@@ -1,0 +1,174 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-label">PORTAL CLIENTES</span>
+      <h1 class="header-title">Movimientos de Transporte</h1>
+    </div>
+    <div class="header-meta">
+      <span class="record-count">{{ filteredMovements.length }} registros</span>
+    </div>
+  </header>
+
+  <!-- Filters Panel -->
+  <section class="filters-panel">
+    <div class="filters-grid">
+
+      <div class="filter-group">
+        <label class="filter-label">Buscar general</label>
+        <div class="input-icon-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input
+            type="text"
+            class="filter-input"
+            placeholder="Placa, contenedor, factura..."
+            [(ngModel)]="filters.search"
+            (ngModelChange)="applyFilters()"
+          />
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Línea</label>
+        <select class="filter-select" [(ngModel)]="filters.linea" (ngModelChange)="applyFilters()">
+          <option value="">Todas</option>
+          <option *ngFor="let l of lineaOptions" [value]="l">{{ l }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group filter-group--action">
+        <button class="btn-clear" (click)="clearFilters()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
+          </svg>
+          Limpiar filtros
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Table -->
+  <section class="table-section">
+  <div class="table-wrapper">
+    <table class="data-table">
+
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Empresa Transporte</th>
+          <th>Placa</th>
+          <th>Contenedor</th>
+          <th>Cliente</th>
+          <th>Línea</th>
+          <th>Patio</th>
+          <th>Operación</th>
+          <th>Conductor</th>
+          <th>Estado</th>
+          <th>Flete</th>
+          <th>Comisión Pagada</th>
+          <th>Estado Trabajo</th>
+          <th>Afiliado</th>
+          <th>Auxiliar Transporte</th>
+          <th>Transporte y Comida</th>
+          <th>Observación</th>
+          <th>Fecha Facturar</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let mov of paginatedMovements; let i = index"
+  class="table-row"
+  [class.row-even]="i % 2 === 0">
+
+          <td>{{ mov.fecha | date:'dd/MM/yyyy' }}</td>
+
+          <td>{{ mov.empresaTransporte }}</td>
+
+          <td>
+            <span class="badge badge--placa">
+              {{ mov.placa }}
+            </span>
+          </td>
+
+          <td>{{ mov.contenedor }}</td>
+
+          <td>{{ mov.cliente }}</td>
+
+          <td>{{ mov.linea }}</td>
+
+          <td>{{ mov.patio }}</td>
+
+          <td>{{ mov.operacion }}</td>
+
+          <td>{{ mov.conductor }}</td>
+
+          <td>{{ mov.estado }}</td>
+
+          <td>
+            {{ mov.flete | currency:'COP':'symbol':'1.0-0' }}
+          </td>
+
+          <td>
+            {{ mov.comisionPagada | currency:'COP':'symbol':'1.0-0' }}
+          </td>
+
+          <td>{{ mov.estadoTrabajo }}</td>
+
+          <td>{{ mov.afiliado }}</td>
+
+          <td>{{ mov.auxiliarTransporte }}</td>
+
+          <td>
+            {{ mov.transporteComida | currency:'COP':'symbol':'1.0-0' }}
+          </td>
+
+          <td>{{ mov.observacion }}</td>
+
+          <td>
+            {{ mov.fechaEnvioFacturar | date:'dd/MM/yyyy' }}
+          </td>
+
+        </tr>
+
+        <tr *ngIf="filteredMovements.length === 0">
+          <td colspan="18" class="empty-state">
+            No se encontraron registros
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <div class="pagination" *ngIf="totalPages > 1">
+
+    <button
+      class="page-btn"
+      [disabled]="currentPage === 1"
+      (click)="changePage(currentPage - 1)">
+      ←
+    </button>
+
+    <span class="page-info">
+      Página {{ currentPage }} de {{ totalPages }}
+    </span>
+
+    <button
+      class="page-btn"
+      [disabled]="currentPage === totalPages"
+      (click)="changePage(currentPage + 1)">
+      →
+    </button>
+
+  </div>
+
+</section>
+
+</div>
