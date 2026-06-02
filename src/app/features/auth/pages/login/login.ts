@@ -69,7 +69,7 @@ export class LoginComponent {
         );
         
 
-        this.router.navigate(['/transport']);
+        this.router.navigate(['/transport-movements']);
         //alert('Login correcto');
 
       },

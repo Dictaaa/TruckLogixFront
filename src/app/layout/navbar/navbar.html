@@ -1,1 +1,86 @@
-<p>navbar works!</p>
+<header class="navbar">
+
+  <button class="navbar-toggle" (click)="toggleSidebar()" [class.active]="sidebarOpen">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="navbar-brand">
+    <div class="navbar-logo">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="14" width="28" height="16" rx="3" fill="currentColor" opacity="0.2"/>
+        <rect x="2" y="14" width="28" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>
+        <rect x="30" y="18" width="8" height="10" rx="2" fill="currentColor" opacity="0.25"/>
+        <rect x="30" y="18" width="8" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+        <circle cx="10" cy="31" r="4" fill="currentColor"/>
+        <circle cx="10" cy="31" r="2" fill="white" opacity="0.6"/>
+        <circle cx="26" cy="31" r="4" fill="currentColor"/>
+        <circle cx="26" cy="31" r="2" fill="white" opacity="0.6"/>
+        <path d="M8 14V10a2 2 0 0 1 2-2h10l6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="navbar-appname">TruckLogix</span>
+  </div>
+
+  <div class="navbar-center">
+    <span class="navbar-page-label">{{ pageTitle }}</span>
+  </div>
+
+  <div class="navbar-actions">
+
+    <button class="nav-icon-btn" title="Notificaciones">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span class="nav-badge">3</span>
+    </button>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-user" (click)="toggleUserMenu()" [class.open]="userMenuOpen">
+      <div class="nav-avatar">
+        <span>{{ userInitials }}</span>
+      </div>
+      <div class="nav-user-info">
+        <span class="nav-user-name">{{ userName }}</span>
+        <span class="nav-user-role">{{ userRole }}</span>
+      </div>
+      <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M6 9l6 6 6-6"/>
+      </svg>
+
+      <!-- Dropdown -->
+      <div class="user-dropdown" *ngIf="userMenuOpen">
+        <div class="dropdown-header">
+          <span class="dropdown-name">{{ userName }}</span>
+          <span class="dropdown-email">{{ userEmail }}</span>
+        </div>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          Mi perfil
+        </button>
+        <button class="dropdown-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+          </svg>
+          Configuración
+        </button>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item dropdown-item--danger" (click)="logout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+
+  </div>
+</header>

@@ -1,0 +1,208 @@
+$sidebar-width:     240px;
+$sidebar-collapsed: 60px;
+$bg-dark:           #0f1e35;
+$bg-dark-2:         #162845;
+$bg-item-hover:     rgba(255,255,255,0.06);
+$bg-item-active:    rgba(26, 111, 219, 0.18);
+$accent:            #1a6fdb;
+$accent-light:      #4d9fff;
+$text-nav:          rgba(255,255,255,0.65);
+$text-nav-active:   #ffffff;
+$text-nav-label:    rgba(255,255,255,0.28);
+$border-nav:        rgba(255,255,255,0.08);
+$font-body:         'IBM Plex Sans', system-ui, sans-serif;
+$font-mono:         'IBM Plex Mono', monospace;
+
+.sidebar {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  bottom: 0;
+  width: $sidebar-width;
+  background: linear-gradient(180deg, $bg-dark 0%, $bg-dark-2 100%);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 90;
+  font-family: $font-body;
+
+  // Subtle grid overlay
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  // Accent top line
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, $accent, $accent-light, transparent);
+  }
+
+  &--collapsed {
+    width: 0;
+  border-right: none;
+  overflow: hidden;
+
+    .nav-section-label,
+    .nav-label,
+    .nav-badge-count,
+    .sidebar-footer { opacity: 0; pointer-events: none; }
+
+    .nav-item { justify-content: center; padding: 0; }
+    .nav-icon  { margin: 0; }
+  }
+}
+
+// ── Nav ───────────────────────────────────────────────────────────────────
+.sidebar-nav {
+  flex: 1;
+  padding: 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+}
+
+.nav-section-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: $text-nav-label;
+  padding: 10px 10px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.2s;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 10px;
+  height: 42px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: $text-nav;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+
+  &:hover {
+    background: $bg-item-hover;
+    color: $text-nav-active;
+  }
+
+  &--active {
+    background: $bg-item-active !important;
+    color: $text-nav-active !important;
+    border: 1px solid rgba($accent, 0.3);
+
+    .nav-icon { color: $accent-light; }
+
+    // Active indicator bar
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 8px; bottom: 8px;
+      width: 3px;
+      background: $accent-light;
+      border-radius: 0 3px 3px 0;
+    }
+  }
+}
+
+.nav-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  transition: color 0.15s;
+
+  ::ng-deep svg {
+    width: 17px;
+    height: 17px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+}
+
+.nav-label {
+  flex: 1;
+  transition: opacity 0.2s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-badge-count {
+  background: $accent;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.nav-divider {
+  height: 1px;
+  background: $border-nav;
+  margin: 10px 6px;
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────
+.sidebar-footer {
+  padding: 14px 20px;
+  border-top: 1px solid $border-nav;
+  transition: opacity 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-version {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: $text-nav-label;
+  font-family: $font-mono;
+}
+
+.version-dot {
+  width: 6px;
+  height: 6px;
+  background: #0d9e4f;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(13, 158, 79, 0.5);
+  flex-shrink: 0;
+}

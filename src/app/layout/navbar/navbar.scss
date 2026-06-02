@@ -1,0 +1,292 @@
+$accent:      #1a6fdb;
+$accent-glow: rgba(26, 111, 219, 0.12);
+$text:        #1a2332;
+$text-muted:  #6b7a90;
+$text-dim:    #a0aab8;
+$border:      #dde3ec;
+$surface:     #ffffff;
+$surface-2:   #f7f9fc;
+$danger:      #dc3545;
+$font-body:   'IBM Plex Sans', system-ui, sans-serif;
+$font-mono:   'IBM Plex Mono', monospace;
+
+.navbar {
+  height: 60px;
+  background: $surface;
+  border-bottom: 1px solid $border;
+  display: flex;
+  align-items: center;
+  padding: 0 20px 0 0;
+  gap: 0;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  font-family: $font-body;
+}
+
+// ── Toggle (hamburger) ────────────────────────────────────────────────────
+.navbar-toggle {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: $text-muted;
+    border-radius: 2px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+  }
+
+  &:hover span { background: $accent; }
+
+  &.active {
+    span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  }
+}
+
+// ── Brand ─────────────────────────────────────────────────────────────────
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 20px;
+  border-right: 1px solid $border;
+  margin-right: 20px;
+}
+
+.navbar-logo {
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, #0f1e35, #1a3255);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4d9fff;
+  flex-shrink: 0;
+
+  svg { width: 20px; height: 20px; }
+}
+
+.navbar-appname {
+  font-size: 16px;
+  font-weight: 700;
+  color: $text;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+// ── Center ────────────────────────────────────────────────────────────────
+.navbar-center {
+  flex: 1;
+}
+
+.navbar-page-label {
+  font-size: 13px;
+  color: $text-muted;
+  font-weight: 500;
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-icon-btn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: $surface-2;
+    border-color: $border;
+    color: $accent;
+  }
+}
+
+.nav-badge {
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 16px; height: 16px;
+  background: $accent;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid $surface;
+}
+
+.nav-divider {
+  width: 1px;
+  height: 28px;
+  background: $border;
+  margin: 0 4px;
+}
+
+// ── User ──────────────────────────────────────────────────────────────────
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  position: relative;
+  border: 1px solid transparent;
+
+  &:hover, &.open {
+    background: $surface-2;
+    border-color: $border;
+  }
+}
+
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, $accent, #2d85f0);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+  }
+}
+
+.nav-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  @media (max-width: 640px) { display: none; }
+}
+
+.nav-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text;
+  line-height: 1;
+}
+
+.nav-user-role {
+  font-size: 11px;
+  color: $text-dim;
+  line-height: 1;
+}
+
+.nav-chevron {
+  color: $text-dim;
+  transition: transform 0.2s;
+  .nav-user.open & { transform: rotate(180deg); }
+}
+
+// ── Dropdown ──────────────────────────────────────────────────────────────
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 220px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
+  padding: 8px;
+  animation: dropdown-in 0.18s ease both;
+  z-index: 200;
+
+  @keyframes dropdown-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+.dropdown-header {
+  padding: 8px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdown-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text;
+}
+
+.dropdown-email {
+  font-size: 11.5px;
+  color: $text-dim;
+  font-family: $font-mono;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: $border;
+  margin: 4px 0;
+}
+
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  color: $text;
+  font-family: $font-body;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, color 0.12s;
+
+  svg { color: $text-muted; flex-shrink: 0; }
+
+  &:hover {
+    background: $surface-2;
+    svg { color: $accent; }
+  }
+
+  &--danger {
+    color: $danger;
+    svg { color: $danger; }
+    &:hover { background: rgba($danger, 0.06); }
+  }
+}

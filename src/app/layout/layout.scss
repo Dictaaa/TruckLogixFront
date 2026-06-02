@@ -1,0 +1,23 @@
+$sidebar-width:     240px;
+$sidebar-collapsed: 60px;
+$navbar-height:     60px;
+
+.layout {
+  display: block;
+
+  .layout-content {
+    margin-top: $navbar-height;
+    margin-left: $sidebar-width;
+    min-height: calc(100vh - #{$navbar-height});
+    transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #f0f4f8;
+  }
+
+  &--collapsed .layout-content {
+    margin-left: $sidebar-collapsed;
+  }
+
+  @media (max-width: 768px) {
+    .layout-content { margin-left: 0; }
+  }
+}

@@ -1,0 +1,16 @@
+<p>layout works!</p>
+<div class="layout" [class.layout--collapsed]="!sidebarOpen">
+
+  <app-navbar
+    [sidebarOpen]="sidebarOpen"
+    [pageTitle]="pageTitle"
+    (toggleSidebarEvent)="sidebarOpen = !sidebarOpen">
+  </app-navbar>
+
+  <app-sidebar [open]="sidebarOpen"></app-sidebar>
+
+  <main class="layout-content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>
