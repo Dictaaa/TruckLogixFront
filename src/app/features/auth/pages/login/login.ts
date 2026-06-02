@@ -69,10 +69,8 @@ export class LoginComponent {
         );
         
 
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/transport']);
         //alert('Login correcto');
-
-        console.log(res);
 
       },
 

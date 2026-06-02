@@ -1,45 +1,123 @@
-<div class="login-container">
+<div class="login-wrapper">
 
-  <mat-card>
+  <!-- Background decoration -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
 
-    <h1>TruckLogix</h1>
+  <!-- Brand strip -->
+  <aside class="brand-strip">
+    <div class="brand-inner">
+      <div class="brand-logo">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="14" width="28" height="16" rx="3" fill="currentColor" opacity="0.15"/>
+          <rect x="2" y="14" width="28" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>
+          <rect x="30" y="18" width="8" height="10" rx="2" fill="currentColor" opacity="0.2"/>
+          <rect x="30" y="18" width="8" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+          <circle cx="10" cy="31" r="4" fill="currentColor"/>
+          <circle cx="10" cy="31" r="2" fill="white" opacity="0.5"/>
+          <circle cx="26" cy="31" r="4" fill="currentColor"/>
+          <circle cx="26" cy="31" r="2" fill="white" opacity="0.5"/>
+          <path d="M8 14V10a2 2 0 0 1 2-2h10l6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="brand-name">TruckLogix</span>
+      <p class="brand-tagline">Portal de Clientes</p>
 
-    <form [formGroup]="form">
+      <div class="brand-stats">
+        <div class="stat">
+          <span class="stat-value">24/7</span>
+          <span class="stat-label">Disponibilidad</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">100%</span>
+          <span class="stat-label">Trazabilidad</span>
+        </div>
+      </div>
 
-      <mat-form-field appearance="outline">
+      <div class="brand-footer">
+        <span>Portal Clientes · v2.4</span>
+      </div>
+    </div>
+  </aside>
 
-        <mat-label>Email</mat-label>
+  <!-- Login card -->
+  <main class="login-main">
+    <div class="login-card">
 
-        <input
-          matInput
-          formControlName="email"
-          type="email">
+      <header class="card-header">
+        <span class="card-eyebrow">Bienvenido</span>
+        <h2 class="card-title">Inicia sesión</h2>
+        <p class="card-subtitle">Ingresa tus credenciales para acceder al portal</p>
+      </header>
 
-      </mat-form-field>
+      <form [formGroup]="form" class="login-form" (ngSubmit)="login()">
 
-      <mat-form-field appearance="outline">
+        <div class="field-group">
+          <label class="field-label" for="email">Correo electrónico</label>
+          <div class="field-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="2" y="4" width="20" height="16" rx="3"/>
+              <path d="m2 7 10 7 10-7"/>
+            </svg>
+            <input
+              id="email"
+              class="field-input"
+              formControlName="email"
+              type="email"
+              placeholder="usuario@empresa.com"
+              autocomplete="email">
+          </div>
+        </div>
 
-        <mat-label>Password</mat-label>
+        <div class="field-group">
+          <div class="field-label-row">
+            <label class="field-label" for="password">Contraseña</label>
+            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+          </div>
+          <div class="field-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="5" y="11" width="14" height="10" rx="2"/>
+              <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+              <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+            </svg>
+            <input
+              id="password"
+              class="field-input"
+              formControlName="password"
+              type="password"
+              placeholder="••••••••"
+              autocomplete="current-password">
+          </div>
+        </div>
 
-        <input
-          matInput
-          formControlName="password"
-          type="password">
+        <button
+          type="submit"
+          class="btn-login"
+          [class.btn-loading]="loading"
+          [disabled]="loading">
 
-      </mat-form-field>
+          <span class="btn-text">
+            <svg *ngIf="!loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            <span *ngIf="!loading">Ingresar al portal</span>
+            <span *ngIf="loading">Verificando...</span>
+          </span>
 
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="login()"
-        [disabled]="loading">
+          <span class="btn-shine"></span>
+        </button>
 
-        Login
+      </form>
 
-      </button>
+      <footer class="card-footer">
+        <span class="footer-text">¿Problemas para ingresar?</span>
+        <a href="mailto:soporte@trucklogix.co" class="footer-link">Contactar soporte</a>
+      </footer>
 
-    </form>
-
-  </mat-card>
+    </div>
+  </main>
 
 </div>

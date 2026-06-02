@@ -1,33 +1,408 @@
-.login-container {
+// ── Tokens (misma paleta que transport-movements) ─────────────────────────
+$bg:           #f0f4f8;
+$surface:      #ffffff;
+$surface-2:    #f7f9fc;
+$border:       #dde3ec;
+$border-light: #e8ecf2;
+$text:         #1a2332;
+$text-muted:   #6b7a90;
+$text-dim:     #a0aab8;
+$accent:       #1a6fdb;
+$accent-dark:  #1459b8;
+$accent-light: #2d85f0;
+$accent-glow:  rgba(26, 111, 219, 0.12);
+$success:      #0d9e4f;
+$radius:       12px;
+$radius-sm:    8px;
+$font-body:    'IBM Plex Sans', system-ui, sans-serif;
+$font-mono:    'IBM Plex Mono', 'Fira Code', monospace;
 
-  height: 100vh;
+// ── Reset ─────────────────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+// ── Wrapper: dos columnas ─────────────────────────────────────────────────
+.login-wrapper {
+  min-height: 100vh;
   display: flex;
-
-  justify-content: center;
-
-  align-items: center;
-
-  background: #f5f5f5;
-
+  font-family: $font-body;
+  position: relative;
+  overflow: hidden;
+  background: $bg;
 }
 
-mat-card {
-
-  width: 400px;
-
-  padding: 2rem;
-
-  border-radius: 16px;
-
+// ── Background decorations ────────────────────────────────────────────────
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(26, 111, 219, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 111, 219, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 0;
 }
 
-form {
+.bg-glow {
+  position: fixed;
+  top: -200px;
+  right: -100px;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(26,111,219,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
 
+// ── Brand strip (izquierda) ───────────────────────────────────────────────
+.brand-strip {
+  width: 340px;
+  flex-shrink: 0;
+  background: linear-gradient(160deg, #0f1e35 0%, #162845 50%, #1a3255 100%);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+
+  // Subtle inner grid
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  // Accent line top
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $accent, $accent-light, transparent);
+  }
+
+  @media (max-width: 768px) { display: none; }
+}
+
+.brand-inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
   display: flex;
-
   flex-direction: column;
+  padding: 48px 40px;
+}
 
-  gap: 1rem;
+.brand-logo {
+  width: 56px;
+  height: 56px;
+  background: rgba($accent, 0.15);
+  border: 1px solid rgba($accent, 0.3);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: $accent-light;
 
+  svg { width: 32px; height: 32px; }
+}
+
+.brand-name {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.brand-tagline {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: auto;
+}
+
+.brand-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 32px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  font-family: $font-mono;
+  letter-spacing: -0.5px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255,255,255,0.12);
+}
+
+.brand-footer {
+  span {
+    font-size: 11px;
+    color: rgba(255,255,255,0.25);
+    font-family: $font-mono;
+    letter-spacing: 0.5px;
+  }
+}
+
+// ── Login main (derecha) ──────────────────────────────────────────────────
+.login-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+// ── Card ──────────────────────────────────────────────────────────────────
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: 16px;
+  padding: 44px 40px;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.05),
+    0 8px 32px rgba(26, 111, 219, 0.06),
+    0 0 0 1px rgba(255,255,255,0.8) inset;
+  animation: card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) { padding: 32px 24px; }
+}
+
+// ── Card header ───────────────────────────────────────────────────────────
+.card-header {
+  margin-bottom: 36px;
+}
+
+.card-eyebrow {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: $accent;
+  background: $accent-glow;
+  border: 1px solid rgba($accent, 0.18);
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+
+.card-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: $text;
+  letter-spacing: -0.4px;
+  margin-bottom: 6px;
+}
+
+.card-subtitle {
+  font-size: 14px;
+  color: $text-muted;
+  line-height: 1.5;
+}
+
+// ── Form ──────────────────────────────────────────────────────────────────
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+.forgot-link {
+  font-size: 12px;
+  color: $accent;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s;
+
+  &:hover { color: $accent-dark; text-decoration: underline; }
+}
+
+.field-wrap {
+  position: relative;
+}
+
+.field-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: $text-dim;
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.field-input {
+  width: 100%;
+  background: $surface-2;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  color: $text;
+  font-family: $font-body;
+  font-size: 14px;
+  padding: 11px 14px 11px 42px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+
+  &::placeholder { color: $text-dim; }
+
+  &:focus {
+    border-color: $accent;
+    box-shadow: 0 0 0 3px rgba($accent, 0.1);
+    background: $surface;
+
+    // Ilumina el ícono al enfocar
+    & + .field-icon,
+    ~ .field-icon { color: $accent; }
+  }
+}
+
+// ── Login button ──────────────────────────────────────────────────────────
+.btn-login {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, $accent 0%, $accent-light 100%);
+  border: none;
+  border-radius: $radius-sm;
+  color: #fff;
+  font-family: $font-body;
+  font-size: 14.5px;
+  font-weight: 600;
+  padding: 13px 20px;
+  cursor: pointer;
+  overflow: hidden;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+  box-shadow: 0 4px 16px rgba($accent, 0.35);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba($accent, 0.45);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.btn-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+// Efecto de brillo al hover
+.btn-shine {
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  //skewX(-20deg);
+  transition: left 0s;
+
+  .btn-login:hover & {
+    left: 150%;
+    transition: left 0.5s ease;
+  }
+}
+
+// Estado cargando
+.btn-loading {
+  background: linear-gradient(135deg, $accent-dark, $accent);
+}
+
+// ── Card footer ───────────────────────────────────────────────────────────
+.card-footer {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid $border-light;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.footer-text {
+  font-size: 13px;
+  color: $text-dim;
+}
+
+.footer-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: $accent;
+  text-decoration: none;
+  transition: color 0.15s;
+
+  &:hover { color: $accent-dark; text-decoration: underline; }
 }
