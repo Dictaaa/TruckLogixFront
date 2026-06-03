@@ -52,7 +52,7 @@ export class TransportMovementsComponent implements OnInit {
           placa: trip.vehicle?.plate || '',
           contenedor: trip.container_number_id || '',
           tamano: '',
-          cliente: trip.company?.name || '',
+          cliente: trip.client?.name || '',
           linea: trip.shippingLine?.name || '',
           patio: trip.patio?.name || '',
           operacion: trip.operation_type || '',
