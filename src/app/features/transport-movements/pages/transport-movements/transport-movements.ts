@@ -50,7 +50,7 @@ export class TransportMovementsComponent implements OnInit {
           fecha: trip.trip_date,
           empresaTransporte: trip.transportCompany?.name || '',
           placa: trip.vehicle?.plate || '',
-          contenedor: trip.container_number_id || '',
+          contenedor: trip.container?.number || '',
           tamano: '',
           cliente: trip.client?.name || '',
           linea: trip.shippingLine?.name || '',
