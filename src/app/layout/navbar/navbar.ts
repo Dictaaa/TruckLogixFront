@@ -1,9 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './navbar.html',
   styleUrls: ['./navbar.scss'],
 })
