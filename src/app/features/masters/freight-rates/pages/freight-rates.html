@@ -1,0 +1,78 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Maestros</span>
+      <h1 class="page-title">Tarifas de Flete</h1>
+    </div>
+    <button class="btn-primary" (click)="openModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+      Nueva tarifa
+    </button>
+  </div>
+
+  <section class="table-section">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="col-id">#</th>
+            <th>Empresa Transporte</th>
+            <th>Origen</th>
+            <th>Destino</th>
+            <th class="col-freight">Tarifa</th>
+            <th class="col-status">Estado</th>
+            <th class="col-actions">Opciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loading -->
+          <tr *ngIf="loading">
+            <td colspan="18">
+              <div class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando…</span>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let f of freights; let i = index" class="table-row">
+              <td>{{ f.id }}</td>
+              <td>{{ f.transportCompany?.name?.trim() }}
+              </td>
+              <td>{{ f.origin?.name }}
+              </td>
+              <td>{{ f.destination?.name?.trim() }}
+              </td>
+              <td>$ {{ f.freight | number:'1.0-0' }}
+              </td>
+              <td class="col-status">
+                <span class="badge" [class.badge-active]="f.active" [class.badge-inactive]="!f.active">
+                  {{ f.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="col-actions">
+  <app-table-actions
+    (actionSelected)="onAction($event, f)">
+  </app-table-actions>
+</td>
+            </tr>
+
+            <!-- Empty state -->
+            <tr *ngIf="freights.length === 0">
+              <td colspan="7" class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
+                  <path d="M9 17H5a2 2 0 0 0-2 2v2h18v-2a2 2 0 0 0-2-2h-4" />
+                  <path d="M12 3v10M8 7l4-4 4 4" />
+                </svg>
+                <p>No hay tarifas registradas</p>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </section>

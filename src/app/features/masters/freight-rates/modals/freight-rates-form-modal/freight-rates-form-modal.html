@@ -1,0 +1,107 @@
+<!-- Header -->
+<div class="modal-header">
+  <div class="modal-header-left">
+    <span class="modal-eyebrow">Maestros</span>
+    <h2 class="modal-title">{{ isEdit ? 'Editar Tarifa' : 'Nueva Tarifa de Flete' }}</h2>
+  </div>
+  <button class="btn-close" (click)="close()" aria-label="Cerrar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </button>
+</div>
+
+<mat-dialog-content class="modal-body">
+
+  <div class="form-section">
+    <div class="form-section-label">Ruta y Empresa</div>
+    <div class="form-grid">
+
+      <!-- EMPRESA DE TRANSPORTE -->
+      <div class="form-group">
+        <label class="form-label">Empresa de Transporte</label>
+        <div class="input-icon-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" class="form-control has-icon" placeholder="Buscar empresa…"
+            [formControl]="empresaCtrl" [matAutocomplete]="autoEmpresa">
+        </div>
+        <mat-autocomplete #autoEmpresa="matAutocomplete" [displayWith]="displayFn('name')"
+          (optionSelected)="onSelect('transport_company_id', $event.option.value)">
+          <mat-option *ngFor="let e of filteredCompanies$ | async" [value]="e">{{ e.name }}</mat-option>
+        </mat-autocomplete>
+      </div>
+
+      <!-- ORIGEN -->
+      <div class="form-group">
+        <label class="form-label">Origen</label>
+        <div class="input-icon-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" class="form-control has-icon" placeholder="Buscar origen…"
+            [formControl]="origenCtrl" [matAutocomplete]="autoOrigen">
+        </div>
+        <mat-autocomplete #autoOrigen="matAutocomplete" [displayWith]="displayFn('name')"
+          (optionSelected)="onSelect('origin_id', $event.option.value)">
+          <mat-option *ngFor="let p of filteredOrigen$ | async" [value]="p">{{ p.name }}</mat-option>
+        </mat-autocomplete>
+      </div>
+
+      <!-- DESTINO -->
+      <div class="form-group">
+        <label class="form-label">Destino</label>
+        <div class="input-icon-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" class="form-control has-icon" placeholder="Buscar destino…"
+            [formControl]="destinoCtrl" [matAutocomplete]="autoDestino">
+        </div>
+        <mat-autocomplete #autoDestino="matAutocomplete" [displayWith]="displayFn('name')"
+          (optionSelected)="onSelect('destination_id', $event.option.value)">
+          <mat-option *ngFor="let p of filteredDestino$ | async" [value]="p">{{ p.name }}</mat-option>
+        </mat-autocomplete>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-section-label">Tarifa</div>
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label class="form-label">Valor del Flete</label>
+        <div class="input-currency-wrap">
+          <span class="currency-prefix">$</span>
+          <input type="number" class="form-control has-prefix" [(ngModel)]="form.freight" min="0">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Estado</label>
+        <select class="form-control" [(ngModel)]="form.active">
+          <option [ngValue]="true">Activo</option>
+          <option [ngValue]="false">Inactivo</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="modal-footer">
+  <button class="btn-cancel" (click)="close()">Cancelar</button>
+  <button class="btn-save" (click)="save()" [disabled]="saving">
+    <svg *ngIf="!saving" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+      <polyline points="17 21 17 13 7 13 7 21"/>
+      <polyline points="7 3 7 8 15 8"/>
+    </svg>
+    <div *ngIf="saving" class="spinner" style="width:14px;height:14px;border-width:2px;border-top-color:#fff"></div>
+    {{ saving ? 'Guardando…' : 'Guardar tarifa' }}
+  </button>
+</mat-dialog-actions>

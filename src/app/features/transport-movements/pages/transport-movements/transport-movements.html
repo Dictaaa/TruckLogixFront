@@ -19,15 +19,11 @@
         <label class="filter-label">Buscar general</label>
         <div class="input-icon-wrap">
           <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
           </svg>
-          <input
-            type="text"
-            class="filter-input"
-            placeholder="Placa, contenedor, factura..."
-            [(ngModel)]="filters.search"
-            (ngModelChange)="applyFilters()"
-          />
+          <input type="text" class="filter-input" placeholder="Placa, contenedor, factura..."
+            [(ngModel)]="filters.search" (ngModelChange)="applyFilters()" />
         </div>
       </div>
 
@@ -42,7 +38,7 @@
       <div class="filter-group filter-group--action">
         <button class="btn-clear" (click)="clearFilters()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
+            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
           </svg>
           Limpiar filtros
         </button>
@@ -50,125 +46,137 @@
 
     </div>
   </section>
+  <div class="actions-bar">
+    <button class="btn-primary" (click)="openModal()">
+      + Nuevo Movimiento
+    </button>
+  </div>
 
   <!-- Table -->
   <section class="table-section">
-  <div class="table-wrapper">
-    <table class="data-table">
+    <div class="table-wrapper">
+      <table class="data-table">
 
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Empresa Transporte</th>
-          <th>Placa</th>
-          <th>Contenedor</th>
-          <th>Cliente</th>
-          <th>Línea</th>
-          <th>Patio</th>
-          <th>Operación</th>
-          <th>Conductor</th>
-          <th>Estado</th>
-          <th>Flete</th>
-          <th>Comisión Pagada</th>
-          <th>Estado Trabajo</th>
-          <th>Afiliado</th>
-          <th>Auxiliar Transporte</th>
-          <th>Transporte y Comida</th>
-          <th>Observación</th>
-          <th>Fecha Facturar</th>
-        </tr>
-      </thead>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Empresa Transporte</th>
+            <th>Placa</th>
+            <th>Contenedor</th>
+            <th>Cliente</th>
+            <th>Línea</th>
+            <th>Origen</th>
+            <th>Destino</th>
+            <th>Operación</th>
+            <th>Conductor</th>
+            <th>Estado</th>
+            <th>Flete</th>
+            <th>Comisión Pagada</th>
+            <th>Estado Trabajo</th>
+            <th>Afiliado</th>
+            <th>Auxiliar Transporte</th>
+            <th>Transporte y Comida</th>
+            <th>Observación</th>
+            <th>Fecha Facturar</th>
+          </tr>
+        </thead>
 
-      <tbody>
+        <tbody>
 
-        <tr *ngFor="let mov of paginatedMovements; let i = index"
-  class="table-row"
-  [class.row-even]="i % 2 === 0">
+          <!-- Loading -->
+          <tr *ngIf="loading">
+            <td colspan="18">
+              <div class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando…</span>
+              </div>
+            </td>
+          </tr>
 
-          <td>{{ mov.fecha | date:'dd/MM/yyyy' }}</td>
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let mov of paginatedMovements; let i = index" class="table-row" [class.row-even]="i % 2 === 0">
 
-          <td>{{ mov.empresaTransporte }}</td>
+              <td>{{ mov.fecha | date:'dd/MM/yyyy' }}</td>
 
-          <td>
-            <span class="badge badge--placa">
-              {{ mov.placa }}
-            </span>
-          </td>
+              <td>{{ mov.empresaTransporte }}</td>
 
-          <td>{{ mov.contenedor }}</td>
+              <td>
+                <span class="badge badge--placa">
+                  {{ mov.placa }}
+                </span>
+              </td>
 
-          <td>{{ mov.cliente }}</td>
+              <td>{{ mov.contenedor }}</td>
 
-          <td>{{ mov.linea }}</td>
+              <td>{{ mov.cliente }}</td>
 
-          <td>{{ mov.patio }}</td>
+              <td>{{ mov.linea }}</td>
 
-          <td>{{ mov.operacion }}</td>
+              <td>{{ mov.origen }}</td>
 
-          <td>{{ mov.conductor }}</td>
+              <td>{{ mov.destino }}</td>
 
-          <td>{{ mov.estado }}</td>
+              <td>{{ mov.operacion }}</td>
 
-          <td>
-            {{ mov.flete | currency:'COP':'symbol':'1.0-0' }}
-          </td>
+              <td>{{ mov.conductor }}</td>
 
-          <td>
-            {{ mov.comisionPagada | currency:'COP':'symbol':'1.0-0' }}
-          </td>
+              <td>{{ mov.estado }}</td>
 
-          <td>{{ mov.estadoTrabajo }}</td>
+              <td>
+                {{ mov.flete | currency:'COP':'symbol':'1.0-0' }}
+              </td>
 
-          <td>{{ mov.afiliado }}</td>
+              <td>
+                {{ mov.comisionPagada | currency:'COP':'symbol':'1.0-0' }}
+              </td>
 
-          <td>{{ mov.auxiliarTransporte }}</td>
+              <td>{{ mov.estadoTrabajo }}</td>
 
-          <td>
-            {{ mov.transporteComida | currency:'COP':'symbol':'1.0-0' }}
-          </td>
+              <td>{{ mov.afiliado }}</td>
 
-          <td>{{ mov.observacion }}</td>
+              <td>{{ mov.auxiliarTransporte }}</td>
 
-          <td>
-            {{ mov.fechaEnvioFacturar | date:'dd/MM/yyyy' }}
-          </td>
+              <td>
+                {{ mov.transporteComida | currency:'COP':'symbol':'1.0-0' }}
+              </td>
 
-        </tr>
+              <td>{{ mov.observacion }}</td>
 
-        <tr *ngIf="filteredMovements.length === 0">
-          <td colspan="18" class="empty-state">
-            No se encontraron registros
-          </td>
-        </tr>
+              <td>
+                {{ mov.fechaEnvioFacturar | date:'dd/MM/yyyy' }}
+              </td>
 
-      </tbody>
+            </tr>
 
-    </table>
-  </div>
+            <tr *ngIf="filteredMovements.length === 0">
+              <td colspan="18" class="empty-state">
+                No se encontraron registros
+              </td>
+            </tr>
+          </ng-container>
 
-  <!-- Paginación -->
-  <div class="pagination" *ngIf="totalPages > 1">
+        </tbody>
 
-    <button
-      class="page-btn"
-      [disabled]="currentPage === 1"
-      (click)="changePage(currentPage - 1)">
-      ←
-    </button>
+      </table>
+    </div>
 
-    <span class="page-info">
-      Página {{ currentPage }} de {{ totalPages }}
-    </span>
+    <!-- Paginación -->
+    <div class="pagination" *ngIf="totalPages > 1">
 
-    <button
-      class="page-btn"
-      [disabled]="currentPage === totalPages"
-      (click)="changePage(currentPage + 1)">
-      →
-    </button>
+      <button class="page-btn" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+        ←
+      </button>
 
-  </div>
+      <span class="page-info">
+        Página {{ currentPage }} de {{ totalPages }}
+      </span>
 
-</section>
+      <button class="page-btn" [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">
+        →
+      </button>
+
+    </div>
+
+  </section>
 
 </div>

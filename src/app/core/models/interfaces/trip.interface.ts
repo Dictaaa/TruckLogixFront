@@ -7,7 +7,8 @@ export interface Movement {
   tamano: string;
   cliente: string;
   linea: string;
-  patio: string;
+  origen: string;
+  destino: string;
   operacion: string;
   conductor: string;
   estado: string;

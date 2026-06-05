@@ -37,3 +37,472 @@ body {
   height: 100%;
 }
 /* You can add global styles to this file, and also import other style files */
+
+// ── Angular Material: override del dialog ─────────────────────────────────
+.dialog-panel {
+
+  .mat-mdc-dialog-container {
+    --mdc-dialog-container-shape: 14px;
+    --mdc-dialog-container-color: #ffffff;
+    padding: 0 !important;
+    height: 100% !important;
+    box-shadow:
+      0 4px 6px rgba(0,0,0,.04),
+      0 20px 60px rgba(10,18,32,.22) !important;
+  }
+
+  // Surface = columna flex que ocupa todo el dialog
+  .mat-mdc-dialog-surface {
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;        // ocupa todo el alto asignado por Material
+  }
+
+  // El componente hijo debe ser flex column también
+  app-transport-movement-form-modal {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;       // sin esto flex no funciona bien en Chrome
+    overflow: hidden !important;
+  }
+
+  // Content: crece para llenar el espacio, scrollea solo en Y
+  .mat-mdc-dialog-content {
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-height: none !important;    // quitamos el max-height fijo — lo controla el dialog
+    padding: 0 !important;
+    margin: 0 !important;
+
+    scrollbar-width: thin;
+    scrollbar-color: #dde3ec transparent;
+    &::-webkit-scrollbar { width: 5px; }
+    &::-webkit-scrollbar-thumb {
+      background: #dde3ec;
+      border-radius: 3px;
+    }
+  }
+
+  // Footer: nunca se aplasta
+  .mat-mdc-dialog-actions {
+    flex-shrink: 0 !important;
+    padding: 0 !important;
+    min-height: unset !important;
+  }
+}
+
+// ── Variables ─────────────────────────────────────────────────────────────
+$bg:           #f0f4f8;
+$surface:      #ffffff;
+$surface-2:    #f7f9fc;
+$border:       #dde3ec;
+$border-light: #e8ecf2;
+$text:         #1a2332;
+$text-muted:   #6b7a90;
+$text-dim:     #a0aab8;
+$accent:       #1a6fdb;
+$accent-light: #2d85f0;
+$accent-glow:  rgba(26, 111, 219, 0.1);
+$success:      #0d9e4f;
+$warn:         #d97706;
+$radius:       10px;
+$radius-sm:    6px;
+$font-body:    'IBM Plex Sans', system-ui, sans-serif;
+$font-mono:    'IBM Plex Mono', 'Fira Code', monospace;
+
+// ── Page wrapper ──────────────────────────────────────────────────────────
+.page-wrapper {
+  min-height: 100vh;
+  background: $bg;
+  color: $text;
+  font-family: $font-body;
+  padding: 32px 40px;
+
+  @media (max-width: 768px) { padding: 20px 16px; }
+}
+
+// ── Page header ───────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid $border;
+
+  .header-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    color: $accent;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .header-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: $text;
+    letter-spacing: -0.3px;
+  }
+
+  .record-count {
+    font-size: 13px;
+    color: $text-muted;
+    background: $surface;
+    border: 1px solid $border;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+}
+
+// ── Actions bar ───────────────────────────────────────────────────────────
+.actions-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: $accent;
+  color: #fff;
+  border: none;
+  border-radius: $radius-sm;
+  font-family: $font-body;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: all 0.15s;
+  box-shadow: 0 1px 3px rgba(26, 111, 219, 0.3);
+
+  &:hover {
+    background: $accent-light;
+    box-shadow: 0 4px 14px rgba(26, 111, 219, 0.35);
+    transform: translateY(-1px);
+  }
+
+  &:active { transform: translateY(0); }
+}
+
+// ── Filters panel ─────────────────────────────────────────────────────────
+.filters-panel {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+  gap: 14px;
+  align-items: end;
+
+  @media (max-width: 1100px) { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 640px)  { grid-template-columns: 1fr; }
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &--action { justify-content: flex-end; }
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: $text-muted;
+}
+
+.input-icon-wrap {
+  position: relative;
+
+  .input-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $text-dim;
+    pointer-events: none;
+    width: 15px;
+    height: 15px;
+  }
+
+  input { padding-left: 32px !important; }
+}
+
+.filter-input,
+.filter-select {
+  background: $surface-2;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  color: $text;
+  font-family: $font-body;
+  font-size: 13.5px;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+  appearance: none;
+
+  &::placeholder { color: $text-dim; }
+
+  &:focus {
+    border-color: $accent;
+    box-shadow: 0 0 0 3px $accent-glow;
+    background: $surface;
+  }
+}
+
+.filter-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7a90' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+  cursor: pointer;
+
+  option { background: $surface; color: $text; }
+}
+
+.btn-clear {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  font-family: $font-body;
+  font-size: 12.5px;
+  padding: 9px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #dc3545;
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.06);
+  }
+}
+
+// ── Table section ─────────────────────────────────────────────────────────
+.table-section {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+.table-wrapper { overflow-x: auto; }
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+
+  thead tr {
+    background: $surface-2;
+    border-bottom: 2px solid $border;
+  }
+
+  th {
+    padding: 13px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: $text-muted;
+    white-space: nowrap;
+    user-select: none;
+
+    &.th-sortable {
+      cursor: pointer;
+      transition: color 0.15s;
+      &:hover { color: $accent; }
+    }
+
+    &.th-right { text-align: right; }
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid $border-light;
+    vertical-align: middle;
+    color: $text;
+  }
+
+  .td-right { text-align: right; }
+
+  .table-row {
+    transition: background 0.12s;
+    &:hover { background: rgba(26, 111, 219, 0.04); }
+    &:last-child td { border-bottom: none; }
+    &.row-even { background: $surface-2; }
+  }
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────
+.loading-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 16px;
+  color: $text-muted;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid $border;
+  border-top-color: $text;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Empty state ───────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center;
+  padding: 60px 20px !important;
+  color: $text-dim;
+  border-bottom: none !important;
+
+  svg { display: block; margin: 0 auto 12px; color: $text-dim; }
+  p   { font-size: 14px; }
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  border-top: 1px solid $border;
+  background: $surface-2;
+
+  .page-info {
+    font-size: 13px;
+    color: $text-muted;
+    font-weight: 500;
+  }
+}
+
+.page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: $accent;
+    color: $accent;
+    background: $accent-glow;
+  }
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+// ── Badges ────────────────────────────────────────────────────────────────
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  &--placa {
+    background: #e8f1fd;
+    color: #1a5cb8;
+    border: 1px solid #c2d8f8;
+    font-family: $font-mono;
+    font-size: 12px;
+  }
+
+  &-active   { background: #dcfce7; color: #16a34a; }
+  &-inactive { background: #fee2e2; color: #dc2626; }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+.mono {
+  font-family: $font-mono;
+  font-size: 12.5px;
+  letter-spacing: 0.3px;
+}
+
+.text-muted { color: $text-muted; }
+
+.valor {
+  font-family: $font-mono;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: $success;
+}
+
+.ta-wrap { display: inline-block; }
+
+.dropdown-fixed {
+  position: fixed;
+  z-index: 9999;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  background: transparent;
+  border: none;
+  font-family: $font-body;
+  font-size: 13px;
+  color: $text;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+
+  &:hover { background: $surface-2; }
+
+  &--danger {
+    color: #dc2626;
+    &:hover { background: #fff1f2; }
+  }
+}

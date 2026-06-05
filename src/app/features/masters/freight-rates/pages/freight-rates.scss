@@ -392,16 +392,6 @@ $font-mono:    'IBM Plex Mono', 'Fira Code', monospace;
   }
 }
 
-.loading-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 48px 16px;
-  color: #64748b;
-  font-size: 14px;
-}
-
 .table-loading {
   display: flex;
   align-items: center;
@@ -422,3 +412,53 @@ $font-mono:    'IBM Plex Mono', 'Fira Code', monospace;
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .03em;
+
+  &.badge-active   { background: #dcfce7; color: #16a34a; }
+  &.badge-inactive { background: #fee2e2; color: #dc2626; }
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all .15s;
+
+  &.btn-edit {
+    background: #f1f5f9;
+    color: #475569;
+    border-color: #e2e8f0;
+    &:hover { background: #e2e8f0; color: #0f172a; }
+  }
+
+  &.btn-delete {
+    background: #fff1f2;
+    color: #e11d48;
+    border-color: #fecdd3;
+    &:hover { background: #ffe4e6; }
+  }
+}
+
+.loading-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 48px 16px;
+  color: #64748b;
+  font-size: 14px;
+}

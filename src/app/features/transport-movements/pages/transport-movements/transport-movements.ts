@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ChangeDetectorRef, inject  } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../../core/services/api/api.service';
 import { Movement } from '../../../../core/models/interfaces/trip.interface';
+import { TransportMovementFormModalComponent } from '../../modals/transport-movement-form-modal/transport-movement-form-modal';
+import { DialogService } from '../../../../core/services/dialog/dialog.service';
 
 @Component({
   selector: 'app-transport-movements',
@@ -12,6 +14,12 @@ import { Movement } from '../../../../core/models/interfaces/trip.interface';
   styleUrls: ['./transport-movements.scss'],
 })
 export class TransportMovementsComponent implements OnInit {
+
+  private apiService = inject(ApiService);
+  private dialogService = inject(DialogService);
+  private cdr = inject(ChangeDetectorRef);
+
+  loading = true;
 
   allMovements: Movement[] = [];
   filteredMovements: Movement[] = [];
@@ -35,13 +43,14 @@ export class TransportMovementsComponent implements OnInit {
   totalPages = 1;
   paginatedMovements: Movement[] = [];
 
-  constructor(private apiService: ApiService) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.loadTrips();
   }
 
   loadTrips(): void {
+    this.loading = true;
     this.apiService.getTrips().subscribe({
       next: (response: any) => {
 
@@ -54,8 +63,9 @@ export class TransportMovementsComponent implements OnInit {
           tamano: '',
           cliente: trip.client?.name || '',
           linea: trip.shippingLine?.name || '',
-          patio: trip.patio?.name || '',
-          operacion: trip.operation_type || '',
+          origen: trip.origin?.name || '',
+          destino: trip.destination?.name || '',
+          operacion: trip.operation?.name || '',
           conductor: trip.driver?.name || '',
           estado: trip.client_status || '',
           flete: Number(trip.freight_value || 0),
@@ -70,10 +80,10 @@ export class TransportMovementsComponent implements OnInit {
 
         this.buildFilterOptions();
         this.applyFilters();
+        this.loading = false;
+        this.cdr.detectChanges();
       },
-      error: (error) => {
-        console.error('Error cargando viajes:', error);
-      }
+      error: () => this.loading = false
     });
   }
 
@@ -219,4 +229,14 @@ export class TransportMovementsComponent implements OnInit {
     this.currentPage = page;
     this.updatePagination();
   }
+
+ openModal(): void {
+  const ref = this.dialogService.open(TransportMovementFormModalComponent);
+
+  ref.afterClosed().subscribe(result => {
+    if (result?.saved) {
+      this.loadTrips();
+    }
+  });
+}
 }

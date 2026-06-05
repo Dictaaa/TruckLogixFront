@@ -1,0 +1,279 @@
+<!-- Header -->
+<div class="modal-header">
+    <div class="modal-header-left">
+        <span class="modal-eyebrow">Transporte</span>
+        <h2 class="modal-title">Nuevo Movimiento</h2>
+    </div>
+    <button class="btn-close" (click)="close()" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+    </button>
+</div>
+
+<mat-dialog-content class="modal-body">
+
+    <div class="form-section">
+        <div class="form-section-label">Información principal</div>
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label class="form-label">Fecha</label>
+                <input type="date" class="form-control" [(ngModel)]="form.fecha">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Cliente</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar cliente…"
+                        [formControl]="clienteCtrl" [matAutocomplete]="autoCliente">
+                </div>
+                <mat-autocomplete #autoCliente="matAutocomplete" [displayWith]="displayFn('name')"
+                    (optionSelected)="onSelect('cliente', $event.option.value)">
+                    <mat-option *ngFor="let c of filteredClients$ | async" [value]="c">{{ c.name }}</mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Línea Naviera</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar línea…"
+                        [formControl]="lineaCtrl" [matAutocomplete]="autoLinea">
+                </div>
+                <mat-autocomplete #autoLinea="matAutocomplete" [displayWith]="displayFn('name')"
+                    (optionSelected)="onSelect('linea', $event.option.value)">
+                    <mat-option *ngFor="let l of filteredShippingLines$ | async" [value]="l">{{ l.name }}</mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <!-- En "Información principal", reemplaza el form-group de Patio por estos dos: -->
+
+            <div class="form-group">
+                <label class="form-label">Origen</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar origen…"
+                        [formControl]="origenCtrl" [matAutocomplete]="autoOrigen">
+                </div>
+                <mat-autocomplete #autoOrigen="matAutocomplete" [displayWith]="displayFn('name')"
+                    (optionSelected)="onSelect('origen', $event.option.value); resolveFreight()">
+                    <mat-option *ngFor="let p of filteredPatios$ | async" [value]="p">{{ p.name }}</mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Destino</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar destino…"
+                        [formControl]="destinoCtrl" [matAutocomplete]="autoDestino">
+                </div>
+                <mat-autocomplete #autoDestino="matAutocomplete" [displayWith]="displayFn('name')"
+                    (optionSelected)="onSelect('destino', $event.option.value); resolveFreight()">
+                    <mat-option *ngFor="let p of filteredPatiosDestino$ | async" [value]="p">{{ p.name }}</mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Contenedor</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon mono" placeholder="MSCU1234567"
+                        [formControl]="contenedorCtrl" [matAutocomplete]="autoContenedor">
+                </div>
+                <mat-autocomplete #autoContenedor="matAutocomplete" [displayWith]="displayFn('number')"
+                    (optionSelected)="onSelect('contenedor', $event.option.value)">
+                    <mat-option *ngFor="let c of filteredContainers$ | async" [value]="c">{{ c.number }}</mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Operación</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar operación…"
+                        [formControl]="operacionCtrl" [matAutocomplete]="autoOperacion">
+                </div>
+                <mat-autocomplete #autoOperacion="matAutocomplete" [displayWith]="displayFn('name')"
+                    (optionSelected)="onSelect('operacion', $event.option.value)">
+                    <mat-option *ngFor="let o of filteredOperations$ | async" [value]="o">{{ o.name }}</mat-option>
+                </mat-autocomplete>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-label">Transporte</div>
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label class="form-label">Empresa Transporte</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar empresa…"
+                        [formControl]="empresaTransporteCtrl" [matAutocomplete]="autoEmpresa">
+                </div>
+                <mat-autocomplete #autoEmpresa="matAutocomplete" [displayWith]="displayFn('name')"
+                    (optionSelected)="onSelect('empresaTransporte', $event.option.value); resolveFreight()">
+                    <mat-option *ngFor="let e of filteredTransportCompanies$ | async" [value]="e">{{ e.name }}
+                    </mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Vehículo</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar vehículo…"
+                        [formControl]="vehiclesCtrl" [matAutocomplete]="autoVehicles">
+                </div>
+                <mat-autocomplete #autoVehicles="matAutocomplete" [displayWith]="displayFn('plate')"
+                    (optionSelected)="onSelect('vehiculo', $event.option.value)">
+                    <mat-option *ngFor="let v of filteredVehicles$ | async" [value]="v">{{ v.plate }}</mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Conductor</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar conductor…"
+                        [formControl]="conductorCtrl" [matAutocomplete]="autoConductor">
+                </div>
+                <mat-autocomplete #autoConductor="matAutocomplete" [displayWith]="displayFn('name')"
+                    (optionSelected)="onSelect('conductor', $event.option.value)">
+                    <mat-option *ngFor="let d of filteredDrivers$ | async" [value]="d">{{ d.name }}</mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Afiliado</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar afiliado…"
+                        [formControl]="afiliadoCtrl" [matAutocomplete]="autoAfiliado">
+                </div>
+                <mat-autocomplete #autoAfiliado="matAutocomplete" [displayWith]="displayFn('name')"
+                    (optionSelected)="onSelect('afiliado', $event.option.value)">
+                    <mat-option *ngFor="let a of filteredAffiliates$ | async" [value]="a">{{ a.name }}</mat-option>
+                </mat-autocomplete>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Auxiliar Transporte</label>
+                <div class="input-icon-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" class="form-control has-icon" placeholder="Buscar auxiliar…"
+                        [formControl]="auxiliarTransporteCtrl" [matAutocomplete]="autoAuxiliar">
+                </div>
+                <mat-autocomplete #autoAuxiliar="matAutocomplete" [displayWith]="displayFn('name')"
+                    (optionSelected)="onSelect('auxiliarTransporte', $event.option.value)">
+                    <mat-option *ngFor="let a of filteredTransportAssistants$ | async" [value]="a">{{ a.name }}
+                    </mat-option>
+                </mat-autocomplete>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="form-section-label">Estado y Valores</div>
+        <div class="form-grid">
+
+            <!-- En "Estado y Valores", reemplaza el input de Estado por: -->
+            <div class="form-group">
+                <label class="form-label">Estado</label>
+                <select class="form-control" [(ngModel)]="form.estado">
+                    <option value="">Seleccionar…</option>
+                    <option value="1">Lleno</option>
+                    <option value="2">Vacío</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Estado Trabajo</label>
+                <input type="text" class="form-control" [(ngModel)]="form.estadoTrabajo">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Fecha Facturar</label>
+                <input type="date" class="form-control" [(ngModel)]="form.fechaFacturar">
+            </div>
+
+            <!-- El campo Flete queda de solo lectura ya que se auto-completa: -->
+            <div class="form-group">
+                <label class="form-label">Flete</label>
+                <div class="input-currency-wrap">
+                    <span class="currency-prefix">$</span>
+                    <input type="number" class="form-control has-prefix" [(ngModel)]="form.flete" min="0"
+                        [readonly]="freightResolved">
+                </div>
+                <span class="form-hint" *ngIf="freightResolved">Auto-calculado por tarifa</span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Transporte y Comida</label>
+                <div class="input-currency-wrap">
+                    <span class="currency-prefix">$</span>
+                    <input type="number" class="form-control has-prefix" [(ngModel)]="form.transporteComida" min="0">
+                </div>
+            </div>
+
+            <div class="form-group form-group-full">
+                <label class="form-label">Observación</label>
+                <textarea class="form-control" rows="3" placeholder="Notas adicionales…"
+                    [(ngModel)]="form.observacion"></textarea>
+            </div>
+
+        </div>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="modal-footer">
+    <button class="btn-cancel" (click)="close()">Cancelar</button>
+    <button class="btn-save" (click)="save()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+        </svg>
+        Guardar movimiento
+    </button>
+</mat-dialog-actions>

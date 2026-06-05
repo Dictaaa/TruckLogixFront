@@ -33,7 +33,12 @@ export const routes: Routes = [
           import('./features/transport-movements/pages/transport-movements/transport-movements')
             .then((m) => m.TransportMovementsComponent),
       },
-      // Agrega aquí las rutas futuras (clientes, conductores, reportes, etc.)
+      {
+      path: 'freight-rates',
+        loadComponent: () =>
+          import('./features/masters/freight-rates/pages/freight-rates')
+            .then((m) => m.FreightRates),
+      }
     ],
   },
 

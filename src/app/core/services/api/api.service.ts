@@ -27,6 +27,13 @@ export class ApiService {
     });
   }
 
+  postAuth(url: string, body: any) {
+  const token = localStorage.getItem('token');
+  return this.http.post(`${this.baseUrl}${url}`, body, {
+    headers: new HttpHeaders({ Authorization: `Bearer ${token}` })
+  });
+}
+
   post(url: string, body: any) {
     return this.http.post(`${this.baseUrl}${url}`, body);
   }
@@ -42,4 +49,18 @@ export class ApiService {
   getTrips() {
     return this.getAuth(ENDPOINTS.TRIPS.LIST);
   }
+
+  putAuth(url: string, body: any) {
+  const token = localStorage.getItem('token');
+  return this.http.put(`${this.baseUrl}${url}`, body, {
+    headers: new HttpHeaders({ Authorization: `Bearer ${token}` })
+  });
+}
+
+deleteAuth(url: string) {
+  const token = localStorage.getItem('token');
+  return this.http.delete(`${this.baseUrl}${url}`, {
+    headers: new HttpHeaders({ Authorization: `Bearer ${token}` })
+  });
+}
 }
