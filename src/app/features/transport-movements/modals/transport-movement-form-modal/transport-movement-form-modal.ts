@@ -10,6 +10,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Observable, combineLatest, startWith, map } from 'rxjs';
 import { ApiService } from '../../../../core/services/api/api.service';
 import { ENDPOINTS } from '../../../../core/services/api/endpoints';
+import { ToastService } from '../../../../core/services/toast/toast';
 
 @Component({
   selector: 'app-transport-movement-form-modal',
@@ -30,6 +31,7 @@ export class TransportMovementFormModalComponent implements OnInit {
 
   private dialogRef = inject(MatDialogRef<TransportMovementFormModalComponent>);
   private api = inject(ApiService);
+  private toast = inject(ToastService);
 
   // --- Catálogos crudos desde la API ---
   drivers: any[] = [];
@@ -74,6 +76,7 @@ export class TransportMovementFormModalComponent implements OnInit {
   filteredPatiosDestino$!: Observable<any[]>;
 
   freightResolved = false;
+  fieldErrors: Record<string, boolean> = {};
 
   form = {
     fecha: '',
@@ -87,6 +90,7 @@ export class TransportMovementFormModalComponent implements OnInit {
     vehiculo: '',
     conductor: '',
     contenedor: '',
+    tamano: '',
     operacion: '',
     estado: '',
     estadoTrabajo: '',
@@ -180,6 +184,12 @@ export class TransportMovementFormModalComponent implements OnInit {
     (this.form as any)[formKey] = item[valueKey];
   }
 
+  // Cuando selecciona contenedor del autocomplete, trae el tamaño
+  onSelectContainer(item: any): void {
+    this.form.contenedor = item.id;
+    this.form.tamano = item.container_size_id ? String(item.container_size_id) : '';
+  }
+
   close(): void {
     this.dialogRef.close();
   }
@@ -188,15 +198,19 @@ export class TransportMovementFormModalComponent implements OnInit {
     const origenId = this.form.origen;
     const destinoId = this.form.destino;
     const empresaId = this.form.empresaTransporte;
+    const condicion  = this.form.estado;    // 1=Lleno, 2=Vacío, 3=Carga suelta
+    const tamano     = this.form.tamano;    // 1=20, 2=40
 
-    if (!origenId || !destinoId || !empresaId) return;
+    if (!origenId || !destinoId || !empresaId || !condicion || !tamano) return;
 
     this.api.getAuth(ENDPOINTS.FREIGHTS.LIST).subscribe((data: any) => {
       const freights = data as any[];
       const match = freights.find(f =>
         String(f.origin_id) === String(origenId) &&
         String(f.destination_id) === String(destinoId) &&
-        String(f.transport_company_id) === String(empresaId)
+        String(f.transport_company_id) === String(empresaId) &&
+        String(f.condition_id) === String(condicion) &&
+        String(f.container_size_id) === String(tamano)
       );
 
       if (match) {
@@ -211,82 +225,111 @@ export class TransportMovementFormModalComponent implements OnInit {
 
   saving = false;
 
-save(): void {
-  if (this.saving) return;
+  save(): void {
+    if (this.saving) return;
+
+    // Reset errores
+  this.fieldErrors = {};
+
+  // Validar
+  if (!this.form.fecha)              this.fieldErrors['fecha'] = true;
+  if (!this.form.cliente)            this.fieldErrors['cliente'] = true;
+  if (!this.form.linea)              this.fieldErrors['linea'] = true;
+  if (!this.form.origen)             this.fieldErrors['origen'] = true;
+  if (!this.form.destino)            this.fieldErrors['destino'] = true;
+  if (!this.form.operacion)          this.fieldErrors['operacion'] = true;
+  if (!this.contenedorCtrl.value)    this.fieldErrors['contenedor'] = true;
+  if (!this.form.tamano)             this.fieldErrors['tamano'] = true;
+  if (!this.form.empresaTransporte)  this.fieldErrors['empresaTransporte'] = true;
+  if (!this.form.vehiculo)           this.fieldErrors['vehiculo'] = true;
+  if (!this.form.conductor)          this.fieldErrors['conductor'] = true;
+  if (!this.form.afiliado)           this.fieldErrors['afiliado'] = true;
+  if (!this.form.auxiliarTransporte) this.fieldErrors['auxiliarTransporte'] = true;
+  if (!this.form.transporteComida)             this.fieldErrors['transporteComida'] = true;
+  if (!this.form.estado)             this.fieldErrors['estado'] = true;
+
+  if (Object.keys(this.fieldErrors).length > 0) {
+    this.toast.error('Completa todos los campos obligatorios');
+    return;
+  }
+
+if (!this.freightResolved) {
+    this.toast.error('No existe una tarifa registrada para esta ruta, empresa, condición y tamaño');
+    return;
+  }
+
   this.saving = true;
 
-  // Si seleccionó del autocomplete, el valor es el objeto completo
-  const ctrlValue = this.contenedorCtrl.value;
-  
-  // Caso 1: seleccionó del autocomplete → ya tiene el id
-  if (ctrlValue && typeof ctrlValue === 'object' && ctrlValue.id) {
-    this.submitTrip(ctrlValue.id);
-    return;
+    const ctrlValue = this.contenedorCtrl.value;
+
+    // Caso 1: seleccionó del autocomplete → ya tiene el id y el tamaño ya fue cargado
+    if (ctrlValue && typeof ctrlValue === 'object' && ctrlValue.id) {
+      this.submitTrip(ctrlValue.id);
+      return;
+    }
+
+    // Caso 2: escribió manualmente → crear con el tamaño seleccionado
+    const containerNumber = typeof ctrlValue === 'string' ? ctrlValue.trim() : '';
+
+    if (!containerNumber) {
+      this.submitTrip(null);
+      return;
+    }
+
+    this.api.postAuth(ENDPOINTS.CONTAINERS.FIND_OR_CREATE, {
+      number: containerNumber,
+      container_size_id: this.form.tamano ? Number(this.form.tamano) : null  // ← incluye el tamaño
+    }).subscribe({
+      next: (res: any) => {
+        this.submitTrip(res.container.id);
+      },
+      error: () => {
+        this.saving = false;
+        console.error('Error al resolver contenedor');
+      }
+    });
   }
 
-  // Caso 2: escribió un número manualmente → buscar o crear
-  const containerNumber = typeof ctrlValue === 'string' 
-    ? ctrlValue.trim() 
-    : '';
+  private submitTrip(containerId: number | null): void {
 
-  if (!containerNumber) {
-    this.submitTrip(null);
-    return;
+    const date = new Date(this.form.fecha);
+
+    const payload = {
+      trip_date: this.form.fecha,
+      transport_company_id: this.form.empresaTransporte || null,
+      vehicle_id: this.form.vehiculo || null,
+      driver_id: this.form.conductor || null,
+      affiliate_id: this.form.afiliado || null,
+      transport_assistant_id: this.form.auxiliarTransporte || null,
+      shipping_line_id: this.form.linea || null,
+      origin_id: this.form.origen || null,
+      destination_id: this.form.destino || null,
+      container_number_id: containerId,
+      operation_id: this.form.operacion || null,
+      client_status: this.form.estado || null,
+      freight_value: this.form.flete || 0,
+      commission_paid: this.form.comisionPagada || 0,
+      work_status: this.form.estadoTrabajo || null,
+      transport_food_value: this.form.transporteComida || 0,
+      observations: this.form.observacion || null,
+      invoice_send_date: this.form.fechaFacturar || null,
+    };
+
+    this.api.postAuth(ENDPOINTS.TRIPS.CREATE, payload).subscribe({
+      next: (res: any) => {
+        this.saving = false;
+        this.dialogRef.close({ saved: true, data: res });
+      },
+      error: (err) => {
+        this.saving = false;
+        console.error('Error al guardar viaje:', err);
+      }
+    });
   }
 
-  this.api.postAuth(ENDPOINTS.CONTAINERS.FIND_OR_CREATE, {
-    number: containerNumber
-  }).subscribe({
-    next: (res: any) => {
-      this.submitTrip(res.container.id);
-    },
-    error: () => {
-      this.saving = false;
-      console.error('Error al resolver contenedor');
-    }
-  });
-}
-
-private submitTrip(containerId: number | null): void {
-
-  const date = new Date(this.form.fecha);
-
-  const payload = {
-    trip_date:              this.form.fecha,
-    transport_company_id:   this.form.empresaTransporte  || null,
-    vehicle_id:             this.form.vehiculo           || null,
-    driver_id:              this.form.conductor          || null,
-    affiliate_id:           this.form.afiliado           || null,
-    transport_assistant_id: this.form.auxiliarTransporte || null,
-    shipping_line_id:       this.form.linea              || null,
-    origin_id:              this.form.origen             || null,
-    destination_id:         this.form.destino            || null,
-    container_number_id:    containerId,
-    operation_id:           this.form.operacion          || null,
-    client_status:          this.form.estado             || null,
-    freight_value:          this.form.flete              || 0,
-    commission_paid:        this.form.comisionPagada     || 0,
-    work_status:            this.form.estadoTrabajo      || null,
-    transport_food_value:   this.form.transporteComida   || 0,
-    observations:           this.form.observacion        || null,
-    invoice_send_date:      this.form.fechaFacturar      || null,
-  };
-
-  this.api.postAuth(ENDPOINTS.TRIPS.CREATE, payload).subscribe({
-    next: (res: any) => {
-      this.saving = false;
-      this.dialogRef.close({ saved: true, data: res });
-    },
-    error: (err) => {
-      this.saving = false;
-      console.error('Error al guardar viaje:', err);
-    }
-  });
-}
-
-private getWeek(date: Date): number {
-  const start = new Date(date.getFullYear(), 0, 1);
-  const diff  = date.getTime() - start.getTime();
-  return Math.ceil((diff / 86400000 + start.getDay() + 1) / 7);
-}
+  private getWeek(date: Date): number {
+    const start = new Date(date.getFullYear(), 0, 1);
+    const diff = date.getTime() - start.getTime();
+    return Math.ceil((diff / 86400000 + start.getDay() + 1) / 7);
+  }
 }

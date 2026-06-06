@@ -22,6 +22,8 @@
             <th>Empresa Transporte</th>
             <th>Origen</th>
             <th>Destino</th>
+            <th>Condición</th>
+            <th>Tamaño</th>
             <th class="col-freight">Tarifa</th>
             <th class="col-status">Estado</th>
             <th class="col-actions">Opciones</th>
@@ -47,6 +49,20 @@
               </td>
               <td>{{ f.destination?.name?.trim() }}
               </td>
+              <!-- En las filas, agrega después de Destino: -->
+<td>
+  <span class="badge"
+    [class.badge-lleno]="f.condition_id == 1"
+    [class.badge-vacio]="f.condition_id == 2"
+    [class.badge-carga]="f.condition_id == 3">
+    {{ f.condition_id == 1 ? 'Lleno' : f.condition_id == 2 ? 'Vacío' : f.condition_id == 3 ? 'Carga suelta' : '—' }}
+  </span>
+</td>
+<td>
+  <span class="badge badge--size">
+    {{ f.container_size_id == 1 ? '20\'' : f.container_size_id == 2 ? '40\'' : '—' }}
+  </span>
+</td>
               <td>$ {{ f.freight | number:'1.0-0' }}
               </td>
               <td class="col-status">

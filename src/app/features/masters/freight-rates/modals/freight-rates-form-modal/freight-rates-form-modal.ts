@@ -7,6 +7,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Observable, startWith, map } from 'rxjs';
 import { ApiService } from '../../../../../core/services/api/api.service';
 import { ENDPOINTS } from '../../../../../core/services/api/endpoints';
+import { ToastService } from '../../../../../core/services/toast/toast';
 
 @Component({
   selector: 'app-freight-rates-form-modal',
@@ -22,6 +23,7 @@ export class FreightRatesFormModal implements OnInit {
 
   private dialogRef = inject(MatDialogRef<FreightRatesFormModal>);
   private api       = inject(ApiService);
+  private toast     = inject(ToastService);
 
   // Recibe el item si es edición, null si es creación
   data              = inject(MAT_DIALOG_DATA); 
@@ -40,12 +42,15 @@ export class FreightRatesFormModal implements OnInit {
   filteredDestino$!:   Observable<any[]>;
 
   saving = false;
+  fieldErrors: Record<string, boolean> = {};
 
   form = {
     transport_company_id: '' as any,
     origin_id:            '' as any,
     destination_id:       '' as any,
     freight:              0,
+    condition_id:            '' as any,  // ← nuevo
+    container_size_id:                 '' as any,  // ← nuevo
     active:               true,
   };
 
@@ -61,6 +66,8 @@ export class FreightRatesFormModal implements OnInit {
       origin_id:            this.data.origin_id,
       destination_id:       this.data.destination_id,
       freight:              this.data.freight,
+      condition_id:            this.data.condition_id  ? String(this.data.condition_id)  : '',
+      container_size_id:                 this.data.container_size_id       ? String(this.data.container_size_id)       : '',
       active:               this.data.active,
     };
   }
@@ -91,6 +98,8 @@ this.api.get(ENDPOINTS.PATIOS.LIST).subscribe((d: any) => {
         origin_id:            this.data.origin_id,
         destination_id:       this.data.destination_id,
         freight:              this.data.freight,
+        condition_id:         this.data.condition_id  ? String(this.data.condition_id)  : '',
+        container_size_id:    this.data.container_size_id       ? String(this.data.container_size_id)       : '',
         active:               this.data.active,
       };
     }
@@ -118,6 +127,20 @@ this.api.get(ENDPOINTS.PATIOS.LIST).subscribe((d: any) => {
 
   save(): void {
     if (this.saving) return;
+
+    this.fieldErrors = {};
+  if (!this.form.transport_company_id) this.fieldErrors['empresa']   = true;
+  if (!this.form.origin_id)            this.fieldErrors['origen']    = true;
+  if (!this.form.destination_id)       this.fieldErrors['destino']   = true;
+  if (!this.form.freight)              this.fieldErrors['freight']   = true;
+  if (!this.form.condition_id)            this.fieldErrors['condition'] = true;
+  if (!this.form.container_size_id)                 this.fieldErrors['size']      = true;
+
+  if (Object.keys(this.fieldErrors).length > 0) {
+    this.toast.error('Completa todos los campos obligatorios');
+    return;
+  }
+
     this.saving = true;
 
     const request$ = this.isEdit

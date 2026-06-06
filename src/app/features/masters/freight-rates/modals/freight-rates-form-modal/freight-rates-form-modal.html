@@ -25,7 +25,7 @@
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
           <input type="text" class="form-control has-icon" placeholder="Buscar empresa…"
-            [formControl]="empresaCtrl" [matAutocomplete]="autoEmpresa">
+            [formControl]="empresaCtrl" [matAutocomplete]="autoEmpresa" [class.field-error]="fieldErrors['empresa']">
         </div>
         <mat-autocomplete #autoEmpresa="matAutocomplete" [displayWith]="displayFn('name')"
           (optionSelected)="onSelect('transport_company_id', $event.option.value)">
@@ -41,7 +41,7 @@
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
           <input type="text" class="form-control has-icon" placeholder="Buscar origen…"
-            [formControl]="origenCtrl" [matAutocomplete]="autoOrigen">
+            [formControl]="origenCtrl" [matAutocomplete]="autoOrigen" [class.field-error]="fieldErrors['origen']">
         </div>
         <mat-autocomplete #autoOrigen="matAutocomplete" [displayWith]="displayFn('name')"
           (optionSelected)="onSelect('origin_id', $event.option.value)">
@@ -57,7 +57,7 @@
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
           <input type="text" class="form-control has-icon" placeholder="Buscar destino…"
-            [formControl]="destinoCtrl" [matAutocomplete]="autoDestino">
+            [formControl]="destinoCtrl" [matAutocomplete]="autoDestino" [class.field-error]="fieldErrors['destino']">
         </div>
         <mat-autocomplete #autoDestino="matAutocomplete" [displayWith]="displayFn('name')"
           (optionSelected)="onSelect('destination_id', $event.option.value)">
@@ -76,17 +76,38 @@
         <label class="form-label">Valor del Flete</label>
         <div class="input-currency-wrap">
           <span class="currency-prefix">$</span>
-          <input type="number" class="form-control has-prefix" [(ngModel)]="form.freight" min="0">
+          <input type="number" class="form-control has-prefix" [(ngModel)]="form.freight" min="0" [class.field-error]="fieldErrors['freight']">
         </div>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Estado</label>
-        <select class="form-control" [(ngModel)]="form.active">
-          <option [ngValue]="true">Activo</option>
-          <option [ngValue]="false">Inactivo</option>
-        </select>
-      </div>
+      <label class="form-label">Condición</label>
+      <select class="form-control" [(ngModel)]="form.condition_id"
+        [class.field-error]="fieldErrors['condition']">
+        <option value="">Seleccionar…</option>
+        <option value="1">Lleno</option>
+        <option value="2">Vacío</option>
+        <option value="3">Carga suelta</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tamaño</label>
+      <select class="form-control" [(ngModel)]="form.container_size_id"
+        [class.field-error]="fieldErrors['size']">
+        <option value="">Seleccionar…</option>
+        <option value="1">20</option>
+        <option value="2">40</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Estado</label>
+      <select class="form-control" [(ngModel)]="form.active">
+        <option [ngValue]="true">Activo</option>
+        <option [ngValue]="false">Inactivo</option>
+      </select>
+    </div>
 
     </div>
   </div>

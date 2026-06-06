@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
 import { ApiService } from '../../../../core/services/api/api.service';
 import { ENDPOINTS } from '../../../../core/services/api/endpoints';
 import { TableActions } from '../../../../core/components/table-actions/table-actions';
@@ -21,6 +22,11 @@ export class FreightRates implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private dialogService = inject(DialogService);
   private dialog = inject(MatDialog);
+
+  // Inicializa con observables vacíos para que el template nunca reciba null
+filteredCompanies$: Observable<any[]> = new Observable(s => s.next([]));
+filteredOrigen$:    Observable<any[]> = new Observable(s => s.next([]));
+filteredDestino$:   Observable<any[]> = new Observable(s => s.next([]));
 
   freights: any[] = [];
   loading = true;
