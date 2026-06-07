@@ -69,35 +69,17 @@
   </div>
 
   <div class="form-section">
-    <div class="form-section-label">Tarifa</div>
-    <div class="form-grid">
+  <div class="form-section-label">Tarifa</div>
+  <div class="form-grid">
 
-      <div class="form-group">
-        <label class="form-label">Valor del Flete</label>
-        <div class="input-currency-wrap">
-          <span class="currency-prefix">$</span>
-          <input type="number" class="form-control has-prefix" [(ngModel)]="form.freight" min="0" [class.field-error]="fieldErrors['freight']">
-        </div>
-      </div>
-
-      <div class="form-group">
-      <label class="form-label">Condición</label>
+    <div class="form-group">
+      <label class="form-label">Condición <span class="required">*</span></label>
       <select class="form-control" [(ngModel)]="form.condition_id"
         [class.field-error]="fieldErrors['condition']">
         <option value="">Seleccionar…</option>
         <option value="1">Lleno</option>
         <option value="2">Vacío</option>
         <option value="3">Carga suelta</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">Tamaño</label>
-      <select class="form-control" [(ngModel)]="form.container_size_id"
-        [class.field-error]="fieldErrors['size']">
-        <option value="">Seleccionar…</option>
-        <option value="1">20</option>
-        <option value="2">40</option>
       </select>
     </div>
 
@@ -109,8 +91,33 @@
       </select>
     </div>
 
+    <div class="form-group">
+      <label class="form-label">Flete 20' <span class="required">*</span></label>
+      <div class="input-currency-wrap">
+        <span class="currency-prefix">$</span>
+        <input type="number" class="form-control has-prefix" [(ngModel)]="form.freight_20" min="0"
+          [class.field-error]="fieldErrors['freight']">
+      </div>
     </div>
+
+    <div class="form-group">
+      <label class="form-label">Flete 40'</label>
+      <div class="input-currency-wrap">
+        <span class="currency-prefix">$</span>
+        <input type="number" class="form-control has-prefix" [(ngModel)]="form.freight_40" min="0">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Flete 45'</label>
+      <div class="input-currency-wrap">
+        <span class="currency-prefix">$</span>
+        <input type="number" class="form-control has-prefix" [(ngModel)]="form.freight_45" min="0">
+      </div>
+    </div>
+
   </div>
+</div>
 
 </mat-dialog-content>
 

@@ -1,11 +1,211 @@
-<!-- <div class="dashboard">
+<div class="page-wrapper">
 
-  <h1>Bienvenido 👋</h1>
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Dashboard</span>
+      <h1 class="page-title">Producción {{ year }}</h1>
+    </div>
+    <div class="header-controls">
+      <div class="filter-group" *appHasRole="[1]">
+        <!-- En el selector de afiliado del HTML -->
+<select class="filter-select" [(ngModel)]="selectedAffiliate"
+  (ngModelChange)="load(); loadKpis()">
+  <option value="">Todos los afiliados</option>
+  <option *ngFor="let a of affiliatesList" [value]="a.id">{{ a.name }}</option>
+</select>
+      </div>
+      <select class="filter-select" [(ngModel)]="year" (ngModelChange)="load()">
+        <option *ngFor="let y of yearOptions" [value]="y">{{ y }}</option>
+      </select>
+    </div>
+  </div>
 
-  <p>Usuario logueado:</p>
+  <!-- KPI Cards -->
+  <div class="kpi-grid" *ngIf="!loadingKpis">
+    <div class="kpi-card" *ngFor="let k of kpis" [style.--accent]="k.color">
+      <div class="kpi-icon">
+        <!-- money -->
+        <svg *ngIf="k.icon === 'money'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        <!-- truck -->
+        <svg *ngIf="k.icon === 'truck'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="7" width="15" height="13" rx="2"/>
+          <path d="M17 9h3l3 3v5h-6V9z"/>
+          <circle cx="7" cy="20" r="2"/><circle cx="19" cy="20" r="2"/>
+        </svg>
+        <!-- box -->
+        <svg *ngIf="k.icon === 'box'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="21 8 21 21 3 21 3 8"/>
+          <rect x="1" y="3" width="22" height="5"/>
+          <line x1="10" y1="12" x2="14" y2="12"/>
+        </svg>
+        <!-- fleet -->
+        <svg *ngIf="k.icon === 'fleet'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/>
+          <rect x="9" y="11" width="14" height="10" rx="2"/>
+          <circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+        </svg>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-value">{{ formatAnimated(k) }}</div>
+        <div class="kpi-label">{{ k.label }}</div>
+        <div class="kpi-sub">{{ k.subtitle }}</div>
+      </div>
+      <div class="kpi-bar-bg">
+        <div class="kpi-bar-fill"></div>
+      </div>
+    </div>
+  </div>
 
-  <pre>{{ user | json }}</pre>
+  <!-- Skeleton cards cargando -->
+  <div class="kpi-grid" *ngIf="loadingKpis">
+    <div class="kpi-card kpi-skeleton" *ngFor="let i of [1,2,3,4]"></div>
+  </div>
 
-  <button (click)="logout()">Cerrar sesión</button>
+  <!-- Gráfica de barras mensual + Alertas -->
+  <div class="mid-grid" *ngIf="!loadingKpis">
 
-</div> -->
+    <!-- Barras por mes -->
+    <div class="chart-card" *ngIf="bars.length">
+      <div class="chart-title">Flete mensual {{ year }}</div>
+      <div class="bar-chart">
+        <div class="bar-item" *ngFor="let b of bars">
+          <div class="bar-wrap">
+            <div class="bar-fill"
+              [style.height.%]="b.pct"
+              [style.background]="b.color">
+            </div>
+          </div>
+          <div class="bar-label">{{ b.label }}</div>
+          <div class="bar-value">$ {{ (b.value / 1_000_000).toFixed(1) }}M</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alertas documentos -->
+    <div class="alerts-card" *ngIf="alerts.length">
+      <div class="chart-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        Documentos por vencer
+      </div>
+      <div class="alert-list">
+        <div class="alert-item" *ngFor="let a of alerts"
+          [class.alert-expired]="a.status === 'expired'"
+          [class.alert-warning]="a.status === 'warning'"
+          [class.alert-ok]="a.status === 'ok'">
+          <div class="alert-left">
+            <span class="badge badge--placa">{{ a.plate }}</span>
+            <span class="alert-type">{{ a.type }}</span>
+          </div>
+          <div class="alert-right">
+            <span class="alert-date">{{ a.expiration }}</span>
+            <span class="alert-days">
+              {{ a.daysLeft < 0 ? 'Vencido' : a.daysLeft + 'd' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alerts-card alerts-empty" *ngIf="!alerts.length">
+      <div class="chart-title">Documentos</div>
+      <div class="empty-ok">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" width="32" height="32">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <p>Todo en orden</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Loading producción -->
+  <div class="loading-cell" *ngIf="loading">
+    <div class="spinner"></div>
+    <span>Calculando producción…</span>
+  </div>
+
+  <!-- Tablas de producción por afiliado -->
+  <ng-container *ngIf="!loading">
+    <div class="section-title">Detalle por Afiliado</div>
+
+    <div class="affiliate-block" *ngFor="let aff of affiliates; trackBy: trackAffiliate">
+      <div class="affiliate-header">
+        <span class="affiliate-name">{{ aff.name }}</span>
+        <div class="affiliate-header-right">
+          <span class="badge"
+            [class.badge-ok]="aff.produccion === 'BUENO'"
+            [class.badge-warning]="aff.produccion === 'REGULAR'"
+            [class.badge-expired]="aff.produccion === 'BAJO'">
+            {{ aff.produccion }}
+          </span>
+          <span class="affiliate-total">
+            $ {{ aff.grandTotal | number:'1.0-0' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table production-table">
+          <thead>
+            <tr>
+              <th class="col-tipo">Tipo</th>
+              <th class="col-placa">Placa</th>
+              <th *ngFor="let m of activeMonths" class="col-mes">{{ monthNames[m] }}</th>
+              <th class="col-prod">Producción</th>
+              <th class="col-proy">Proyección</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of aff.vehicles" class="table-row">
+              <td class="text-muted">T.R.A.</td>
+              <td><span class="badge badge--placa">{{ v.plate }}</span></td>
+              <td *ngFor="let m of activeMonths" class="td-money">
+                <span *ngIf="getMonthVal(v.months, m) > 0">
+                  $ {{ getMonthVal(v.months, m) | number:'1.0-0' }}
+                </span>
+                <span *ngIf="getMonthVal(v.months, m) === 0" class="text-muted">$ -</span>
+              </td>
+              <td>
+                <span class="badge"
+                  [class.badge-ok]="v.produccion === 'BUENO'"
+                  [class.badge-warning]="v.produccion === 'REGULAR'"
+                  [class.badge-expired]="v.produccion === 'BAJO'">
+                  {{ v.produccion }}
+                </span>
+              </td>
+              <td class="td-money">$ {{ v.proyeccion | number:'1.0-0' }}</td>
+            </tr>
+            <tr class="row-total">
+              <td colspan="2"><strong>TOTAL PRODUCCIÓN</strong></td>
+              <td *ngFor="let m of activeMonths" class="td-money">
+                <strong>$ {{ getMonthVal(aff.totals, m) | number:'1.0-0' }}</strong>
+              </td>
+              <td>
+                <span class="badge"
+                  [class.badge-ok]="aff.produccion === 'BUENO'"
+                  [class.badge-warning]="aff.produccion === 'REGULAR'"
+                  [class.badge-expired]="aff.produccion === 'BAJO'">
+                  {{ aff.produccion }}
+                </span>
+              </td>
+              <td class="td-money"><strong>$ {{ aff.proyeccion | number:'1.0-0' }}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="affiliates.length === 0">
+      <p>No hay datos de producción para {{ year }}</p>
+    </div>
+  </ng-container>
+
+</div>

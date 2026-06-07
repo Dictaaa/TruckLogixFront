@@ -1,0 +1,89 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Maestros</span>
+      <h1 class="page-title">Conductores</h1>
+    </div>
+    <button class="btn-primary" (click)="openModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      Nuevo conductor
+    </button>
+  </div>
+
+  <section class="table-section">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Teléfono</th>
+            <th>Categoría</th>
+            <th>N° Licencia</th>
+            <th>Vencimiento</th>
+            <th class="col-status">Estado</th>
+            <th class="col-actions">Opciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="loading">
+            <td colspan="9">
+              <div class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando…</span>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let d of drivers" class="table-row">
+              <td class="text-muted">{{ d.id }}</td>
+              <td>{{ d.name }}</td>
+              <td class="mono">{{ d.document ?? '—' }}</td>
+              <td class="mono">{{ d.phone ?? '—' }}</td>
+              <td>
+                <span *ngIf="d.license_category_id" class="badge badge--cat">
+                  {{ licenseCategories[d.license_category_id] || d.license_category_id }}
+                </span>
+                <span *ngIf="!d.license_category_id">—</span>
+              </td>
+              <td class="mono">{{ d.license_number ?? '—' }}</td>
+              <td>
+                <span *ngIf="d.license_expiration"
+                  class="badge"
+                  [class.badge-expired]="isExpired(d.license_expiration)"
+                  [class.badge-warning]="!isExpired(d.license_expiration) && isExpiringSoon(d.license_expiration)"
+                  [class.badge-ok]="!isExpired(d.license_expiration) && !isExpiringSoon(d.license_expiration)">
+                  {{ d.license_expiration | date:'dd/MM/yyyy' }}
+                </span>
+                <span *ngIf="!d.license_expiration">—</span>
+              </td>
+              <td>
+                <span class="badge" [class.badge-active]="d.active" [class.badge-inactive]="!d.active">
+                  {{ d.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="col-actions">
+                <app-table-actions
+                  [actions]="actions"
+                  (actionSelected)="onAction($event, d)">
+                </app-table-actions>
+              </td>
+            </tr>
+
+            <tr *ngIf="drivers.length === 0">
+              <td colspan="9" class="empty-state">
+                <p>No hay conductores registrados</p>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>

@@ -508,3 +508,8 @@ $font-mono:    'IBM Plex Mono', 'Fira Code', monospace;
     border-radius: 12px;
   }
 }
+
+.truck-loader {
+  display: block;
+  filter: drop-shadow(0 0 4px rgba(255,255,255,0.2));
+}

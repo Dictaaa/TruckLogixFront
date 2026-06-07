@@ -47,7 +47,7 @@
     </div>
   </section>
   <div class="actions-bar">
-    <button class="btn-primary" (click)="openModal()">
+    <button class="btn-primary" *appHasRole="[1, 2]" (click)="openModal()">
       + Nuevo Movimiento
     </button>
   </div>
@@ -78,6 +78,7 @@
             <th>Transporte y Comida</th>
             <th>Observación</th>
             <th>Fecha Facturar</th>
+            <th *ngIf="actions.length" class="col-actions">Opciones</th>
           </tr>
         </thead>
 
@@ -145,6 +146,13 @@
               <td>
                 {{ mov.fechaEnvioFacturar | date:'dd/MM/yyyy' }}
               </td>
+
+              <td *ngIf="actions.length" class="col-actions">
+  <app-table-actions
+    [actions]="actions"
+    (actionSelected)="onAction($event, mov)">
+  </app-table-actions>
+</td>
 
             </tr>
 

@@ -25,6 +25,19 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
+  getUser(): any {
+    const raw = localStorage.getItem('user');
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  getRole(): number {
+    return this.getUser()?.role ?? 0;
+  }
+
+  hasRole(roles: number[]): boolean {
+    return roles.includes(this.getRole());
+  }
+
   isLoggedIn(): boolean {
     return !!this.getToken();
   }

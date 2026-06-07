@@ -5,11 +5,17 @@ import { ApiService } from '../../../../core/services/api/api.service';
 import { Movement } from '../../../../core/models/interfaces/trip.interface';
 import { TransportMovementFormModalComponent } from '../../modals/transport-movement-form-modal/transport-movement-form-modal';
 import { DialogService } from '../../../../core/services/dialog/dialog.service';
+import { HasRoleDirective } from '../../../../core/directives/has-role';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ENDPOINTS } from '../../../../core/services/api/endpoints';
+import { ToastService } from '../../../../core/services/toast/toast';
+import { MatDialog } from '@angular/material/dialog';
+import { TableActions } from '../../../../core/components/table-actions/table-actions';
 
 @Component({
   selector: 'app-transport-movements',
   standalone: true,
-  imports: [CommonModule, FormsModule, CurrencyPipe],
+  imports: [CommonModule, FormsModule, CurrencyPipe, HasRoleDirective, TableActions],
   templateUrl: './transport-movements.html',
   styleUrls: ['./transport-movements.scss'],
 })
@@ -17,9 +23,14 @@ export class TransportMovementsComponent implements OnInit {
 
   private apiService = inject(ApiService);
   private dialogService = inject(DialogService);
+  private dialog        = inject(MatDialog);
+  private auth          = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  private toast         = inject(ToastService);
 
   loading = true;
+
+   private rawTrips: any[] = [];
 
   allMovements: Movement[] = [];
   filteredMovements: Movement[] = [];
@@ -43,6 +54,13 @@ export class TransportMovementsComponent implements OnInit {
   totalPages = 1;
   paginatedMovements: Movement[] = [];
 
+  get actions() {
+    const base: any[] = [];
+    if (this.auth.hasRole([1, 2])) base.push({ label: 'Editar',   action: 'edit' });
+    if (this.auth.hasRole([1]))    base.push({ label: 'Eliminar', action: 'delete', danger: true });
+    return base;
+  }
+
   constructor() {}
 
   ngOnInit(): void {
@@ -53,6 +71,15 @@ export class TransportMovementsComponent implements OnInit {
     this.loading = true;
     this.apiService.getTrips().subscribe({
       next: (response: any) => {
+        this.rawTrips = response;
+        let trips = response as any[];
+
+        if (this.auth.hasRole([3])) {
+        const userCompanyId = this.auth.getUser()?.company_id;
+        trips = trips.filter(t => String(t.affiliate_id) === String(userCompanyId));
+      }
+
+      this.rawTrips = trips;
 
         this.allMovements = response.map((trip: any) => ({
           id: trip.id,
@@ -84,6 +111,51 @@ export class TransportMovementsComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => this.loading = false
+    });
+  }
+
+  onAction(action: string, mov: Movement): void {
+    if (action === 'edit')   this.edit(mov);
+    if (action === 'delete') this.confirmDelete(mov);
+  }
+
+  edit(mov: Movement): void {
+    // Busca el trip crudo para tener todos los ids
+    const raw = this.rawTrips.find(t => String(t.id) === String(mov.id));
+    if (!raw) return;
+
+    const ref = this.dialog.open(TransportMovementFormModalComponent, {
+      data: raw,
+      panelClass: 'dialog-panel',
+      width: '860px',
+      maxHeight: '90vh',
+    });
+
+    ref.afterClosed().subscribe(result => {
+      if (result?.saved) setTimeout(() => this.loadTrips());
+    });
+  }
+
+  confirmDelete(mov: Movement): void {
+    if (!confirm(`¿Eliminar el movimiento #${mov.id}?`)) return;
+    this.apiService.deleteAuth(ENDPOINTS.TRIPS.DELETE(mov.id)).subscribe({
+      next: () => {
+        this.toast.success('Movimiento eliminado');
+        setTimeout(() => this.loadTrips());
+      },
+      error: () => this.toast.error('Error al eliminar')
+    });
+  }
+
+  openModal(): void {
+    const ref = this.dialog.open(TransportMovementFormModalComponent, {
+      data: null,
+      panelClass: 'dialog-panel',
+      width: '860px',
+      maxHeight: '90vh',
+    });
+    ref.afterClosed().subscribe(result => {
+      if (result?.saved) setTimeout(() => this.loadTrips());
     });
   }
 
@@ -230,13 +302,4 @@ export class TransportMovementsComponent implements OnInit {
     this.updatePagination();
   }
 
- openModal(): void {
-  const ref = this.dialogService.open(TransportMovementFormModalComponent);
-
-  ref.afterClosed().subscribe(result => {
-    if (result?.saved) {
-      this.loadTrips();
-    }
-  });
-}
 }

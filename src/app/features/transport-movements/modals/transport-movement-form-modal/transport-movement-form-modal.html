@@ -2,7 +2,7 @@
 <div class="modal-header">
     <div class="modal-header-left">
         <span class="modal-eyebrow">Transporte</span>
-        <h2 class="modal-title">Nuevo Movimiento</h2>
+        <h2 class="modal-title">{{ isEdit ? 'Editar Movimiento' : 'Nuevo Movimiento' }}</h2>
     </div>
     <button class="btn-close" (click)="close()" aria-label="Cerrar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
@@ -236,26 +236,7 @@
                 </select>
             </div>
 
-            <!-- <div class="form-group">
-                <label class="form-label">Estado Trabajo</label>
-                <input type="text" class="form-control" [(ngModel)]="form.estadoTrabajo">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Fecha Facturar</label>
-                <input type="date" class="form-control" [(ngModel)]="form.fechaFacturar">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Flete</label>
-                <div class="input-currency-wrap">
-                    <span class="currency-prefix">$</span>
-                    <input type="number" class="form-control has-prefix" [(ngModel)]="form.flete" min="0"
-                        [readonly]="freightResolved">
-                </div>
-                <span class="form-hint" *ngIf="freightResolved">Auto-calculado por tarifa</span>
-            </div> -->
-
+   
             <div class="form-group">
                 <label class="form-label">Transporte y Comida</label>
                 <div class="input-currency-wrap">
@@ -283,6 +264,6 @@
             <polyline points="17 21 17 13 7 13 7 21" />
             <polyline points="7 3 7 8 15 8" />
         </svg>
-        Guardar movimiento
-    </button>
+        {{ saving ? 'Guardando…' : (isEdit ? 'Actualizar movimiento' : 'Guardar movimiento') }}
+</button>
 </mat-dialog-actions>

@@ -20,7 +20,7 @@ export class ApiService {
 
     const token = localStorage.getItem('token');
 
-    return this.http.get(`${this.baseUrl}${url}`, {
+    return this.http.get<any>(`${this.baseUrl}${url}`, {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`
       })

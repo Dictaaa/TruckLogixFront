@@ -1,0 +1,69 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Maestros</span>
+      <h1 class="page-title">Auxiliares de Transporte</h1>
+    </div>
+    <button class="btn-primary" (click)="openModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      Nuevo auxiliar
+    </button>
+  </div>
+
+  <section class="table-section">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Documento</th>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th class="col-status">Estado</th>
+            <th class="col-actions">Opciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="loading">
+            <td colspan="6">
+              <div class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando…</span>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let a of assistants" class="table-row">
+              <td class="text-muted">{{ a.id }}</td>
+              <td class="mono">{{ a.document_number ?? '—' }}</td>
+              <td>{{ a.name }}</td>
+              <td class="mono">{{ a.phone ?? '—' }}</td>
+              <td>
+                <span class="badge" [class.badge-active]="a.active" [class.badge-inactive]="!a.active">
+                  {{ a.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="col-actions">
+                <app-table-actions
+                  [actions]="actions"
+                  (actionSelected)="onAction($event, a)">
+                </app-table-actions>
+              </td>
+            </tr>
+
+            <tr *ngIf="assistants.length === 0">
+              <td colspan="6" class="empty-state">
+                <p>No hay auxiliares registrados</p>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>

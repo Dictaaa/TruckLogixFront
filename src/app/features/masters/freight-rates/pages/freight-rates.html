@@ -23,8 +23,9 @@
             <th>Origen</th>
             <th>Destino</th>
             <th>Condición</th>
-            <th>Tamaño</th>
-            <th class="col-freight">Tarifa</th>
+            <th>Flete 20'</th>
+            <th>Flete 40'</th>
+            <th>Flete 45'</th>
             <th class="col-status">Estado</th>
             <th class="col-actions">Opciones</th>
           </tr>
@@ -58,11 +59,9 @@
     {{ f.condition_id == 1 ? 'Lleno' : f.condition_id == 2 ? 'Vacío' : f.condition_id == 3 ? 'Carga suelta' : '—' }}
   </span>
 </td>
-<td>
-  <span class="badge badge--size">
-    {{ f.container_size_id == 1 ? '20\'' : f.container_size_id == 2 ? '40\'' : '—' }}
-  </span>
-</td>
+<td class="td-mono">{{ f.freight_20 ? ('$ ' + (f.freight_20 | number:'1.0-0')) : '—' }}</td>
+<td class="td-mono">{{ f.freight_40 ? ('$ ' + (f.freight_40 | number:'1.0-0')) : '—' }}</td>
+<td class="td-mono">{{ f.freight_45 ? ('$ ' + (f.freight_45 | number:'1.0-0')) : '—' }}</td>
               <td>$ {{ f.freight | number:'1.0-0' }}
               </td>
               <td class="col-status">

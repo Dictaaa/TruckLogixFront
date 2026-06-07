@@ -1,0 +1,84 @@
+<div class="modal-header">
+  <div class="modal-header-left">
+    <span class="modal-eyebrow">Maestros</span>
+    <h2 class="modal-title">{{ isEdit ? 'Editar Vehículo' : 'Nuevo Vehículo' }}</h2>
+  </div>
+  <button class="btn-close" (click)="close()" aria-label="Cerrar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </button>
+</div>
+
+<mat-dialog-content class="modal-body">
+
+  <div class="form-section">
+    <div class="form-section-label">Información del Vehículo</div>
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label class="form-label">Placa <span class="required">*</span></label>
+        <input type="text" class="form-control mono" [(ngModel)]="form.plate"
+          placeholder="ABC123"
+          [class.field-error]="fieldErrors['plate']"
+          (input)="form.plate = form.plate.toUpperCase()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Estado</label>
+        <select class="form-control" [(ngModel)]="form.active">
+          <option [ngValue]="1">Activo</option>
+          <option [ngValue]="0">Inactivo</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-section-label">Documentos</div>
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label class="form-label">
+          Vencimiento SOAT <span class="required">*</span>
+          <span *ngIf="form.soat_expiration" class="expiry-hint"
+            [class.expiry-warn]="isExpiringSoon(form.soat_expiration)"
+            [class.expiry-error]="isExpired(form.soat_expiration)">
+            {{ isExpired(form.soat_expiration) ? '⚠ Vencido' : isExpiringSoon(form.soat_expiration) ? '⚠ Por vencer' : '✓ Vigente' }}
+          </span>
+        </label>
+        <input type="date" class="form-control" [(ngModel)]="form.soat_expiration"
+          [class.field-error]="fieldErrors['soat_expiration']">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          Vencimiento RTM <span class="required">*</span>
+          <span *ngIf="form.rtm_expiration" class="expiry-hint"
+            [class.expiry-warn]="isExpiringSoon(form.rtm_expiration)"
+            [class.expiry-error]="isExpired(form.rtm_expiration)">
+            {{ isExpired(form.rtm_expiration) ? '⚠ Vencido' : isExpiringSoon(form.rtm_expiration) ? '⚠ Por vencer' : '✓ Vigente' }}
+          </span>
+        </label>
+        <input type="date" class="form-control" [(ngModel)]="form.rtm_expiration"
+          [class.field-error]="fieldErrors['rtm_expiration']">
+      </div>
+
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="modal-footer">
+  <button class="btn-cancel" (click)="close()">Cancelar</button>
+  <button class="btn-save" (click)="save()" [disabled]="saving">
+    <svg *ngIf="!saving" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+      <polyline points="17 21 17 13 7 13 7 21"/>
+      <polyline points="7 3 7 8 15 8"/>
+    </svg>
+    <div *ngIf="saving" class="spinner" style="width:14px;height:14px;border-width:2px;border-top-color:#fff"></div>
+    {{ saving ? 'Guardando…' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>

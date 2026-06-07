@@ -104,23 +104,81 @@
         </div>
 
         <button
-          type="submit"
-          class="btn-login"
-          [class.btn-loading]="loading"
-          [disabled]="loading">
+  type="submit"
+  class="btn-login"
+  [class.btn-loading]="loading"
+  [disabled]="loading">
 
-          <span class="btn-text">
-            <svg *ngIf="!loading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-              <polyline points="10 17 15 12 10 7"/>
-              <line x1="15" y1="12" x2="3" y2="12"/>
-            </svg>
-            <span *ngIf="!loading">Ingresar al portal</span>
-            <span *ngIf="loading">Verificando...</span>
-          </span>
+  <span class="btn-text">
 
-          <span class="btn-shine"></span>
-        </button>
+    <!-- Estado normal -->
+    <ng-container *ngIf="!loading">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+        <polyline points="10 17 15 12 10 7"/>
+        <line x1="15" y1="12" x2="3" y2="12"/>
+      </svg>
+      Ingresar al portal
+    </ng-container>
+
+    <!-- Estado cargando: camión animado -->
+    <ng-container *ngIf="loading">
+      <svg class="truck-loader" viewBox="0 0 120 32" width="120" height="32">
+        <style>
+          .tl-road { stroke-dasharray: 6 5; animation: tl-road 0.4s linear infinite; }
+          @keyframes tl-road { to { stroke-dashoffset: -22; } }
+          .tl-truck { animation: tl-bounce 0.1s ease-in-out infinite alternate; }
+          @keyframes tl-bounce { to { transform: translateY(0.5px); } }
+          .tl-wheel { transform-box: fill-box; transform-origin: center; animation: tl-spin 0.35s linear infinite; }
+          @keyframes tl-spin { to { transform: rotate(360deg); } }
+          .tl-smoke { transform-box: fill-box; transform-origin: bottom center; }
+          .tl-s1 { animation: tl-puff 0.5s ease-out infinite; }
+          .tl-s2 { animation: tl-puff 0.5s ease-out 0.17s infinite; }
+          .tl-s3 { animation: tl-puff 0.5s ease-out 0.34s infinite; }
+          @keyframes tl-puff {
+            0%   { opacity: 0.7; transform: scale(0.4) translateY(0); }
+            100% { opacity: 0;   transform: scale(1.6) translateY(-5px); }
+          }
+        </style>
+
+        <!-- Road -->
+        <line class="tl-road" x1="0" y1="28" x2="120" y2="28"
+          stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="none"/>
+
+        <!-- Smoke -->
+        <circle class="tl-smoke tl-s1" cx="10" cy="14" r="2.5" fill="rgba(255,255,255,0.5)"/>
+        <circle class="tl-smoke tl-s2" cx="7"  cy="10" r="2"   fill="rgba(255,255,255,0.4)"/>
+        <circle class="tl-smoke tl-s3" cx="5"  cy="7"  r="1.5" fill="rgba(255,255,255,0.3)"/>
+
+        <!-- Truck -->
+        <g class="tl-truck">
+          <!-- Exhaust pipe -->
+          <rect x="11" y="10" width="2.5" height="7" rx="0.5" fill="rgba(255,255,255,0.6)"/>
+          <!-- Trailer -->
+          <rect x="14" y="12" width="62" height="14" rx="2" fill="rgba(255,255,255,0.25)"/>
+          <!-- Trailer lines -->
+          <line x1="33" y1="13" x2="33" y2="25" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
+          <line x1="50" y1="13" x2="50" y2="25" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
+          <line x1="67" y1="13" x2="67" y2="25" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
+          <!-- Cab -->
+          <rect x="76" y="14" width="22" height="12" rx="2" fill="rgba(255,255,255,0.3)"/>
+          <!-- Window -->
+          <rect x="81" y="16" width="11" height="6" rx="1.5" fill="rgba(255,255,255,0.5)"/>
+          <!-- Headlight -->
+          <rect x="96" y="19" width="2.5" height="3" rx="0.5" fill="rgba(255,255,220,0.9)"/>
+          <!-- Wheels -->
+          <g class="tl-wheel"><circle cx="28" cy="27" r="4" fill="rgba(255,255,255,0.3)"/><circle cx="28" cy="27" r="1.5" fill="rgba(255,255,255,0.6)"/></g>
+          <g class="tl-wheel"><circle cx="42" cy="27" r="4" fill="rgba(255,255,255,0.3)"/><circle cx="42" cy="27" r="1.5" fill="rgba(255,255,255,0.6)"/></g>
+          <g class="tl-wheel"><circle cx="64" cy="27" r="4" fill="rgba(255,255,255,0.3)"/><circle cx="64" cy="27" r="1.5" fill="rgba(255,255,255,0.6)"/></g>
+          <g class="tl-wheel"><circle cx="88" cy="27" r="4" fill="rgba(255,255,255,0.3)"/><circle cx="88" cy="27" r="1.5" fill="rgba(255,255,255,0.6)"/></g>
+        </g>
+      </svg>
+    </ng-container>
+
+  </span>
+
+  <span class="btn-shine"></span>
+</button>
 
       </form>
 

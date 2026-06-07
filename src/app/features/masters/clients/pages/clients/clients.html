@@ -1,0 +1,67 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Maestros</span>
+      <h1 class="page-title">Clientes</h1>
+    </div>
+    <button class="btn-primary" (click)="openModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      Nuevo cliente
+    </button>
+  </div>
+
+  <section class="table-section">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="col-id">#</th>
+            <th>NIT</th>
+            <th>Nombre</th>
+            <th class="col-status">Estado</th>
+            <th class="col-actions">Opciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="loading">
+            <td colspan="5">
+              <div class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando…</span>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let c of clients" class="table-row">
+              <td class="text-muted">{{ c.id }}</td>
+              <td class="mono">{{ c.nit ?? '—' }}</td>
+              <td>{{ c.name }}</td>
+              <td>
+                <span class="badge" [class.badge-active]="c.active" [class.badge-inactive]="!c.active">
+                  {{ c.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="col-actions">
+                <app-table-actions
+                  [actions]="actions"
+                  (actionSelected)="onAction($event, c)">
+                </app-table-actions>
+              </td>
+            </tr>
+
+            <tr *ngIf="clients.length === 0">
+              <td colspan="5" class="empty-state">
+                <p>No hay clientes registrados</p>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>

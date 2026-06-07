@@ -1,0 +1,65 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Maestros</span>
+      <h1 class="page-title">Operaciones</h1>
+    </div>
+    <button class="btn-primary" (click)="openModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      Nueva operación
+    </button>
+  </div>
+
+  <section class="table-section">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th class="col-status">Estado</th>
+            <th class="col-actions">Opciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="loading">
+            <td colspan="4">
+              <div class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando…</span>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let o of operations" class="table-row">
+              <td class="text-muted">{{ o.id }}</td>
+              <td>{{ o.name }}</td>
+              <td>
+                <span class="badge" [class.badge-active]="o.active" [class.badge-inactive]="!o.active">
+                  {{ o.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="col-actions">
+                <app-table-actions
+                  [actions]="actions"
+                  (actionSelected)="onAction($event, o)">
+                </app-table-actions>
+              </td>
+            </tr>
+
+            <tr *ngIf="operations.length === 0">
+              <td colspan="4" class="empty-state">
+                <p>No hay operaciones registradas</p>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>

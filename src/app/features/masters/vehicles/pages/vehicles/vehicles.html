@@ -1,0 +1,85 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Maestros</span>
+      <h1 class="page-title">Vehículos</h1>
+    </div>
+    <button class="btn-primary" (click)="openModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      Nuevo vehículo
+    </button>
+  </div>
+
+  <section class="table-section">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Placa</th>
+            <th>SOAT</th>
+            <th>RTM</th>
+            <th class="col-status">Estado</th>
+            <th class="col-actions">Opciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="loading">
+            <td colspan="6">
+              <div class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando…</span>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let v of vehicles" class="table-row">
+              <td class="text-muted">{{ v.id }}</td>
+              <td>
+                <span class="badge badge--placa">{{ v.plate }}</span>
+              </td>
+              <td>
+                <span class="badge"
+                  [class.badge-expired]="isExpired(v.soat_expiration)"
+                  [class.badge-warning]="!isExpired(v.soat_expiration) && isExpiringSoon(v.soat_expiration)"
+                  [class.badge-ok]="!isExpired(v.soat_expiration) && !isExpiringSoon(v.soat_expiration)">
+                  {{ v.soat_expiration | date:'dd/MM/yyyy' }}
+                </span>
+              </td>
+              <td>
+                <span class="badge"
+                  [class.badge-expired]="isExpired(v.rtm_expiration)"
+                  [class.badge-warning]="!isExpired(v.rtm_expiration) && isExpiringSoon(v.rtm_expiration)"
+                  [class.badge-ok]="!isExpired(v.rtm_expiration) && !isExpiringSoon(v.rtm_expiration)">
+                  {{ v.rtm_expiration | date:'dd/MM/yyyy' }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" [class.badge-active]="v.active" [class.badge-inactive]="!v.active">
+                  {{ v.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="col-actions">
+                <app-table-actions
+                  [actions]="actions"
+                  (actionSelected)="onAction($event, v)">
+                </app-table-actions>
+              </td>
+            </tr>
+
+            <tr *ngIf="vehicles.length === 0">
+              <td colspan="6" class="empty-state">
+                <p>No hay vehículos registrados</p>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>

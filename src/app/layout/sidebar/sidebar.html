@@ -1,39 +1,56 @@
-<aside class="sidebar" [class.sidebar--collapsed]="!open">
+<nav class="sidebar" [class.sidebar--collapsed]="!open">
 
-  <nav class="sidebar-nav">
-
-    <div class="nav-section-label" *ngIf="open">Principal</div>
-
-    <a class="nav-item"
-       *ngFor="let item of mainItems"
-       [routerLink]="item.route"
-       routerLinkActive="nav-item--active"
-       [title]="!open ? item.label : ''">
+  <div class="sidebar-section">
+    <!-- Items principales -->
+    <a *ngFor="let item of mainItems"
+      [routerLink]="item.route"
+      routerLinkActive="nav-item--active"
+      class="nav-item">
       <span class="nav-icon" [innerHTML]="item.icon"></span>
-      <span class="nav-label" *ngIf="open">{{ item.label }}</span>
-      <span class="nav-badge-count" *ngIf="item.badge && open">{{ item.badge }}</span>
+      <span class="nav-label">{{ item.label }}</span>
+      <span *ngIf="item.badge" class="nav-badge">{{ item.badge }}</span>
     </a>
 
-    <div class="nav-divider"></div>
+    <!-- Grupo Maestros -->
+    <div class="nav-group" *appHasRole="[1]">
+      <button class="nav-item nav-item--group"
+        [class.nav-item--active]="isMasterActive()"
+        [class.nav-item--open]="mastersOpen"
+        (click)="toggleMasters()">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M4 6h16M4 10h16M4 14h8M4 18h8"/>
+          </svg>
+        </span>
+        <span class="nav-label">Maestros</span>
+        <span class="nav-chevron" [class.nav-chevron--open]="mastersOpen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </span>
+      </button>
 
-    <div class="nav-section-label" *ngIf="open">Sistema</div>
-
-    <a class="nav-item"
-       *ngFor="let item of systemItems"
-       [routerLink]="item.route"
-       routerLinkActive="nav-item--active"
-       [title]="!open ? item.label : ''">
-      <span class="nav-icon" [innerHTML]="item.icon"></span>
-      <span class="nav-label" *ngIf="open">{{ item.label }}</span>
-    </a>
-
-  </nav>
-
-  <div class="sidebar-footer" *ngIf="open">
-    <div class="sidebar-version">
-      <span class="version-dot"></span>
-      <span>v2.4 · Producción</span>
+      <div class="nav-children" [class.nav-children--open]="mastersOpen">
+        <a *ngFor="let item of masterItems"
+          [routerLink]="item.route"
+          routerLinkActive="nav-child--active"
+          class="nav-child">
+          <span class="nav-child-icon" [innerHTML]="item.icon"></span>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      </div>
     </div>
+
   </div>
 
-</aside>
+  <div class="sidebar-section sidebar-section--bottom">
+    <a *ngFor="let item of systemItems"
+      [routerLink]="item.route"
+      routerLinkActive="nav-item--active"
+      class="nav-item">
+      <span class="nav-icon" [innerHTML]="item.icon"></span>
+      <span class="nav-label">{{ item.label }}</span>
+    </a>
+  </div>
+
+</nav>

@@ -30,6 +30,8 @@ export class FreightRatesFormModal implements OnInit {
 
   get isEdit(): boolean { return !!this.data?.id; }
 
+  freights: any[] = [];
+
   patios:             any[] = [];
   transportCompanies: any[] = [];
 
@@ -48,9 +50,10 @@ export class FreightRatesFormModal implements OnInit {
     transport_company_id: '' as any,
     origin_id:            '' as any,
     destination_id:       '' as any,
-    freight:              0,
+    freight_20:           0,
+    freight_40:           0,
+    freight_45:           0,
     condition_id:            '' as any,  // ← nuevo
-    container_size_id:                 '' as any,  // ← nuevo
     active:               true,
   };
 
@@ -60,14 +63,18 @@ export class FreightRatesFormModal implements OnInit {
 
   private loadCatalogs(): void {
   // Pre-carga inmediata del form (no depende de la API)
+  this.api.getAuth(ENDPOINTS.FREIGHTS.LIST).subscribe((d: any) => {
+  this.freights = d;
+});
   if (this.isEdit) {
     this.form = {
       transport_company_id: this.data.transport_company_id,
       origin_id:            this.data.origin_id,
       destination_id:       this.data.destination_id,
-      freight:              this.data.freight,
+      freight_20:           this.data.freight_20 || 0,
+      freight_40:           this.data.freight_40 || 0,
+      freight_45:           this.data.freight_45 || 0,
       condition_id:            this.data.condition_id  ? String(this.data.condition_id)  : '',
-      container_size_id:                 this.data.container_size_id       ? String(this.data.container_size_id)       : '',
       active:               this.data.active,
     };
   }
@@ -97,9 +104,10 @@ this.api.get(ENDPOINTS.PATIOS.LIST).subscribe((d: any) => {
         transport_company_id: this.data.transport_company_id,
         origin_id:            this.data.origin_id,
         destination_id:       this.data.destination_id,
-        freight:              this.data.freight,
+        freight_20:              this.data.freight_20 || 0,
+        freight_40:              this.data.freight_40 || 0,
+        freight_45:              this.data.freight_45 || 0,
         condition_id:         this.data.condition_id  ? String(this.data.condition_id)  : '',
-        container_size_id:    this.data.container_size_id       ? String(this.data.container_size_id)       : '',
         active:               this.data.active,
       };
     }
@@ -132,13 +140,28 @@ this.api.get(ENDPOINTS.PATIOS.LIST).subscribe((d: any) => {
   if (!this.form.transport_company_id) this.fieldErrors['empresa']   = true;
   if (!this.form.origin_id)            this.fieldErrors['origen']    = true;
   if (!this.form.destination_id)       this.fieldErrors['destino']   = true;
-  if (!this.form.freight)              this.fieldErrors['freight']   = true;
+  if (!this.form.freight_20 && !this.form.freight_40 && !this.form.freight_45)
+                                                  this.fieldErrors['freight']    = true;
   if (!this.form.condition_id)            this.fieldErrors['condition'] = true;
-  if (!this.form.container_size_id)                 this.fieldErrors['size']      = true;
 
   if (Object.keys(this.fieldErrors).length > 0) {
     this.toast.error('Completa todos los campos obligatorios');
     return;
+  }
+
+  // Verifica duplicado en el array ya cargado
+  if (!this.isEdit) {
+    const duplicate = this.freights.find(f =>  // necesitas tener freights[] cargado
+      String(f.transport_company_id) === String(this.form.transport_company_id) &&
+      String(f.origin_id)            === String(this.form.origin_id)            &&
+      String(f.destination_id)       === String(this.form.destination_id)       &&
+      String(f.condition_id)         === String(this.form.condition_id)
+    );
+
+    if (duplicate) {
+      this.toast.error('Ya existe una tarifa para esta empresa, ruta y condición');
+      return;
+    }
   }
 
     this.saving = true;
