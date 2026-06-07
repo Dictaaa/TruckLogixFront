@@ -71,17 +71,9 @@ export class TransportMovementsComponent implements OnInit {
     this.loading = true;
     this.apiService.getTrips().subscribe({
       next: (response: any) => {
-        this.rawTrips = response;
-        let trips = response as any[];
-
-        if (this.auth.hasRole([3])) {
-        const userCompanyId = this.auth.getUser()?.company_id;
-        trips = trips.filter(t => String(t.affiliate_id) === String(userCompanyId));
-      }
-
+        const trips = response as any[];  // ← sin filtro frontend
       this.rawTrips = trips;
-
-        this.allMovements = response.map((trip: any) => ({
+      this.allMovements = trips.map((trip: any) => ({
           id: trip.id,
           fecha: trip.trip_date,
           empresaTransporte: trip.transportCompany?.name || '',
