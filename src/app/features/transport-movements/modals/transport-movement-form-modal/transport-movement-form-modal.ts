@@ -101,7 +101,8 @@ export class TransportMovementFormModalComponent implements OnInit {
     comisionPagada: 0,
     transporteComida: 0,
     observacion: '',
-    fechaFacturar: ''
+    fechaFacturar: '',
+    tipoServicio: '', 
   };
 
   ngOnInit(): void {
@@ -204,6 +205,13 @@ export class TransportMovementFormModalComponent implements OnInit {
     const empresaId = this.form.empresaTransporte;
     const condicion = this.form.estado;    // 1=Lleno, 2=Vacío, 3=Carga suelta
     const tamano = this.form.tamano;    // 1=20, 2=40
+    const tipo      = this.form.tipoServicio;
+
+  // Si es regional o nacional, el flete es manual — no autocalcula
+  if (tipo === 'regional' || tipo === 'nacional') {
+    this.freightResolved = this.form.flete > 0;
+    return;
+  }
 
     if (!origenId || !destinoId || !empresaId || !condicion || !tamano) return;
 
@@ -222,14 +230,21 @@ export class TransportMovementFormModalComponent implements OnInit {
         else if (tamano === '2') valor = Number(match.freight_40 || 0);
         else if (tamano === '3') valor = Number(match.freight_45 || 0);
 
-        this.form.flete = valor;
-        this.freightResolved = valor > 0;
-      } else {
-        this.form.flete = 0;
-        this.freightResolved = false;
-      }
+        this.form.flete          = valor;
+      this.form.comisionPagada = Math.round(valor * 0.10); // ← 10% automático
+      this.freightResolved     = valor > 0;
+    } else {
+      this.form.flete          = 0;
+      this.form.comisionPagada = 0;
+      this.freightResolved     = false;
+    }
     });
   }
+
+  onFleteManualChange(): void {
+  this.form.comisionPagada = Math.round(this.form.flete * 0.10);
+  this.freightResolved = this.form.flete > 0;
+}
 
   saving = false;
 
@@ -255,11 +270,17 @@ export class TransportMovementFormModalComponent implements OnInit {
     if (!this.form.auxiliarTransporte) this.fieldErrors['auxiliarTransporte'] = true;
     if (!this.form.transporteComida) this.fieldErrors['transporteComida'] = true;
     if (!this.form.estado) this.fieldErrors['estado'] = true;
+    if (!this.form.tipoServicio) this.fieldErrors['tipoServicio'] = true;
 
     if (Object.keys(this.fieldErrors).length > 0) {
       this.toast.error('Completa todos los campos obligatorios');
       return;
     }
+
+    if ((this.form.tipoServicio === 'regional' || this.form.tipoServicio === 'nacional') 
+    && !this.form.flete) {
+  this.fieldErrors['flete'] = true;
+}
 
     if (!this.freightResolved) {
       this.toast.error('No existe una tarifa registrada para esta ruta, empresa, condición y tamaño');
@@ -360,6 +381,7 @@ export class TransportMovementFormModalComponent implements OnInit {
       transport_food_value:   this.form.transporteComida   || 0,
       observations:           this.form.observacion        || null,
       invoice_send_date:      this.form.fechaFacturar      || null,
+      service_type:           this.form.tipoServicio       || null,
     };
 
     const request$ = this.isEdit

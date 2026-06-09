@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TransportMovementFormModal } from './transport-movement-form-modal';
+import { TransportMovementFormModalComponent } from './transport-movement-form-modal';
 
-describe('TransportMovementFormModal', () => {
-  let component: TransportMovementFormModal;
-  let fixture: ComponentFixture<TransportMovementFormModal>;
+describe('TransportMovementFormModalComponent', () => {
+  let component: TransportMovementFormModalComponent;
+  let fixture: ComponentFixture<TransportMovementFormModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TransportMovementFormModal],
+      imports: [TransportMovementFormModalComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TransportMovementFormModal);
+    fixture = TestBed.createComponent(TransportMovementFormModalComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

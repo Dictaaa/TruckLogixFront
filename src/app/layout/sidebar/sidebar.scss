@@ -270,3 +270,14 @@ $font-mono:         'IBM Plex Mono', monospace;
     stroke-width: 2;
   }
 }
+
+.nav-icon svg,
+.nav-child-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

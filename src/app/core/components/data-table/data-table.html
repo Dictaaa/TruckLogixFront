@@ -1,0 +1,141 @@
+<div class="dt-wrapper">
+
+  <!-- Toolbar -->
+  <div class="dt-toolbar">
+    <div class="dt-search-wrap">
+      <!-- Selector de columna -->
+      <select class="dt-col-select" [(ngModel)]="searchCol" (ngModelChange)="onSearch()">
+        <option value="">Todas las columnas</option>
+        <option *ngFor="let c of columns" [value]="c.key">{{ c.label }}</option>
+      </select>
+      <!-- Input búsqueda -->
+      <div class="dt-search-input-wrap">
+        <svg class="dt-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="dt-search-input" placeholder="Buscar…"
+          [(ngModel)]="search" (ngModelChange)="onSearch()">
+        <button *ngIf="search" class="dt-search-clear" (click)="search=''; onSearch()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Exportar -->
+    <div class="dt-export-wrap">
+      <button class="dt-btn-export dt-btn-excel" (click)="exportExcel()" title="Exportar Excel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>
+        </svg>
+        Excel
+      </button>
+      <button class="dt-btn-export dt-btn-pdf" (click)="exportPdf()" title="Exportar PDF">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="dt-scroll">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th *ngFor="let col of columns"
+            [class.th-sortable]="col.sortable"
+            (click)="onSort(col)">
+            {{ col.label }}
+            <span *ngIf="col.sortable" class="sort-icon"
+              [class.active]="sortBy === col.key">
+              {{ getSortIcon(col.key) }}
+            </span>
+          </th>
+          <th *ngIf="actions.length" class="col-actions">Opciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Loading -->
+        <tr *ngIf="loading">
+          <td [attr.colspan]="columns.length + (actions.length ? 1 : 0)">
+            <div class="loading-cell">
+              <div class="spinner"></div>
+              <span>Cargando…</span>
+            </div>
+          </td>
+        </tr>
+
+        <!-- Datos -->
+        <ng-container *ngIf="!loading">
+          <tr *ngFor="let row of data; let i = index"
+            class="table-row" [class.row-even]="i % 2 === 0">
+
+            <td *ngFor="let col of columns">
+              <!-- Badge -->
+              <ng-container *ngIf="col.format === 'badge' && col.badgeMap">
+                <span class="badge" [ngClass]="col.badgeMap[getCellValue(row, col)]?.class">
+                  {{ col.badgeMap[getCellValue(row, col)]?.label || getCellValue(row, col) }}
+                </span>
+              </ng-container>
+              <!-- Placa -->
+              <ng-container *ngIf="col.format === 'placa'">
+                <span class="badge badge--placa">{{ getCellValue(row, col) }}</span>
+              </ng-container>
+              <!-- Fecha -->
+              <ng-container *ngIf="col.format === 'date'">
+                {{ getCellValue(row, col) | date:'dd/MM/yyyy' }}
+              </ng-container>
+              <!-- Currency -->
+              <ng-container *ngIf="col.format === 'currency'">
+                {{ getCellValue(row, col) | currency:'COP':'symbol':'1.0-0' }}
+              </ng-container>
+              <!-- Texto plano -->
+              <ng-container *ngIf="!col.format || col.format === 'text'">
+                {{ getCellValue(row, col) }}
+              </ng-container>
+            </td>
+
+            <td *ngIf="actions.length" class="col-actions">
+              <app-table-actions
+                [actions]="actions"
+                (actionSelected)="actionSelect.emit({ action: $event, row })">
+              </app-table-actions>
+            </td>
+          </tr>
+
+          <!-- Empty -->
+          <tr *ngIf="data.length === 0">
+            <td [attr.colspan]="columns.length + (actions.length ? 1 : 0)" class="empty-state">
+              <p>No se encontraron registros</p>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer: page size + paginación -->
+  <div class="dt-footer" *ngIf="!loading">
+    <div class="dt-page-size">
+      <span class="dt-total-label">{{ total }} registros</span>
+      <select class="dt-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSize($event)">
+        <option *ngFor="let s of pageSizes" [value]="s">{{ s }} por página</option>
+      </select>
+    </div>
+
+    <div class="pagination">
+      <button class="page-btn" [disabled]="page === 1" (click)="changePage(1)">«</button>
+      <button class="page-btn" [disabled]="page === 1" (click)="changePage(page - 1)">‹</button>
+      <span class="page-info">Página {{ page }} de {{ totalPages }}</span>
+      <button class="page-btn" [disabled]="page === totalPages" (click)="changePage(page + 1)">›</button>
+      <button class="page-btn" [disabled]="page === totalPages" (click)="changePage(totalPages)">»</button>
+    </div>
+  </div>
+
+</div>

@@ -19,7 +19,8 @@
 
             <div class="form-group">
                 <label class="form-label">Fecha</label>
-                <input type="date" class="form-control" [(ngModel)]="form.fecha" [class.field-error]="fieldErrors['fecha']">
+                <input type="date" class="form-control" [(ngModel)]="form.fecha"
+                    [class.field-error]="fieldErrors['fecha']">
             </div>
 
             <div class="form-group">
@@ -30,7 +31,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar cliente…"
-                        [formControl]="clienteCtrl" [matAutocomplete]="autoCliente" [class.field-error]="fieldErrors['cliente']">
+                        [formControl]="clienteCtrl" [matAutocomplete]="autoCliente"
+                        [class.field-error]="fieldErrors['cliente']">
                 </div>
                 <mat-autocomplete #autoCliente="matAutocomplete" [displayWith]="displayFn('name')"
                     (optionSelected)="onSelect('cliente', $event.option.value)">
@@ -46,7 +48,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar línea…"
-                        [formControl]="lineaCtrl" [matAutocomplete]="autoLinea" [class.field-error]="fieldErrors['linea']">
+                        [formControl]="lineaCtrl" [matAutocomplete]="autoLinea"
+                        [class.field-error]="fieldErrors['linea']">
                 </div>
                 <mat-autocomplete #autoLinea="matAutocomplete" [displayWith]="displayFn('name')"
                     (optionSelected)="onSelect('linea', $event.option.value)">
@@ -64,7 +67,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar origen…"
-                        [formControl]="origenCtrl" [matAutocomplete]="autoOrigen" [class.field-error]="fieldErrors['origen']">
+                        [formControl]="origenCtrl" [matAutocomplete]="autoOrigen"
+                        [class.field-error]="fieldErrors['origen']">
                 </div>
                 <mat-autocomplete #autoOrigen="matAutocomplete" [displayWith]="displayFn('name')"
                     (optionSelected)="onSelect('origen', $event.option.value); resolveFreight()">
@@ -80,7 +84,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar destino…"
-                        [formControl]="destinoCtrl" [matAutocomplete]="autoDestino" [class.field-error]="fieldErrors['destino']">
+                        [formControl]="destinoCtrl" [matAutocomplete]="autoDestino"
+                        [class.field-error]="fieldErrors['destino']">
                 </div>
                 <mat-autocomplete #autoDestino="matAutocomplete" [displayWith]="displayFn('name')"
                     (optionSelected)="onSelect('destino', $event.option.value); resolveFreight()">
@@ -96,7 +101,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar operación…"
-                        [formControl]="operacionCtrl" [matAutocomplete]="autoOperacion" [class.field-error]="fieldErrors['operacion']">
+                        [formControl]="operacionCtrl" [matAutocomplete]="autoOperacion"
+                        [class.field-error]="fieldErrors['operacion']">
                 </div>
                 <mat-autocomplete #autoOperacion="matAutocomplete" [displayWith]="displayFn('name')"
                     (optionSelected)="onSelect('operacion', $event.option.value)">
@@ -112,7 +118,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon mono" placeholder="MSCU1234567"
-                        [formControl]="contenedorCtrl" [matAutocomplete]="autoContenedor" [class.field-error]="fieldErrors['contenedor']">
+                        [formControl]="contenedorCtrl" [matAutocomplete]="autoContenedor"
+                        [class.field-error]="fieldErrors['contenedor']">
                 </div>
                 <mat-autocomplete #autoContenedor="matAutocomplete" [displayWith]="displayFn('number')"
                     (optionSelected)="onSelectContainer($event.option.value)">
@@ -122,7 +129,8 @@
 
             <div class="form-group">
                 <label class="form-label">Tamaño</label>
-                <select class="form-control" [(ngModel)]="form.tamano" [class.field-error]="fieldErrors['tamano']" (ngModelChange)="resolveFreight()">
+                <select class="form-control" [(ngModel)]="form.tamano" [class.field-error]="fieldErrors['tamano']"
+                    (ngModelChange)="resolveFreight()">
                     <option value="">Seleccionar…</option>
                     <option value="1">20</option>
                     <option value="2">40</option>
@@ -144,7 +152,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar empresa…"
-                        [formControl]="empresaTransporteCtrl" [matAutocomplete]="autoEmpresa" [class.field-error]="fieldErrors['empresaTransporte']">
+                        [formControl]="empresaTransporteCtrl" [matAutocomplete]="autoEmpresa"
+                        [class.field-error]="fieldErrors['empresaTransporte']">
                 </div>
                 <mat-autocomplete #autoEmpresa="matAutocomplete" [displayWith]="displayFn('name')"
                     (optionSelected)="onSelect('empresaTransporte', $event.option.value); resolveFreight()">
@@ -161,7 +170,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar vehículo…"
-                        [formControl]="vehiclesCtrl" [matAutocomplete]="autoVehicles" [class.field-error]="fieldErrors['vehiculo']">
+                        [formControl]="vehiclesCtrl" [matAutocomplete]="autoVehicles"
+                        [class.field-error]="fieldErrors['vehiculo']">
                 </div>
                 <mat-autocomplete #autoVehicles="matAutocomplete" [displayWith]="displayFn('plate')"
                     (optionSelected)="onSelect('vehiculo', $event.option.value)">
@@ -177,7 +187,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar conductor…"
-                        [formControl]="conductorCtrl" [matAutocomplete]="autoConductor" [class.field-error]="fieldErrors['conductor']">
+                        [formControl]="conductorCtrl" [matAutocomplete]="autoConductor"
+                        [class.field-error]="fieldErrors['conductor']">
                 </div>
                 <mat-autocomplete #autoConductor="matAutocomplete" [displayWith]="displayFn('name')"
                     (optionSelected)="onSelect('conductor', $event.option.value)">
@@ -193,7 +204,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar afiliado…"
-                        [formControl]="afiliadoCtrl" [matAutocomplete]="autoAfiliado" [class.field-error]="fieldErrors['afiliado']">
+                        [formControl]="afiliadoCtrl" [matAutocomplete]="autoAfiliado"
+                        [class.field-error]="fieldErrors['afiliado']">
                 </div>
                 <mat-autocomplete #autoAfiliado="matAutocomplete" [displayWith]="displayFn('name')"
                     (optionSelected)="onSelect('afiliado', $event.option.value)">
@@ -209,7 +221,8 @@
                         <path d="m21 21-4.35-4.35" />
                     </svg>
                     <input type="text" class="form-control has-icon" placeholder="Buscar auxiliar…"
-                        [formControl]="auxiliarTransporteCtrl" [matAutocomplete]="autoAuxiliar" [class.field-error]="fieldErrors['auxiliarTransporte']">
+                        [formControl]="auxiliarTransporteCtrl" [matAutocomplete]="autoAuxiliar"
+                        [class.field-error]="fieldErrors['auxiliarTransporte']">
                 </div>
                 <mat-autocomplete #autoAuxiliar="matAutocomplete" [displayWith]="displayFn('name')"
                     (optionSelected)="onSelect('auxiliarTransporte', $event.option.value)">
@@ -228,7 +241,8 @@
             <!-- En "Estado y Valores", reemplaza el input de Estado por: -->
             <div class="form-group">
                 <label class="form-label">Estado</label>
-                <select class="form-control" [(ngModel)]="form.estado" [class.field-error]="fieldErrors['estado']" (ngModelChange)="resolveFreight()">
+                <select class="form-control" [(ngModel)]="form.estado" [class.field-error]="fieldErrors['estado']"
+                    (ngModelChange)="resolveFreight()">
                     <option value="">Seleccionar…</option>
                     <option value="1">Lleno</option>
                     <option value="2">Vacío</option>
@@ -236,12 +250,36 @@
                 </select>
             </div>
 
-   
+            <!-- Tipo de servicio — agrega después del campo Tamaño -->
+            <div class="form-group">
+                <label class="form-label">Tipo de Servicio <span class="required">*</span></label>
+                <select class="form-control" [(ngModel)]="form.tipoServicio"
+                    [class.field-error]="fieldErrors['tipoServicio']" (ngModelChange)="resolveFreight()">
+                    <option value="">Seleccionar…</option>
+                    <option value="local">Local</option>
+                    <option value="regional">Regional</option>
+                    <option value="nacional">Nacional</option>
+                </select>
+            </div>
+
+            <!-- Flete — SOLO visible cuando es regional o nacional -->
+<div class="form-group" 
+  *ngIf="form.tipoServicio === 'regional' || form.tipoServicio === 'nacional'">
+  <label class="form-label">Flete</label>
+  <div class="input-currency-wrap">
+    <span class="currency-prefix">$</span>
+    <input type="number" class="form-control has-prefix" 
+      [(ngModel)]="form.flete" min="0"
+      (ngModelChange)="onFleteManualChange()">
+  </div>
+</div>
+
             <div class="form-group">
                 <label class="form-label">Transporte y Comida</label>
                 <div class="input-currency-wrap">
                     <span class="currency-prefix">$</span>
-                    <input type="number" class="form-control has-prefix" [(ngModel)]="form.transporteComida" min="0" [class.field-error]="fieldErrors['transporteComida']">
+                    <input type="number" class="form-control has-prefix" [(ngModel)]="form.transporteComida" min="0"
+                        [class.field-error]="fieldErrors['transporteComida']">
                 </div>
             </div>
 
@@ -265,5 +303,5 @@
             <polyline points="7 3 7 8 15 8" />
         </svg>
         {{ saving ? 'Guardando…' : (isEdit ? 'Actualizar movimiento' : 'Guardar movimiento') }}
-</button>
+    </button>
 </mat-dialog-actions>
