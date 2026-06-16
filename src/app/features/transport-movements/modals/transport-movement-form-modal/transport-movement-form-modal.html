@@ -174,7 +174,7 @@
                         [class.field-error]="fieldErrors['vehiculo']">
                 </div>
                 <mat-autocomplete #autoVehicles="matAutocomplete" [displayWith]="displayFn('plate')"
-                    (optionSelected)="onSelect('vehiculo', $event.option.value)">
+                    (optionSelected)="onSelectVehicle($event.option.value)">
                     <mat-option *ngFor="let v of filteredVehicles$ | async" [value]="v">{{ v.plate }}</mat-option>
                 </mat-autocomplete>
             </div>
@@ -278,8 +278,7 @@
                 <label class="form-label">Transporte y Comida</label>
                 <div class="input-currency-wrap">
                     <span class="currency-prefix">$</span>
-                    <input type="number" class="form-control has-prefix" [(ngModel)]="form.transporteComida" min="0"
-                        [class.field-error]="fieldErrors['transporteComida']">
+                    <input type="number" class="form-control has-prefix" [(ngModel)]="form.transporteComida" min="0">
                 </div>
             </div>
 

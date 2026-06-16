@@ -27,9 +27,43 @@
       <div class="form-group">
         <label class="form-label">Estado</label>
         <select class="form-control" [(ngModel)]="form.active">
-          <option [ngValue]="1">Activo</option>
-          <option [ngValue]="0">Inactivo</option>
+          <option [ngValue]="true">Activo</option>
+          <option [ngValue]="false">Inactivo</option>
         </select>
+      </div>
+
+      <!-- Afiliado — solo si el usuario no tiene company_id -->
+      <div class="form-group" *ngIf="showAfiliadoField">
+        <label class="form-label">Afiliado <span class="required">*</span></label>
+        <div class="input-icon-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" class="form-control has-icon" placeholder="Buscar afiliado…"
+            [formControl]="afiliadoCtrl" [matAutocomplete]="autoAfiliado"
+            [class.field-error]="fieldErrors['company_id']">
+        </div>
+        <mat-autocomplete #autoAfiliado="matAutocomplete" [displayWith]="displayFn"
+          (optionSelected)="form.company_id = $event.option.value.id">
+          <mat-option *ngFor="let a of filteredAffiliates$ | async" [value]="a">{{ a.name }}</mat-option>
+        </mat-autocomplete>
+      </div>
+
+      <!-- Conductor -->
+      <div class="form-group">
+        <label class="form-label">Conductor <span class="required">*</span></label>
+        <div class="input-icon-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" class="form-control has-icon" placeholder="Buscar conductor…"
+            [formControl]="conductorCtrl" [matAutocomplete]="autoConductor"
+            [class.field-error]="fieldErrors['driver_id']">
+        </div>
+        <mat-autocomplete #autoConductor="matAutocomplete" [displayWith]="displayFn"
+          (optionSelected)="form.driver_id = $event.option.value.id">
+          <mat-option *ngFor="let d of filteredDrivers$ | async" [value]="d">{{ d.name }}</mat-option>
+        </mat-autocomplete>
       </div>
 
     </div>

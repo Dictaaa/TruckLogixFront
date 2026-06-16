@@ -2,7 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA  } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -32,7 +32,7 @@ export class TransportMovementFormModalComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<TransportMovementFormModalComponent>);
   private api = inject(ApiService);
   private toast = inject(ToastService);
-  data              = inject(MAT_DIALOG_DATA);
+  data = inject(MAT_DIALOG_DATA);
 
   // --- Catálogos crudos desde la API ---
   drivers: any[] = [];
@@ -102,7 +102,7 @@ export class TransportMovementFormModalComponent implements OnInit {
     transporteComida: 0,
     observacion: '',
     fechaFacturar: '',
-    tipoServicio: '', 
+    tipoServicio: '',
   };
 
   ngOnInit(): void {
@@ -205,13 +205,13 @@ export class TransportMovementFormModalComponent implements OnInit {
     const empresaId = this.form.empresaTransporte;
     const condicion = this.form.estado;    // 1=Lleno, 2=Vacío, 3=Carga suelta
     const tamano = this.form.tamano;    // 1=20, 2=40
-    const tipo      = this.form.tipoServicio;
+    const tipo = this.form.tipoServicio;
 
-  // Si es regional o nacional, el flete es manual — no autocalcula
-  if (tipo === 'regional' || tipo === 'nacional') {
-    this.freightResolved = this.form.flete > 0;
-    return;
-  }
+    // Si es regional o nacional, el flete es manual — no autocalcula
+    if (tipo === 'regional' || tipo === 'nacional') {
+      this.freightResolved = this.form.flete > 0;
+      return;
+    }
 
     if (!origenId || !destinoId || !empresaId || !condicion || !tamano) return;
 
@@ -230,21 +230,21 @@ export class TransportMovementFormModalComponent implements OnInit {
         else if (tamano === '2') valor = Number(match.freight_40 || 0);
         else if (tamano === '3') valor = Number(match.freight_45 || 0);
 
-        this.form.flete          = valor;
-      this.form.comisionPagada = Math.round(valor * 0.10); // ← 10% automático
-      this.freightResolved     = valor > 0;
-    } else {
-      this.form.flete          = 0;
-      this.form.comisionPagada = 0;
-      this.freightResolved     = false;
-    }
+        this.form.flete = valor;
+        this.form.comisionPagada = Math.round(valor * 0.10); // ← 10% automático
+        this.freightResolved = valor > 0;
+      } else {
+        this.form.flete = 0;
+        this.form.comisionPagada = 0;
+        this.freightResolved = false;
+      }
     });
   }
 
   onFleteManualChange(): void {
-  this.form.comisionPagada = Math.round(this.form.flete * 0.10);
-  this.freightResolved = this.form.flete > 0;
-}
+    this.form.comisionPagada = Math.round(this.form.flete * 0.10);
+    this.freightResolved = this.form.flete > 0;
+  }
 
   saving = false;
 
@@ -268,7 +268,7 @@ export class TransportMovementFormModalComponent implements OnInit {
     if (!this.form.conductor) this.fieldErrors['conductor'] = true;
     if (!this.form.afiliado) this.fieldErrors['afiliado'] = true;
     if (!this.form.auxiliarTransporte) this.fieldErrors['auxiliarTransporte'] = true;
-    if (!this.form.transporteComida) this.fieldErrors['transporteComida'] = true;
+    //if (!this.form.transporteComida) this.fieldErrors['transporteComida'] = true;
     if (!this.form.estado) this.fieldErrors['estado'] = true;
     if (!this.form.tipoServicio) this.fieldErrors['tipoServicio'] = true;
 
@@ -277,10 +277,10 @@ export class TransportMovementFormModalComponent implements OnInit {
       return;
     }
 
-    if ((this.form.tipoServicio === 'regional' || this.form.tipoServicio === 'nacional') 
-    && !this.form.flete) {
-  this.fieldErrors['flete'] = true;
-}
+    if ((this.form.tipoServicio === 'regional' || this.form.tipoServicio === 'nacional')
+      && !this.form.flete) {
+      this.fieldErrors['flete'] = true;
+    }
 
     if (!this.freightResolved) {
       this.toast.error('No existe una tarifa registrada para esta ruta, empresa, condición y tamaño');
@@ -321,40 +321,41 @@ export class TransportMovementFormModalComponent implements OnInit {
 
   private preloadForm(): void {
     const d = this.data;
-    this.form.fecha            = d.trip_date            ?? '';
-    this.form.estado           = d.client_status        ?? '';
-    this.form.estadoTrabajo    = d.work_status          ?? '';
-    this.form.flete            = Number(d.freight_value  || 0);
-    this.form.comisionPagada   = Number(d.commission_paid || 0);
+    this.form.fecha = d.trip_date ?? '';
+    this.form.cliente = d.client_id ?? '';
+    this.form.estado = d.client_status ?? '';
+    this.form.estadoTrabajo = d.work_status ?? '';
+    this.form.flete = Number(d.freight_value || 0);
+    this.form.comisionPagada = Number(d.commission_paid || 0);
     this.form.transporteComida = Number(d.transport_food_value || 0);
-    this.form.observacion      = d.observations         ?? '';
-    this.form.fechaFacturar    = d.invoice_send_date    ?? '';
+    this.form.observacion = d.observations ?? '';
+    this.form.fechaFacturar = d.invoice_send_date ?? '';
 
     // IDs para los campos del form
-    this.form.cliente            = d.client_id              ?? '';
-    this.form.linea              = d.shipping_line_id       ?? '';
-    this.form.origen             = d.origin_id              ?? '';
-    this.form.destino            = d.destination_id         ?? '';
-    this.form.operacion          = d.operation_id           ?? '';
-    this.form.empresaTransporte  = d.transport_company_id   ?? '';
-    this.form.vehiculo           = d.vehicle_id             ?? '';
-    this.form.conductor          = d.driver_id              ?? '';
-    this.form.afiliado           = d.affiliate_id           ?? '';
+    this.form.cliente = d.client_id ?? '';
+    this.form.linea = d.shipping_line_id ?? '';
+    this.form.origen = d.origin_id ?? '';
+    this.form.destino = d.destination_id ?? '';
+    this.form.operacion = d.operation_id ?? '';
+    this.form.empresaTransporte = d.transport_company_id ?? '';
+    this.form.vehiculo = d.vehicle_id ?? '';
+    this.form.conductor = d.driver_id ?? '';
+    this.form.afiliado = d.affiliate_id ?? '';
     this.form.auxiliarTransporte = d.transport_assistant_id ?? '';
-    this.form.tamano             = d.container?.container_size_id
-                                   ? String(d.container.container_size_id) : '';
+    this.form.tamano = d.container?.container_size_id
+      ? String(d.container.container_size_id) : '';
 
     // Pre-carga los controles de autocomplete con los objetos anidados
-    if (d.client)             this.clienteCtrl.setValue(d.client,             { emitEvent: false });
-    if (d.shippingLine)       this.lineaCtrl.setValue(d.shippingLine,         { emitEvent: false });
-    if (d.origin)             this.origenCtrl.setValue(d.origin,              { emitEvent: false });
-    if (d.destination)        this.destinoCtrl.setValue(d.destination,        { emitEvent: false });
-    if (d.operation)          this.operacionCtrl.setValue(d.operation,        { emitEvent: false });
-    if (d.container)          this.contenedorCtrl.setValue(d.container,       { emitEvent: false });
-    if (d.transportCompany)   this.empresaTransporteCtrl.setValue(d.transportCompany, { emitEvent: false });
-    if (d.vehicle)            this.vehiclesCtrl.setValue(d.vehicle,           { emitEvent: false });
-    if (d.driver)             this.conductorCtrl.setValue(d.driver,           { emitEvent: false });
-    if (d.affiliate)          this.afiliadoCtrl.setValue(d.affiliate,         { emitEvent: false });
+    if (d.client) this.clienteCtrl.setValue(d.client, { emitEvent: false });
+    if (d.shippingLine) this.lineaCtrl.setValue(d.shippingLine, { emitEvent: false });
+    if (d.origin) this.origenCtrl.setValue(d.origin, { emitEvent: false });
+    if (d.destination) this.destinoCtrl.setValue(d.destination, { emitEvent: false });
+    if (d.operation) this.operacionCtrl.setValue(d.operation, { emitEvent: false });
+    if (d.container) this.contenedorCtrl.setValue(d.container, { emitEvent: false });
+    if (d.transportCompany) this.empresaTransporteCtrl.setValue(d.transportCompany, { emitEvent: false });
+    if (d.vehicle) this.vehiclesCtrl.setValue(d.vehicle, { emitEvent: false });
+    if (d.driver) this.conductorCtrl.setValue(d.driver, { emitEvent: false });
+    if (d.affiliate) this.afiliadoCtrl.setValue(d.affiliate, { emitEvent: false });
     if (d.transportAssistant) this.auxiliarTransporteCtrl.setValue(d.transportAssistant, { emitEvent: false });
 
     // Flete ya resuelto si viene con valor
@@ -363,25 +364,26 @@ export class TransportMovementFormModalComponent implements OnInit {
 
   private submitTrip(containerId: number | null): void {
     const payload = {
-      trip_date:              this.form.fecha,
-      transport_company_id:   this.form.empresaTransporte  || null,
-      vehicle_id:             this.form.vehiculo           || null,
-      driver_id:              this.form.conductor          || null,
-      affiliate_id:           this.form.afiliado           || null,
+      trip_date: this.form.fecha,
+      client_id:              this.form.cliente             || null,
+      transport_company_id: this.form.empresaTransporte || null,
+      vehicle_id: this.form.vehiculo || null,
+      driver_id: this.form.conductor || null,
+      affiliate_id: this.form.afiliado || null,
       transport_assistant_id: this.form.auxiliarTransporte || null,
-      shipping_line_id:       this.form.linea              || null,
-      origin_id:              this.form.origen             || null,
-      destination_id:         this.form.destino            || null,
-      container_number_id:    containerId,
-      operation_id:           this.form.operacion          || null,
-      client_status:          this.form.estado             || null,
-      freight_value:          this.form.flete              || 0,
-      commission_paid:        this.form.comisionPagada     || 0,
-      work_status:            this.form.estadoTrabajo      || null,
-      transport_food_value:   this.form.transporteComida   || 0,
-      observations:           this.form.observacion        || null,
-      invoice_send_date:      this.form.fechaFacturar      || null,
-      service_type:           this.form.tipoServicio       || null,
+      shipping_line_id: this.form.linea || null,
+      origin_id: this.form.origen || null,
+      destination_id: this.form.destino || null,
+      container_number_id: containerId,
+      operation_id: this.form.operacion || null,
+      client_status: this.form.estado || null,
+      freight_value: this.form.flete || 0,
+      commission_paid: this.form.comisionPagada || 0,
+      work_status: this.form.estadoTrabajo || null,
+      transport_food_value: this.form.transporteComida || 0,
+      observations: this.form.observacion || null,
+      invoice_send_date: this.form.fechaFacturar || null,
+      service_type: this.form.tipoServicio || null,
     };
 
     const request$ = this.isEdit
@@ -406,5 +408,21 @@ export class TransportMovementFormModalComponent implements OnInit {
     const start = new Date(date.getFullYear(), 0, 1);
     const diff = date.getTime() - start.getTime();
     return Math.ceil((diff / 86400000 + start.getDay() + 1) / 7);
+  }
+
+  onSelectVehicle(item: any): void {
+    this.form.vehiculo = item.id;
+
+    // Autocompleta conductor si el vehículo tiene uno asignado
+    if (item.driver) {
+      this.form.conductor = item.driver.id;
+      this.conductorCtrl.setValue(item.driver, { emitEvent: false });
+    }
+
+    // Autocompleta afiliado si el vehículo tiene company asignada
+    if (item.affiliate) {
+      this.form.afiliado = item.affiliate.id;
+      this.afiliadoCtrl.setValue(item.affiliate, { emitEvent: false });
+    }
   }
 }

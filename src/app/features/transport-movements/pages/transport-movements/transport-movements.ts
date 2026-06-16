@@ -49,12 +49,10 @@ export class TransportMovementsComponent implements OnInit {
     { key: 'conductor',          label: 'Conductor'                                              },
     { key: 'estado',             label: 'Estado'                                                 },
     { key: 'flete',              label: 'Flete',              format: 'currency', sortable: true },
-    { key: 'estadoTrabajo',      label: 'Estado Trabajo'                                        },
     { key: 'afiliado',           label: 'Afiliado'                                               },
     { key: 'auxiliarTransporte', label: 'Auxiliar Transporte'                                    },
     { key: 'transporteComida',   label: 'T. y Comida',        format: 'currency'                 },
     { key: 'observacion',        label: 'Observación'                                            },
-    { key: 'fechaEnvioFacturar', label: 'Fecha Facturar',     format: 'date'                     },
   ];
 
   get actions() {
@@ -91,6 +89,12 @@ export class TransportMovementsComponent implements OnInit {
     });
   }
 
+  private statusMap: Record<string, string> = {
+  '1': 'Lleno',
+  '2': 'Vacío',
+  '3': 'Carga suelta',
+};
+
   private mapTrip(trip: any): any {
     return {
       id:                trip.id,
@@ -104,15 +108,13 @@ export class TransportMovementsComponent implements OnInit {
       destino:           trip.destination?.name       || '',
       operacion:         trip.operation?.name         || '',
       conductor:         trip.driver?.name            || '',
-      estado:            trip.client_status           || '',
+      estado:            this.statusMap[trip.client_status] || trip.client_status || '',
       flete:             Number(trip.freight_value    || 0),
       comisionPagada:    Number(trip.commission_paid  || 0),
-      estadoTrabajo:     trip.work_status             || '',
       afiliado:          trip.affiliate?.name         || '',
       auxiliarTransporte:trip.transportAssistant?.name|| '',
       transporteComida:  Number(trip.transport_food_value || 0),
       observacion:       trip.observations            || '',
-      fechaEnvioFacturar:trip.invoice_send_date       || '',
     };
   }
 
