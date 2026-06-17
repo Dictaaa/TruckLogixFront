@@ -1,0 +1,74 @@
+<div class="modal-header">
+  <div class="modal-header-left">
+    <span class="modal-eyebrow">Maestros</span>
+    <h2 class="modal-title">Presupuesto {{ data.year }}</h2>
+  </div>
+  <button class="btn-close" (click)="close()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </button>
+</div>
+
+<mat-dialog-content class="modal-body">
+
+  <!-- Afiliado -->
+  <div class="form-section">
+    <div class="form-section-label">Afiliado</div>
+    <div class="form-grid">
+      <div class="form-group form-group-full">
+        <label class="form-label">Afiliado <span class="required">*</span></label>
+        <div class="input-icon-wrap">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" class="form-control has-icon" placeholder="Buscar afiliado…"
+            [formControl]="afiliadoCtrl" [matAutocomplete]="autoAfiliado">
+        </div>
+        <mat-autocomplete #autoAfiliado="matAutocomplete" [displayWith]="displayFn"
+          (optionSelected)="onSelectAffiliate($event.option.value)">
+          <mat-option *ngFor="let a of filteredAffiliates$ | async" [value]="a">
+            {{ a.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </div>
+    </div>
+  </div>
+
+  <!-- Presupuesto por mes -->
+  <div class="form-section">
+    <div class="form-section-label">Presupuesto mensual</div>
+    <div class="form-grid">
+      <div class="form-group" *ngFor="let m of months">
+        <label class="form-label">{{ monthNames[m] }}</label>
+        <div class="input-currency-wrap">
+          <span class="currency-prefix">$</span>
+          <input type="number" class="form-control has-prefix"
+            [(ngModel)]="budgetForm[m]" min="0" placeholder="0">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total -->
+  <div class="form-section">
+    <div class="budget-total-row">
+      <span class="budget-total-label">Total presupuesto año</span>
+      <span class="budget-total-value">$ {{ totalPresupuesto() | number:'1.0-0' }}</span>
+    </div>
+  </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="modal-footer">
+  <button class="btn-cancel" (click)="close()">Cancelar</button>
+  <button class="btn-save" (click)="save()" [disabled]="saving">
+    <svg *ngIf="!saving" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+      <polyline points="17 21 17 13 7 13 7 21"/>
+      <polyline points="7 3 7 8 15 8"/>
+    </svg>
+    <div *ngIf="saving" class="spinner" style="width:14px;height:14px;border-width:2px;border-top-color:#fff"></div>
+    {{ saving ? 'Guardando…' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>

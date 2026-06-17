@@ -150,19 +150,22 @@ sumMonthValue(plates: any[], month: number): number {
 }
 
 // Meta por defecto 15M por placa, ajusta según tu negocio
-getPct(value: number, meta: number): number {
-  return Math.min(Math.round((value / meta) * 100), 999);
+getPct(value: number, budget: number): number {
+  if (!budget) return 0;
+  return Math.min(Math.round((value / budget) * 100), 999);
 }
 
-getCircleDash(value: number, meta: number): string {
-  const pct = Math.min((value / meta) * 100, 100);
+getCircleDash(value: number, budget: number): string {
+  if (!budget) return '0 100';
+  const pct = Math.min((value / budget) * 100, 100);
   return `${pct} ${100 - pct}`;
 }
 
-getCircleColor(value: number, meta: number): string {
-  const pct = (value / meta) * 100;
-  if (pct >= 100) return '#10b981'; // verde
-  if (pct >= 70)  return '#f59e0b'; // amarillo
-  return '#ef4444';                  // rojo
+getCircleColor(value: number, budget: number): string {
+  if (!budget) return '#94a3b8';
+  const pct = (value / budget) * 100;
+  if (pct >= 100) return '#10b981';
+  if (pct >= 70)  return '#f59e0b';
+  return '#ef4444';
 }
 }

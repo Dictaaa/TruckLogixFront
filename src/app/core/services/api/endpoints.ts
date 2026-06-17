@@ -43,5 +43,12 @@ export const ENDPOINTS = {
   },
   OPERATIONS: { LIST: '/api/v1/operations', CREATE: '/api/v1/operations', UPDATE: (id: number) => `/api/v1/operations/${id}`, DELETE: (id: number) => `/api/v1/operations/${id}` },
   VEHICLES: { LIST: '/api/v1/vehicles', CREATE: '/api/v1/vehicles', UPDATE: (id: number) => `/api/v1/vehicles/${id}`, DELETE: (id: number) => `/api/v1/vehicles/${id}` },
-  DASHBOARD: { LIST: '/api/v1/dashboard' }
+  DASHBOARD: { LIST: '/api/v1/dashboard' },
+  BUDGETS: {
+    LIST: '/api/v1/affiliate-budgets',
+    CREATE: '/api/v1/affiliate-budgets',
+    UPSERT_MANY: '/api/v1/affiliate-budgets/bulk',
+    UPDATE: (id: number) => `/api/v1/affiliate-budgets/${id}`,
+    DELETE: (id: number) => `/api/v1/affiliate-budgets/${id}`
+  }
 };

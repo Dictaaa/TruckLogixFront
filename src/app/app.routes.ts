@@ -112,6 +112,13 @@ export const routes: Routes = [
           import('./features/masters/users/pages/users/users')
             .then((m) => m.UsersComponent),
             canActivate: [roleGuard([1])]
+      },
+      {
+      path: 'affiliate-budget',
+        loadComponent: () =>
+          import('./features/masters/affiliate-budget/pages/affiliate-budget/affiliate-budget')
+            .then((m) => m.AffiliateBudgetComponent),
+            canActivate: [roleGuard([1])]
       }
     ],
   },
