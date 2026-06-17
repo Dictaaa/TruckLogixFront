@@ -27,6 +27,23 @@
     <!-- KPI Cards -->
     <div class="kpi-grid" *ngIf="kpis && !loading">
 
+      <div class="kpi-card" style="--accent: #10b981">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ formatMoney(animatedValues['thisMonthTotal']) }}</div>
+          <div class="kpi-label">Facturación del Mes</div>
+          <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }}</div>
+        </div>
+        <div class="kpi-bar-bg">
+          <div class="kpi-bar-fill"></div>
+        </div>
+      </div>
+
       <div class="kpi-card" style="--accent: #1a6fdb">
         <div class="kpi-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -40,23 +57,6 @@
           <div class="kpi-value">{{ animatedValues['yesterdayTrips'] }}</div>
           <div class="kpi-label">Viajes de Ayer</div>
           <div class="kpi-sub">{{ formatMoney(kpis.yesterdayBilling) }}</div>
-        </div>
-        <div class="kpi-bar-bg">
-          <div class="kpi-bar-fill"></div>
-        </div>
-      </div>
-
-      <div class="kpi-card" style="--accent: #10b981">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="1" x2="12" y2="23" />
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-value">{{ formatMoney(animatedValues['thisMonthTotal']) }}</div>
-          <div class="kpi-label">Facturación del Mes</div>
-          <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }}</div>
         </div>
         <div class="kpi-bar-bg">
           <div class="kpi-bar-fill"></div>
@@ -137,6 +137,7 @@
                 {{ monthNames[m] }}
               </th>
               <th class="col-mes">Total Año</th>
+              <th class="col-num">V.Ayer</th>
               <th class="col-num">V.Mes</th>
               <th class="col-num">V.Año</th>
               <th class="col-docs">Docs</th>
@@ -157,6 +158,10 @@
               </td>
 
               <td class="td-money td-strong">$ {{ v.totalYear | number:'1.0-0' }}</td>
+              <td class="td-center">
+                <span *ngIf="v.yesterdayTrips > 0" class="badge badge-ok">{{ v.yesterdayTrips }}</span>
+                <span *ngIf="v.yesterdayTrips === 0" class="text-muted">—</span>
+              </td>
               <td class="td-center">{{ v.monthTrips }}</td>
               <td class="td-center">{{ v.totalTrips }}</td>
 
@@ -193,7 +198,6 @@
             </tr>
 
             <!-- Total fila -->
-            <!-- Total fila -->
             <tr class="row-total">
               <td><strong>TOTAL</strong></td>
 
@@ -208,6 +212,10 @@
               </td>
 
               <!-- Viajes mes / año -->
+              <!-- En row-total, después de totalTrips -->
+              <td class="td-center">
+                <strong>{{ aff.plates | sumProp:'yesterdayTrips' }}</strong>
+              </td>
               <td class="td-center"><strong>{{ aff.plates | sumProp:'monthTrips' }}</strong></td>
               <td class="td-center"><strong>{{ aff.plates | sumProp:'totalTrips' }}</strong></td>
 

@@ -57,7 +57,12 @@ export class HomeComponent implements OnInit {
 
   kpis: any = null;
 monthlyBillingBars: { label: string; value: number; pct: number; color: string }[] = [];
-animatedValues: Record<string, number> = {};
+animatedValues: Record<string, number> = {
+  yesterdayTrips:   0,
+  thisMonthTrips:   0,
+  thisMonthTotal:   0,
+  yesterdayBilling: 0,
+};
 
 // En load(), después de asignar affiliates:
 load(): void {
@@ -120,6 +125,7 @@ private animateKpis(kpis: any): void {
 }
 
 formatMoney(v: number): string {
+  if (v === undefined || v === null) return '$ 0';
   return '$ ' + v.toLocaleString('es-CO', { maximumFractionDigits: 0 });
 }
 
