@@ -11,6 +11,7 @@ import { Observable, combineLatest, startWith, map } from 'rxjs';
 import { ApiService } from '../../../../core/services/api/api.service';
 import { ENDPOINTS } from '../../../../core/services/api/endpoints';
 import { ToastService } from '../../../../core/services/toast/toast';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-transport-movement-form-modal',
@@ -32,6 +33,7 @@ export class TransportMovementFormModalComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<TransportMovementFormModalComponent>);
   private api = inject(ApiService);
   private toast = inject(ToastService);
+  private auth = inject(AuthService);
   data = inject(MAT_DIALOG_DATA);
 
   // --- Catálogos crudos desde la API ---
@@ -106,9 +108,14 @@ export class TransportMovementFormModalComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.loadCatalogs();
-    if (this.isEdit) this.preloadForm();
+  this.loadCatalogs();
+  if (this.isEdit) {
+    this.preloadForm();
+  } else if (!this.showAfiliadoField && this.userCompanyId) {
+    // Si no es admin (company_id !== 2), asigna su company_id como afiliado
+    this.form.afiliado = this.userCompanyId;
   }
+}
 
   private loadCatalogs(): void {
     this.api.getAuth(ENDPOINTS.DRIVERS.LIST).subscribe((d: any) => {
@@ -425,4 +432,7 @@ export class TransportMovementFormModalComponent implements OnInit {
       this.afiliadoCtrl.setValue(item.affiliate, { emitEvent: false });
     }
   }
+
+  get userCompanyId(): any { return this.auth.getUser()?.company_id ?? null; }
+  get showAfiliadoField(): boolean { return this.userCompanyId == 2; }
 }

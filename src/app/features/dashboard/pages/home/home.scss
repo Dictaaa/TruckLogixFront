@@ -308,3 +308,49 @@
 }
 
 .header-controls { display: flex; align-items: center; gap: 12px; }
+
+.col-current  { background: rgba(26,111,219,0.06); }
+.td-current   { background: rgba(26,111,219,0.04); font-weight: 600; }
+
+.col-prog     { width: 80px; text-align: center; }
+.td-prog      { text-align: center; padding: 6px 4px; }
+
+.prog-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.prog-circle {
+  width: 36px;
+  height: 36px;
+  transform: rotate(-90deg);
+
+  .prog-bg {
+    fill: none;
+    stroke: #e2e8f0;
+    stroke-width: 3;
+  }
+
+  .prog-fill {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.6s ease;
+    stroke-dashoffset: 0;
+  }
+}
+
+.prog-pct {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace;
+  line-height: 1;
+}
+
+.td-strong { font-weight: 700; }
+.td-center { text-align: center; }
+
+.proy-value { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; }
+.proy-meta  { font-size: 10px; color: #94a3b8; }
