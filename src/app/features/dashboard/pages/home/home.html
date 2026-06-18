@@ -101,17 +101,65 @@
     </div>
 
     <!-- Gráfica facturación mensual -->
+    <!-- Gráfica facturación mensual - línea de tendencia -->
     <div class="chart-card" *ngIf="monthlyBillingBars.length && !loading">
-      <div class="chart-title">Facturación por Mes — {{ year }}</div>
-      <div class="bar-chart">
-        <div class="bar-item" *ngFor="let b of monthlyBillingBars">
-          <div class="bar-wrap">
-            <div class="bar-fill" [style.height.%]="b.pct" [style.background]="b.color">
-            </div>
-          </div>
-          <div class="bar-label">{{ b.label }}</div>
-          <div class="bar-value">$ {{ (b.value / 1_000_000).toFixed(1) }}M</div>
+      <div class="chart-title">Tendencia de Facturación — {{ year }}</div>
+
+      <div class="line-chart-wrap" (mouseleave)="activeTooltip = null">
+
+        <!-- SVG línea -->
+        <svg class="line-chart-svg" viewBox="0 0 800 220" preserveAspectRatio="none">
+
+          <!-- Grid lines horizontales -->
+          <line *ngFor="let g of gridLines" [attr.x1]="40" [attr.y1]="g.y" [attr.x2]="780" [attr.y2]="g.y"
+            stroke="#e2e8f0" stroke-width="1" />
+
+          <!-- Labels eje Y -->
+          <text *ngFor="let g of gridLines" [attr.x]="35" [attr.y]="g.y + 4" text-anchor="end" font-size="10"
+            fill="#94a3b8">
+            {{ g.label }}
+          </text>
+
+          <!-- Área bajo la curva -->
+          <path [attr.d]="areaPath" fill="url(#greenGradient)" opacity="0.3" />
+
+          <!-- Definición del gradiente -->
+          <defs>
+            <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#10b981" stop-opacity="0.4" />
+              <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+
+          <!-- Línea principal -->
+          <path [attr.d]="linePath" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round" class="line-anim" />
+
+          <!-- Puntos interactivos -->
+          <g *ngFor="let b of monthlyBillingBars; let i = index">
+            <circle [attr.cx]="getPointX(i)" [attr.cy]="getPointY(b.value)"
+              [attr.r]="activeTooltip?.index === i ? 7 : 5" [attr.fill]="b.color === '#1a6fdb' ? '#1a6fdb' : '#10b981'"
+              stroke="white" stroke-width="2" style="cursor:pointer; transition: r 0.15s"
+              (mouseenter)="showTooltip(i, b, $event)" (mousemove)="showTooltip(i, b, $event)" />
+          </g>
+
+        </svg>
+
+        <!-- Tooltip -->
+        <div class="line-tooltip" *ngIf="activeTooltip" [style.left.px]="activeTooltip.x"
+          [style.top.px]="activeTooltip.y">
+          <div class="tooltip-month">{{ activeTooltip.label }}</div>
+          <div class="tooltip-value">$ {{ (activeTooltip.value / 1_000_000).toFixed(2) }}M</div>
+          <div class="tooltip-arrow"></div>
         </div>
+
+        <!-- Labels eje X -->
+        <div class="line-x-labels">
+          <span *ngFor="let b of monthlyBillingBars" class="x-label" [class.x-label-current]="b.color === '#1a6fdb'">
+            {{ b.label }}
+          </span>
+        </div>
+
       </div>
     </div>
 
@@ -141,7 +189,6 @@
               <th class="col-num">V.Mes</th>
               <th class="col-num">V.Año</th>
               <th class="col-docs">Docs</th>
-              <th class="col-prog">Cumpl. %</th>
               <th class="col-proy">Proyección</th>
             </tr>
           </thead>
@@ -171,22 +218,6 @@
                 <span *ngFor="let doc of v.docAlerts" class="badge doc-badge" [ngClass]="docStatusClass(doc.status)"
                   [title]="doc.expiration">
                   {{ doc.type }} {{ doc.daysLeft < 0 ? '⚠' : doc.daysLeft + 'd' }} </span>
-              </td>
-
-              <!-- Cumplimiento circular -->
-              <!-- Cumplimiento por placa -->
-              <td class="td-prog">
-                <div class="prog-wrap">
-                  <svg viewBox="0 0 36 36" class="prog-circle">
-                    <circle class="prog-bg" cx="18" cy="18" r="15.9" />
-                    <circle class="prog-fill" cx="18" cy="18" r="15.9"
-                      [style.strokeDasharray]="getCircleDash(v.monthValue, aff.budgets[thisMonth])"
-                      [style.stroke]="getCircleColor(v.monthValue, aff.budgets[thisMonth])" />
-                  </svg>
-                  <span class="prog-pct" [style.color]="getCircleColor(v.monthValue, aff.budgets[thisMonth])">
-                    {{ aff.budgets[thisMonth] ? getPct(v.monthValue, aff.budgets[thisMonth]) + '%' : '—' }}
-                  </span>
-                </div>
               </td>
 
               <!-- Proyección -->
@@ -222,26 +253,35 @@
               <!-- Docs vacío -->
               <td></td>
 
-              <!-- Cumplimiento del afiliado -->
-              <td class="td-prog">
-                <div class="prog-wrap" *ngIf="aff.cumplimiento !== null">
-                  <svg viewBox="0 0 36 36" class="prog-circle">
-                    <circle class="prog-bg" cx="18" cy="18" r="15.9" />
-                    <circle class="prog-fill" cx="18" cy="18" r="15.9"
-                      [style.strokeDasharray]="getCircleDash(aff.monthTotal, aff.budgets[thisMonth])"
-                      [style.stroke]="getCircleColor(aff.monthTotal, aff.budgets[thisMonth])" />
-                  </svg>
-                  <span class="prog-pct" [style.color]="getCircleColor(aff.monthTotal, aff.budgets[thisMonth])">
-                    {{ aff.cumplimiento }}%
-                  </span>
-                </div>
-                <span *ngIf="aff.cumplimiento === null" class="text-muted" style="font-size:11px">Sin meta</span>
-              </td>
-
               <!-- Proyección total afiliado -->
               <td class="td-money td-proy">
                 <strong>$ {{ aff.proyeccion | number:'1.0-0' }}</strong>
               </td>
+            </tr>
+            <tr class="row-total row-compliance">
+              <td><strong>% CUMPLIMIENTO</strong></td>
+
+              <!-- % por mes con círculo mini -->
+              <td *ngFor="let m of activeMonths" class="td-prog" [class.td-current]="m === thisMonth">
+                <ng-container *ngIf="aff.monthlyCompliance[m] !== null && aff.monthlyCompliance[m] !== undefined">
+                  <div class="prog-wrap">
+                    <svg viewBox="0 0 36 36" class="prog-circle">
+                      <circle class="prog-bg" cx="18" cy="18" r="15.9" />
+                      <circle class="prog-fill" cx="18" cy="18" r="15.9"
+                        [style.strokeDasharray]="getCircleDash(sumMonthValue(aff.plates, m), aff.budgets[+m] ?? aff.budgets[m])"
+                        [style.stroke]="getCircleColor(sumMonthValue(aff.plates, m), aff.budgets[+m] ?? aff.budgets[m])" />
+                    </svg>
+                    <span class="prog-pct" [style.color]="getCircleColor(sumMonthValue(aff.plates, m), aff.budgets[m])">
+                      {{ aff.monthlyCompliance[m] }}%
+                    </span>
+                  </div>
+                </ng-container>
+                <span *ngIf="aff.monthlyCompliance[m] === null || aff.monthlyCompliance[m] === undefined"
+                  class="text-muted" style="font-size:11px">—</span>
+              </td>
+
+              <!-- Columnas restantes vacías + círculo anual -->
+              <td colspan="6"></td>
             </tr>
 
           </tbody>
