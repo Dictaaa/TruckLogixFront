@@ -27,7 +27,7 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () =>
           import('./features/dashboard/pages/home/home').then((m) => m.HomeComponent),
-        canActivate: [roleGuard([1, 3])]
+        canActivate: [roleGuard([1, 2, 3])]
       },
       {
         path: 'transport-movements',
