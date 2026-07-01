@@ -1,0 +1,42 @@
+<!-- Overlay -->
+<div class="filter-overlay" [class.open]="open" (click)="closed.emit()"></div>
+
+<!-- Panel -->
+<aside class="filter-panel" [class.open]="open">
+
+  <div class="filter-panel-header">
+    <h3 class="filter-panel-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+      </svg>
+      {{ title }}
+      <span class="filter-count-badge" *ngIf="activeCount > 0">{{ activeCount }}</span>
+    </h3>
+    <button class="filter-panel-close" (click)="closed.emit()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Cuerpo dinámico — el padre proyecta sus campos aquí -->
+  <div class="filter-panel-body">
+    <ng-content></ng-content>
+  </div>
+
+  <div class="filter-panel-footer">
+    <button class="btn-cancel" (click)="clear.emit()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+        <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
+      </svg>
+      Limpiar
+    </button>
+    <button class="btn-save" (click)="apply.emit()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Aplicar
+    </button>
+  </div>
+
+</aside>

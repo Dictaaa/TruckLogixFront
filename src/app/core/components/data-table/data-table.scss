@@ -136,3 +136,10 @@
   outline: none;
   cursor: pointer;
 }
+
+.dt-btn-filter {
+  background: #f0f4ff;
+  color: #1a6fdb;
+  border-color: #c7d7f8;
+  &:hover { background: #dce8ff; }
+}

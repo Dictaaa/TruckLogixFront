@@ -556,3 +556,200 @@ app-toast {
   pointer-events: none;
   display: block;
 }
+
+// ── Filter Panel campos ───────────────────────────────────────────────
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.filter-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  // Asegura que el autocomplete de material no desborde
+  .mat-mdc-autocomplete-trigger { width: 100%; }
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Inputs dentro del panel
+.filter-panel-body {
+  .form-control {
+    background: #f8fafc;
+    border: 1px solid #dde3ec;
+    border-radius: 6px;
+    color: #1a2332;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 13.5px;
+    padding: 9px 12px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.18s, box-shadow 0.18s;
+
+    &::placeholder { color: #a0aab8; }
+
+    &:focus {
+      border-color: #1a6fdb;
+      box-shadow: 0 0 0 3px rgba(26, 111, 219, 0.1);
+      background: #fff;
+    }
+
+    &.mono {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    &.has-icon { padding-left: 34px; }
+  }
+
+  select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+    cursor: pointer;
+  }
+
+  input[type="date"].form-control {
+    cursor: pointer;
+    &::-webkit-calendar-picker-indicator {
+      opacity: 0.5;
+      cursor: pointer;
+    }
+  }
+
+  .input-icon-wrap {
+    position: relative;
+
+    .input-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a0aab8;
+      pointer-events: none;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  // Autocomplete Material dentro del panel
+  .mat-mdc-form-field { width: 100%; }
+}
+
+// Botón filtros en el header
+.btn-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #fff;
+  border: 1px solid #dde3ec;
+  border-radius: 6px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s;
+
+  &:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+
+  svg { flex-shrink: 0; }
+}
+
+.filter-badge {
+  background: #1a6fdb;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 1px 6px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+// ── Filter Panel footer buttons ───────────────────────────────────────
+.filter-panel-footer {
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid #dde3ec;
+    border-radius: 6px;
+    color: #64748b;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 9px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #1a2332;
+    }
+  }
+
+  .btn-save {
+    background: #1a6fdb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    box-shadow: 0 1px 3px rgba(26, 111, 219, 0.3);
+
+    &:hover {
+      background: #2d85f0;
+      box-shadow: 0 4px 12px rgba(26, 111, 219, 0.35);
+      transform: translateY(-1px);
+    }
+
+    &:active { transform: translateY(0); }
+  }
+}

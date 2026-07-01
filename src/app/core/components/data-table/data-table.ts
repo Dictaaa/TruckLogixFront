@@ -39,6 +39,7 @@ export interface TablePage {
   templateUrl: './data-table.html',
   styleUrl: './data-table.scss',
 })
+
 export class DataTableComponent implements OnInit, OnChanges {
 
   @Input() columns:    TableColumn[] = [];
@@ -52,6 +53,9 @@ export class DataTableComponent implements OnInit, OnChanges {
   @Output() pageChange   = new EventEmitter<TablePage>();
   @Output() actionSelect = new EventEmitter<{ action: string; row: any }>();
 
+  @Input()  showFilterBtn = false;
+  @Output() filterClick   = new EventEmitter<void>();
+
   page        = 1;
   search      = '';
   searchCol   = '';   // '' = global
@@ -63,7 +67,7 @@ export class DataTableComponent implements OnInit, OnChanges {
     return Math.max(1, Math.ceil(this.total / this.pageSize));
   }
 
-  get pageSizes(): number[] { return [10, 25, 50, 100]; }
+  get pageSizes(): number[] { return [10, 50, 100, 500, 1000]; }
 
   ngOnInit(): void { this.emit(); }
 
