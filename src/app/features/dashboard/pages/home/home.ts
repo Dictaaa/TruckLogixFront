@@ -39,6 +39,12 @@ export class HomeComponent implements OnInit {
   dayOfMonth = 0;
   daysRemaining = 0;
 
+  getCumplimientoColor(pct: number): string {
+  if (pct >= 100) return '#10b981';
+  if (pct >= 70)  return '#f59e0b';
+  return '#ef4444';
+}
+
   get isAdmin(): boolean { return this.auth.hasRole([1]); }
 
   ngOnInit(): void {
@@ -83,6 +89,7 @@ export class HomeComponent implements OnInit {
         this.dayOfMonth = res.dayOfMonth;
         this.daysRemaining = res.daysRemaining;
         this.kpis = res.kpis;
+        this.buildSummaryKpis(res.affiliates, res.kpis, res.thisMonth);
         this.buildBars(res.kpis.monthlyBilling, res.thisMonth);
         this.animateKpis(res.kpis);
         this.loading = false;
@@ -91,6 +98,40 @@ export class HomeComponent implements OnInit {
       error: () => { this.loading = false; }
     });
   }
+
+  private buildSummaryKpis(affiliates: any[], kpis: any, thisMonth: number): void {
+  // Presupuesto total del mes (suma de todos los afiliados)
+  const presupuestoMes = affiliates.reduce((s, aff) => {
+    return s + (Number(aff.budgets?.[thisMonth] ?? aff.budgets?.[String(thisMonth)] ?? 0));
+  }, 0);
+
+  // Producción total del mes (suma de monthTotal de todos los afiliados)
+  const produccionMes = affiliates.reduce((s, aff) => s + (aff.monthTotal || 0), 0);
+
+  // Cumplimiento general
+  const cumplimiento = presupuestoMes > 0
+    ? Math.round((produccionMes / presupuestoMes) * 100)
+    : 0;
+
+  this.summaryKpis = { presupuestoMes, produccionMes, cumplimiento };
+  this.animateSummaryKpis();
+}
+
+summaryKpis = { presupuestoMes: 0, produccionMes: 0, cumplimiento: 0 };
+summaryAnimated: Record<string, number> = { presupuestoMes: 0, produccionMes: 0, cumplimiento: 0 };
+
+private animateSummaryKpis(): void {
+  Object.entries(this.summaryKpis).forEach(([key, target]) => {
+    let current = 0;
+    const inc   = target / 40;
+    const timer = setInterval(() => {
+      current = Math.min(current + inc, target);
+      this.summaryAnimated[key] = Math.round(current);
+      if (current >= target) clearInterval(timer);
+      this.cdr.detectChanges();
+    }, 30);
+  });
+}
 
   private animateKpis(kpis: any): void {
     const targets: Record<string, number> = {
@@ -140,10 +181,8 @@ export class HomeComponent implements OnInit {
   // Cambia sumMonths por sumMonthValue
   // Temporal en el template, o en el .ts
   sumMonthValue(plates: any[], month: number): number {
-    const val = plates.reduce((s, p) => s + (p.months[month] || 0), 0);
-    console.log(`Mes ${month}: produccion=${val}, budget=${JSON.stringify(this.affiliates[0]?.budgets)}`);
-    return val;
-  }
+  return plates.reduce((s, p) => s + (p.months[month] || 0), 0);
+}
 
   // Meta por defecto 15M por placa, ajusta según tu negocio
   getPct(value: number, budget: number): number {

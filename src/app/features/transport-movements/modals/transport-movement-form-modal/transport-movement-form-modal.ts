@@ -108,14 +108,14 @@ export class TransportMovementFormModalComponent implements OnInit {
   };
 
   ngOnInit(): void {
-  this.loadCatalogs();
-  if (this.isEdit) {
-    this.preloadForm();
-  } else if (!this.showAfiliadoField && this.userCompanyId) {
-    // Si no es admin (company_id !== 2), asigna su company_id como afiliado
-    this.form.afiliado = this.userCompanyId;
+    this.loadCatalogs();
+    if (this.isEdit) {
+      this.preloadForm();
+    } else if (!this.showAfiliadoField && this.userCompanyId) {
+      // Si no es admin (company_id !== 2), asigna su company_id como afiliado
+      this.form.afiliado = this.userCompanyId;
+    }
   }
-}
 
   private loadCatalogs(): void {
     this.api.getAuth(ENDPOINTS.DRIVERS.LIST).subscribe((d: any) => {
@@ -372,7 +372,7 @@ export class TransportMovementFormModalComponent implements OnInit {
   private submitTrip(containerId: number | null): void {
     const payload = {
       trip_date: this.form.fecha,
-      client_id:              this.form.cliente             || null,
+      client_id: this.form.cliente || null,
       transport_company_id: this.form.empresaTransporte || null,
       vehicle_id: this.form.vehiculo || null,
       driver_id: this.form.conductor || null,
@@ -417,16 +417,33 @@ export class TransportMovementFormModalComponent implements OnInit {
     return Math.ceil((diff / 86400000 + start.getDay() + 1) / 7);
   }
 
+  vehicleDocAlert = '';
+
   onSelectVehicle(item: any): void {
     this.form.vehiculo = item.id;
+    this.vehicleDocAlert = '';
 
-    // Autocompleta conductor si el vehículo tiene uno asignado
+    // Verificar documentos vencidos
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const alerts: string[] = [];
+
+    if (item.soat_expiration && new Date(item.soat_expiration) < today) {
+      alerts.push(`SOAT vencido (${item.soat_expiration.toString().substring(0, 10)})`);
+    }
+    if (item.rtm_expiration && new Date(item.rtm_expiration) < today) {
+      alerts.push(`RTM vencido (${item.rtm_expiration.toString().substring(0, 10)})`);
+    }
+
+    if (alerts.length) {
+      this.vehicleDocAlert = alerts.join(' · ');
+      this.toast.error(`Vehículo con documentos vencidos: ${this.vehicleDocAlert}`);
+    }
+
     if (item.driver) {
       this.form.conductor = item.driver.id;
       this.conductorCtrl.setValue(item.driver, { emitEvent: false });
     }
-
-    // Autocompleta afiliado si el vehículo tiene company asignada
     if (item.affiliate) {
       this.form.afiliado = item.affiliate.id;
       this.afiliadoCtrl.setValue(item.affiliate, { emitEvent: false });

@@ -428,3 +428,23 @@
     margin-top: 2px;
   }
 }
+
+.kpi-cumpl-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kpi-circle {
+  transform: rotate(-90deg);
+  flex-shrink: 0;
+}
+
+.kpi-cumpl-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-grid {
+  grid-template-columns: repeat(3, 1fr); // ← cambia a 3 columnas
+}
