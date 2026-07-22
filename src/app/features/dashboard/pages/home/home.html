@@ -27,70 +27,130 @@
     <!-- KPI Cards -->
     <div class="kpi-grid" *ngIf="kpis && !loading">
 
-  <!-- Presupuesto del mes -->
-  <div class="kpi-card" style="--accent: #1a6fdb">
-    <div class="kpi-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="2" y="5" width="20" height="14" rx="2"/>
-        <line x1="2" y1="10" x2="22" y2="10"/>
-      </svg>
-    </div>
-    <div class="kpi-body">
-      <div class="kpi-value">{{ formatMoney(summaryAnimated['presupuestoMes']) }}</div>
-      <div class="kpi-label">Presupuesto del Mes</div>
-      <div class="kpi-sub">Meta {{ monthNames[thisMonth] }} {{ year }}</div>
-    </div>
-    <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
-  </div>
+      <!-- Presupuesto del mes -->
+      <div class="kpi-card" style="--accent: #1a6fdb">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ formatMoney(summaryAnimated['presupuestoMes']) }}</div>
+          <div class="kpi-label">Presupuesto del Mes</div>
+          <div class="kpi-sub">Meta {{ monthNames[thisMonth] }} {{ year }}</div>
+        </div>
+        <div class="kpi-bar-bg">
+          <div class="kpi-bar-fill"></div>
+        </div>
+      </div>
 
-  <!-- Producción del mes -->
-  <div class="kpi-card" style="--accent: #10b981">
-    <div class="kpi-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="12" y1="1" x2="12" y2="23"/>
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-      </svg>
-    </div>
-    <div class="kpi-body">
-      <div class="kpi-value">{{ formatMoney(summaryAnimated['produccionMes']) }}</div>
-      <div class="kpi-label">Producción del Mes</div>
-      <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }} · {{ kpis.thisMonthTrips }} viajes</div>
-    </div>
-    <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
-  </div>
+      <!-- Producción del mes -->
+      <div class="kpi-card" style="--accent: #10b981">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ formatMoney(summaryAnimated['produccionMes']) }}</div>
+          <div class="kpi-label">Producción del Mes</div>
+          <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }} · {{ kpis.thisMonthTrips }} viajes</div>
+        </div>
+        <div class="kpi-bar-bg">
+          <div class="kpi-bar-fill"></div>
+        </div>
+      </div>
 
-  <!-- Cumplimiento -->
-  <div class="kpi-card kpi-card-cumplimiento" style="--accent: {{ getCumplimientoColor(summaryKpis.cumplimiento) }}">
-    <div class="kpi-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-        <polyline points="22 4 12 14.01 9 11.01"/>
-      </svg>
-    </div>
-    <div class="kpi-body">
-      <div class="kpi-cumpl-wrap">
-        <!-- Círculo grande -->
-        <svg viewBox="0 0 36 36" class="kpi-circle" width="56" height="56">
-          <circle class="prog-bg" cx="18" cy="18" r="15.9"/>
-          <circle class="prog-fill" cx="18" cy="18" r="15.9"
-            [style.strokeDasharray]="getCircleDash(summaryAnimated['cumplimiento'], 100)"
-            [style.stroke]="getCumplimientoColor(summaryKpis.cumplimiento)"/>
-        </svg>
-        <div class="kpi-cumpl-text">
-          <div class="kpi-value" [style.color]="getCumplimientoColor(summaryKpis.cumplimiento)">
-            {{ summaryAnimated['cumplimiento'] }}%
-          </div>
-          <div class="kpi-label">Cumplimiento</div>
-          <div class="kpi-sub">
-            {{ summaryKpis.cumplimiento >= 100 ? '✓ Meta alcanzada' :
+      <!-- Cumplimiento -->
+      <div class="kpi-card kpi-card-cumplimiento"
+        style="--accent: {{ getCumplimientoColor(summaryKpis.cumplimiento) }}">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-cumpl-wrap">
+            <!-- Círculo grande -->
+            <svg viewBox="0 0 36 36" class="kpi-circle" width="56" height="56">
+              <circle class="prog-bg" cx="18" cy="18" r="15.9" />
+              <circle class="prog-fill" cx="18" cy="18" r="15.9"
+                [style.strokeDasharray]="getCircleDash(summaryAnimated['cumplimiento'], 100)"
+                [style.stroke]="getCumplimientoColor(summaryKpis.cumplimiento)" />
+            </svg>
+            <div class="kpi-cumpl-text">
+              <div class="kpi-value" [style.color]="getCumplimientoColor(summaryKpis.cumplimiento)">
+                {{ summaryAnimated['cumplimiento'] }}%
+              </div>
+              <div class="kpi-label">Cumplimiento</div>
+              <div class="kpi-sub">
+                {{ summaryKpis.cumplimiento >= 100 ? '✓ Meta alcanzada' :
                summaryKpis.cumplimiento >= 70  ? 'En progreso' : 'Por debajo' }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-</div>
+    </div>
+
+    <div class="kpi-grid fuel-kpi-grid" *ngIf="fuel && !loading">
+
+      <div class="kpi-card" style="--accent: #f59e0b">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 22V8l9-6 9 6v14H3z" />
+            <path d="M10 22v-6h4v6" />
+            <path d="M19 8h2a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-2" />
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ fuelAnimated['totalGallons'] | number:'1.1-1' }} gal</div>
+          <div class="kpi-label">Galones del Mes</div>
+          <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }}</div>
+        </div>
+        <div class="kpi-bar-bg">
+          <div class="kpi-bar-fill"></div>
+        </div>
+      </div>
+
+      <div class="kpi-card" style="--accent: #ef4444">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ formatMoney(fuelAnimated['totalValue']) }}</div>
+          <div class="kpi-label">Gasto en Combustible</div>
+          <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }}</div>
+        </div>
+        <div class="kpi-bar-bg">
+          <div class="kpi-bar-fill"></div>
+        </div>
+      </div>
+
+      <div class="kpi-card" style="--accent: #7c3aed">
+        <div class="kpi-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+        </div>
+        <div class="kpi-body">
+          <div class="kpi-value">{{ fuelAnimated['avgKmPerGallon'] | number:'1.1-1' }} km/gal</div>
+          <div class="kpi-label">Rendimiento Promedio</div>
+          <div class="kpi-sub">{{ fuel.kpis.totalKmDriven | number:'1.0-0' }} km recorridos</div>
+        </div>
+        <div class="kpi-bar-bg">
+          <div class="kpi-bar-fill"></div>
+        </div>
+      </div>
+
+    </div>
 
     <!-- Gráfica facturación mensual -->
     <!-- Gráfica facturación mensual - línea de tendencia -->
@@ -283,6 +343,74 @@
 
     <div class="empty-state" *ngIf="affiliates.length === 0">
       <p>No hay datos de producción para {{ year }}</p>
+    </div>
+
+    <div class="fuel-section" *ngIf="fuel?.byPlate?.length && !loading">
+
+      <div class="section-header">
+        <div class="section-header-left">
+          <span class="section-eyebrow">Trazabilidad</span>
+          <h2 class="section-title">Combustible por Vehículo — {{ monthNames[thisMonth] }} {{ year }}</h2>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table fuel-table">
+          <thead>
+            <tr>
+              <th>Placa</th>
+              <th>Afiliado</th>
+              <th class="td-right">Galones</th>
+              <th class="td-right">$ Combustible</th>
+              <th class="td-right">Km Recorridos</th>
+              <th class="td-right">Km / Galón</th>
+              <th>Rendimiento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of fuel.byPlate" class="table-row">
+
+              <td><span class="badge badge--placa">{{ p.plate }}</span></td>
+              <td>{{ p.affilate }}</td>
+              <td class="td-right">{{ p.gallons | number:'1.1-1' }}</td>
+              <td class="td-right td-money">$ {{ p.value | number:'1.0-0' }}</td>
+              <td class="td-right">{{ p.kmDriven | number:'1.0-0' }} km</td>
+              <td class="td-right">
+                <strong>{{ p.kmPerGallon | number:'1.1-1' }}</strong>
+              </td>
+
+              <!-- Barra de rendimiento relativa al mejor -->
+              <td class="td-bar">
+                <div class="render-bar-wrap">
+                  <div class="render-bar" [style.width.%]="getFuelRenderPct(p.kmPerGallon)"
+                    [style.background]="getFuelRenderColor(p.kmPerGallon)">
+                  </div>
+                  <span class="render-label" [style.color]="getFuelRenderColor(p.kmPerGallon)">
+                    {{ getFuelRenderLabel(p.kmPerGallon) }}
+                  </span>
+                </div>
+              </td>
+
+            </tr>
+
+            <!-- Fila total -->
+            <tr class="row-total">
+              <td colspan="2"><strong>TOTAL</strong></td>
+              <td class="td-right"><strong>{{ fuel.kpis.totalGallons | number:'1.1-1' }}</strong></td>
+              <td class="td-right td-money"><strong>$ {{ fuel.kpis.totalValue | number:'1.0-0' }}</strong></td>
+              <td class="td-right"><strong>{{ fuel.kpis.totalKmDriven | number:'1.0-0' }} km</strong></td>
+              <td class="td-right"><strong>{{ fuel.kpis.avgKmPerGallon | number:'1.1-1' }}</strong></td>
+              <td></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <div class="fuel-empty" *ngIf="!fuel?.byPlate?.length && !loading">
+      <span>Sin registros de combustible para {{ monthNames[thisMonth] }} {{ year }}</span>
     </div>
 
   </ng-container>

@@ -61,6 +61,66 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  fuel: any = null;
+fuelAnimated: Record<string, number> = {
+  totalGallons:    0,
+  totalValue:      0,
+  avgKmPerGallon:  0,
+};
+
+loadFuel(fuelData: any): void {
+  if (!fuelData) return;
+  this.fuel = fuelData;
+  this.animateFuelKpis(fuelData.kpis);
+}
+ 
+private animateFuelKpis(kpis: any): void {
+  const targets: Record<string, number> = {
+    totalGallons:   kpis.totalGallons   || 0,
+    totalValue:     kpis.totalValue     || 0,
+    avgKmPerGallon: kpis.avgKmPerGallon || 0,
+  };
+  Object.entries(targets).forEach(([key, target]) => {
+    let current = 0;
+    const inc   = target / 40;
+    const timer = setInterval(() => {
+      current = Math.min(current + inc, target);
+      this.fuelAnimated[key] = key === 'totalGallons' || key === 'avgKmPerGallon'
+        ? Math.round(current * 10) / 10   // 1 decimal
+        : Math.round(current);
+      if (current >= target) clearInterval(timer);
+      this.cdr.detectChanges();
+    }, 30);
+  });
+}
+ 
+// 3. Helpers para la barra de rendimiento
+//    Calcula % respecto al mejor kmPerGallon del listado
+getFuelRenderPct(kmPerGallon: number): number {
+  if (!this.fuel?.byPlate?.length) return 0;
+  const max = Math.max(...this.fuel.byPlate.map((p: any) => p.kmPerGallon), 1);
+  return Math.round((kmPerGallon / max) * 100);
+}
+ 
+getFuelRenderColor(kmPerGallon: number): string {
+  if (!this.fuel?.byPlate?.length) return '#94a3b8';
+  const max = Math.max(...this.fuel.byPlate.map((p: any) => p.kmPerGallon), 1);
+  const pct = (kmPerGallon / max) * 100;
+  if (pct >= 80) return '#10b981';
+  if (pct >= 50) return '#f59e0b';
+  return '#ef4444';
+}
+ 
+getFuelRenderLabel(kmPerGallon: number): string {
+  if (!this.fuel?.byPlate?.length) return '';
+  const max = Math.max(...this.fuel.byPlate.map((p: any) => p.kmPerGallon), 1);
+  const pct = (kmPerGallon / max) * 100;
+  if (pct >= 80) return 'Bueno';
+  if (pct >= 50) return 'Regular';
+  return 'Bajo';
+}
+ 
+
   kpis: any = null;
   monthlyBillingBars: { label: string; value: number; pct: number; color: string }[] = [];
   animatedValues: Record<string, number> = {
@@ -92,6 +152,7 @@ export class HomeComponent implements OnInit {
         this.buildSummaryKpis(res.affiliates, res.kpis, res.thisMonth);
         this.buildBars(res.kpis.monthlyBilling, res.thisMonth);
         this.animateKpis(res.kpis);
+        this.loadFuel(res.fuel);
         this.loading = false;
         this.cdr.detectChanges();
       },

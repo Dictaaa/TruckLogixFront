@@ -50,5 +50,11 @@ export const ENDPOINTS = {
     UPSERT_MANY: '/api/v1/affiliate-budgets/bulk',
     UPDATE: (id: number) => `/api/v1/affiliate-budgets/${id}`,
     DELETE: (id: number) => `/api/v1/affiliate-budgets/${id}`
-  }
+  },
+  FUEL_LOGS: {
+  LIST:         '/api/v1/fuel-logs',
+  CREATE:       '/api/v1/fuel-logs',
+  UPDATE: (id: number) => `/api/v1/fuel-logs/${id}`,
+  DELETE: (id: number) => `/api/v1/fuel-logs/${id}`,
+},
 };

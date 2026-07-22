@@ -448,3 +448,108 @@
 .kpi-grid {
   grid-template-columns: repeat(3, 1fr); // ← cambia a 3 columnas
 }
+
+// ═══════════════════════════════════════════════════════════════
+// AGREGAR al home.scss
+// ═══════════════════════════════════════════════════════════════
+
+// Grid de KPIs combustible — igual al production pero con separación visual
+.fuel-kpi-grid {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 2px dashed var(--border, #e2e8f0);
+  position: relative;
+
+  &::before {
+    position: absolute;
+    top: -11px;
+    left: 16px;
+    background: var(--bg, #f8fafc);
+    padding: 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #f59e0b;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+
+// Sección combustible
+.fuel-section {
+  margin-top: 32px;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.section-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f59e0b;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  margin: 0;
+}
+
+// Tabla combustible
+.fuel-table {
+  th, td { white-space: nowrap; }
+
+  .td-right {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .td-bar { width: 160px; }
+}
+
+// Barra de rendimiento
+.render-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.render-bar {
+  height: 6px;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+  min-width: 4px;
+  flex: 1;
+  max-width: 100px;
+}
+
+.render-label {
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 44px;
+}
+
+// Empty state combustible
+.fuel-empty {
+  margin-top: 16px;
+  padding: 16px 20px;
+  background: var(--bg-subtle, #f8fafc);
+  border-radius: 10px;
+  border: 1px dashed var(--border, #e2e8f0);
+  font-size: 13px;
+  color: var(--text-muted, #94a3b8);
+  text-align: center;
+}

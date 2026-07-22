@@ -119,7 +119,14 @@ export const routes: Routes = [
           import('./features/masters/affiliate-budget/pages/affiliate-budget/affiliate-budget')
             .then((m) => m.AffiliateBudgetComponent),
             canActivate: [roleGuard([1])]
-      }
+      },
+      {
+  path: 'fuel-logs',
+  loadComponent: () =>
+    import('./features/fuel-logs/pages/fuel-logs/fuel-logs/fuel-logs')
+      .then((m) => m.FuelLogs),
+  canActivate: [roleGuard([1, 2])]
+},
     ],
   },
 

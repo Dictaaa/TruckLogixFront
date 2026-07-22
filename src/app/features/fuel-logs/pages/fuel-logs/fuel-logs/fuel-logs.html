@@ -1,0 +1,28 @@
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-label">TRAZABILIDAD</span>
+      <h1 class="header-title">Registro de Combustible</h1>
+    </div>
+    <div class="actions-bar">
+      <button class="btn-primary" *appHasRole="[1, 2]" (click)="openModal()">
+        + Nuevo Registro
+      </button>
+    </div>
+  </header>
+
+  <section class="table-section">
+    <app-data-table
+      [columns]="columns"
+      [actions]="actions"
+      [data]="logs"
+      [total]="total"
+      [loading]="loading"
+      exportName="combustible"
+      (pageChange)="onPageChange($event)"
+      (actionSelect)="onAction($event)">
+    </app-data-table>
+  </section>
+
+</div>
