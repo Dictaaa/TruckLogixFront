@@ -1,8 +1,9 @@
 <nav class="sidebar" [class.sidebar--collapsed]="!open">
 
   <div class="sidebar-section">
-    <!-- Items principales -->
-    <a *ngFor="let item of mainItems"
+
+    <!-- Items principales filtrados -->
+    <a *ngFor="let item of filteredMainItems"
       [routerLink]="item.route"
       routerLinkActive="nav-item--active"
       class="nav-item">
@@ -11,8 +12,8 @@
       <span *ngIf="item.badge" class="nav-badge">{{ item.badge }}</span>
     </a>
 
-    <!-- Grupo Maestros -->
-    <div class="nav-group" *appHasRole="[1]">
+    <!-- Grupo Maestros — visible para rol 1 y rol 4 -->
+    <div class="nav-group" *appHasRole="[1, 4]">
       <button class="nav-item nav-item--group"
         [class.nav-item--active]="isMasterActive()"
         [class.nav-item--open]="mastersOpen"
@@ -31,7 +32,7 @@
       </button>
 
       <div class="nav-children" [class.nav-children--open]="mastersOpen">
-        <a *ngFor="let item of masterItems"
+        <a *ngFor="let item of filteredMasterItems"
           [routerLink]="item.route"
           routerLinkActive="nav-child--active"
           class="nav-child">

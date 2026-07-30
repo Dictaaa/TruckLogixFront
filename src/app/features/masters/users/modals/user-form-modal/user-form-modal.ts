@@ -33,6 +33,7 @@ export class UserFormModal implements OnInit {
     { id: 1, label: 'Administrador' },
     { id: 2, label: 'Auxiliar' },
     { id: 3, label: 'Afiliado' },
+    { id: 4, label: 'Coordinador de mantenimiento' },
   ];
 
   // Autocomplete afiliados

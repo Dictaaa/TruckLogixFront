@@ -28,6 +28,7 @@ export class UsersComponent implements OnInit {
     1: 'Administrador',
     2: 'Auxiliar',
     3: 'Afiliado',
+    4: 'Coordinador de mantenimiento',
   };
 
   actions = [

@@ -47,7 +47,8 @@
                 <span class="badge"
                   [class.badge-admin]="u.role === 1"
                   [class.badge-aux]="u.role === 2"
-                  [class.badge-afil]="u.role === 3">
+                  [class.badge-afil]="u.role === 3"
+                  [class.badge-mant]="u.role === 4">
                   {{ profiles[u.role] || '—' }}
                 </span>
               </td>

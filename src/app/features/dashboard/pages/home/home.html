@@ -25,7 +25,7 @@
 
   <ng-container *ngIf="!loading">
     <!-- KPI Cards -->
-    <div class="kpi-grid" *ngIf="kpis && !loading">
+    <div class="kpi-grid" *ngIf="kpis && !loading && !isFuelRole">
 
       <!-- Presupuesto del mes -->
       <div class="kpi-card" style="--accent: #1a6fdb">
@@ -154,7 +154,7 @@
 
     <!-- Gráfica facturación mensual -->
     <!-- Gráfica facturación mensual - línea de tendencia -->
-    <div class="chart-card" *ngIf="monthlyBillingBars.length && !loading">
+    <div class="chart-card" *ngIf="monthlyBillingBars.length && !loading && !isFuelRole">
       <div class="chart-title">Tendencia de Facturación — {{ year }}</div>
 
       <div class="line-chart-wrap" (mouseleave)="activeTooltip = null">
@@ -217,7 +217,7 @@
 
     <!-- Tablas por afiliado -->
     <!-- ... el resto del HTML que ya tienes ... -->
-
+<ng-container *ngIf="!isFuelRole">
     <div class="affiliate-block" *ngFor="let aff of affiliates; trackBy: trackAffiliate">
 
       <div class="affiliate-header">
@@ -340,6 +340,7 @@
         </table>
       </div>
     </div>
+    </ng-container>
 
     <div class="empty-state" *ngIf="affiliates.length === 0">
       <p>No hay datos de producción para {{ year }}</p>

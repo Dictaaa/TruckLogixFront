@@ -31,6 +31,8 @@ export class HomeComponent implements OnInit {
   affiliatesList: any[] = [];
   selectedAffiliate = '';
 
+  isFuelRole = this.auth.hasRole([4]);
+
   // Datos del dashboard
   affiliates: any[] = [];
   activeMonths: number[] = [];

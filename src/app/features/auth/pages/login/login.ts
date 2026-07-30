@@ -69,7 +69,11 @@ export class LoginComponent {
         );
         
 
+        if (res.user.role === 4) {
+        this.router.navigate(['/fuel-logs']);
+      } else {
         this.router.navigate(['/transport-movements']);
+      }
         //alert('Login correcto');
 
       },
