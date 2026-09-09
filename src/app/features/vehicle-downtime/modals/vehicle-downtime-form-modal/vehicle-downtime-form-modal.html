@@ -1,0 +1,118 @@
+<div class="modal-wrapper">
+
+  <div class="modal-header">
+    <h2 class="modal-title">{{ title }}</h2>
+    <button class="modal-close" (click)="close()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="modal-body">
+
+    <!-- Placa + Afiliado (solo en creación) -->
+    <ng-container *ngIf="!isEdit">
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Placa <span class="required">*</span></label>
+          <select class="form-control" [(ngModel)]="form.vehicle_id" (ngModelChange)="onVehicleChange()">
+            <option [ngValue]="null">Seleccionar...</option>
+            <option *ngFor="let v of vehicles" [value]="v.id">{{ v.plate }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Afiliado</label>
+          <select class="form-control" [(ngModel)]="form.affiliate_id">
+            <option [ngValue]="null">— Auto desde placa —</option>
+            <option *ngFor="let a of affiliates" [value]="a.id">{{ a.name }}</option>
+          </select>
+          <!-- Solo informativo, se llena automático -->
+          <span class="form-hint" *ngIf="form.affiliate_id">Afiliado asignado automáticamente.</span>
+        </div>
+      </div>
+
+      <!-- Rango de fechas -->
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Fecha Desde <span class="required">*</span></label>
+          <input type="date" class="form-control" [(ngModel)]="form.date_from">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha Hasta</label>
+          <input type="date" class="form-control" [(ngModel)]="form.date_to"
+            [min]="form.date_from">
+          <span class="form-hint">Dejá en blanco para un solo día.</span>
+        </div>
+      </div>
+
+      <!-- Aviso de rango -->
+      <div class="range-notice" *ngIf="isRange">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+        </svg>
+        Se crearán registros individuales por cada día del rango seleccionado.
+      </div>
+    </ng-container>
+
+    <!-- En edición solo muestra placa y fecha (readonly) -->
+    <ng-container *ngIf="isEdit">
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">Placa</label>
+          <div class="form-control form-control--readonly">
+            {{ data.record.vehicle?.plate || '—' }}
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha</label>
+          <div class="form-control form-control--readonly">
+            {{ data.record.downtime_date }}
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Estado -->
+    <div class="form-row cols-1">
+      <div class="form-group">
+        <label class="form-label">Estado <span class="required">*</span></label>
+        <div class="select-with-add">
+          <select class="form-control" [(ngModel)]="form.status_id" [disabled]="showNewStatus">
+            <option [ngValue]="null">Seleccionar...</option>
+            <option *ngFor="let s of statuses" [value]="s.id">{{ s.name }}</option>
+          </select>
+          <button class="btn-add-inline" type="button"
+            (click)="showNewStatus = !showNewStatus"
+            [class.active]="showNewStatus" title="Agregar estado">
+            {{ showNewStatus ? '✕' : '+' }}
+          </button>
+        </div>
+        <div class="inline-add-row" *ngIf="showNewStatus">
+          <input type="text" class="form-control" [(ngModel)]="newStatusName"
+            placeholder="Ej: Descanso, Sin operación...">
+          <button class="btn-save-inline" (click)="saveStatus()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="form-row">
+      <div class="form-group full">
+        <label class="form-label">Observación</label>
+        <textarea class="form-control" [(ngModel)]="form.observations"
+          rows="2" placeholder="Detalle adicional..."></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-secondary" (click)="close()" [disabled]="saving">Cancelar</button>
+    <button class="btn-primary"   (click)="save()"  [disabled]="saving">
+      <span *ngIf="!saving">{{ isEdit ? 'Actualizar' : 'Guardar' }}</span>
+      <span *ngIf="saving">Guardando...</span>
+    </button>
+  </div>
+
+</div>

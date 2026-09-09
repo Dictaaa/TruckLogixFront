@@ -37,94 +37,120 @@ export const routes: Routes = [
         canActivate: [roleGuard([1, 2, 3])]
       },
       {
-      path: 'freight-rates',
+        path: 'freight-rates',
         loadComponent: () =>
           import('./features/masters/freight-rates/pages/freight-rates')
             .then((m) => m.FreightRates),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'shipping-lines',
+        path: 'shipping-lines',
         loadComponent: () =>
           import('./features/masters/shipping-lines/pages/shipping-lines/shipping-lines')
             .then((m) => m.ShippingLinesComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'clients',
+        path: 'clients',
         loadComponent: () =>
           import('./features/masters/clients/pages/clients/clients')
             .then((m) => m.ClientsComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'transport-companies',
+        path: 'transport-companies',
         loadComponent: () =>
           import('./features/masters/transport-companies/pages/transport-companies/transport-companies')
             .then((m) => m.TransportCompaniesComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'drivers',
+        path: 'drivers',
         loadComponent: () =>
           import('./features/masters/drivers/pages/drivers/drivers')
             .then((m) => m.DriversComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'containers',
+        path: 'containers',
         loadComponent: () =>
           import('./features/masters/containers/pages/containers/containers')
             .then((m) => m.ContainersComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'operations',
+        path: 'operations',
         loadComponent: () =>
           import('./features/masters/operations/pages/operations/operations')
             .then((m) => m.OperationsComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'yards',
+        path: 'yards',
         loadComponent: () =>
           import('./features/masters/yards/pages/yards/yards')
             .then((m) => m.YardsComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'transport-assistants',
+        path: 'transport-assistants',
         loadComponent: () =>
           import('./features/masters/transport-assistants/pages/transport-assistants/transport-assistants')
             .then((m) => m.TransportAssistantsComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'vehicles',
+        path: 'vehicles',
         loadComponent: () =>
           import('./features/masters/vehicles/pages/vehicles/vehicles')
             .then((m) => m.VehiclesComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'users',
+        path: 'users',
         loadComponent: () =>
           import('./features/masters/users/pages/users/users')
             .then((m) => m.UsersComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-      path: 'affiliate-budget',
+        path: 'affiliate-budget',
         loadComponent: () =>
           import('./features/masters/affiliate-budget/pages/affiliate-budget/affiliate-budget')
             .then((m) => m.AffiliateBudgetComponent),
-            canActivate: [roleGuard([1])]
+        canActivate: [roleGuard([1])]
       },
       {
-  path: 'fuel-logs',
+        path: 'fuel-logs',
+        loadComponent: () =>
+          import('./features/fuel-logs/pages/fuel-logs/fuel-logs/fuel-logs')
+            .then((m) => m.FuelLogs),
+        canActivate: [roleGuard([1, 4])]
+      },
+      {
+        path: 'maintenances',
+        loadComponent: () =>
+          import('./features/maintenances/pages/maintenances/maintenances')
+            .then((m) => m.MaintenancesComponent),
+        canActivate: [roleGuard([1, 4])]
+      },
+      {
+        path: 'maintenance-types',
+        loadComponent: () =>
+          import('./features/masters/maintenance-types/pages/maintenance-types/maintenance-types').then((m) => m.MaintenanceTypes),
+        canActivate: [roleGuard([1])]
+      },
+      {
+        path: 'trailer-plates',
+        loadComponent: () =>
+          import('./features/masters/trailer-plates/pages/trailer-plates/trailer-plates').then((m) => m.TrailerPlates),
+        canActivate: [roleGuard([1])]
+      },
+      {
+  path: 'vehicle-downtime',
   loadComponent: () =>
-    import('./features/fuel-logs/pages/fuel-logs/fuel-logs/fuel-logs')
-      .then((m) => m.FuelLogs),
+    import('./features/vehicle-downtime/pages/vehicle-downtime/vehicle-downtime')
+      .then(m => m.VehicleDowntime),
   canActivate: [roleGuard([1, 4])]
 },
     ],

@@ -1,0 +1,145 @@
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-label">CONTROL</span>
+      <h1 class="header-title">Control de Vehículos</h1>
+    </div>
+    <div class="actions-bar">
+      <button class="btn-primary" (click)="openCreateModal()">+ Registrar Día No Trabajado</button>
+    </div>
+  </header>
+
+  <!-- Filtro de rango -->
+  <div class="range-bar">
+    <div class="range-group">
+      <label class="range-label">Desde</label>
+      <input type="date" class="filter-input" [(ngModel)]="fechaDesde">
+    </div>
+    <div class="range-group">
+      <label class="range-label">Hasta</label>
+      <input type="date" class="filter-input" [(ngModel)]="fechaHasta">
+    </div>
+    <button class="btn-consult" (click)="consultSuggestions(); setTab('suggestions')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      Consultar
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn" [class.tab-btn--active]="activeTab === 'suggestions'"
+      (click)="setTab('suggestions')">
+      Sugerencias Pendientes
+      <span class="tab-badge" *ngIf="suggestions.length">{{ suggestions.length }}</span>
+    </button>
+    <button class="tab-btn" [class.tab-btn--active]="activeTab === 'records'"
+      (click)="setTab('records')">
+      Registros Guardados
+    </button>
+  </div>
+
+  <!-- ═══ TAB SUGERENCIAS ═══════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'suggestions'">
+
+    <div class="loading-cell" *ngIf="loadingSuggestions">
+      <div class="spinner"></div>
+      <span>Detectando días sin actividad…</span>
+    </div>
+
+    <div class="empty-state" *ngIf="!loadingSuggestions && suggestions.length === 0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
+        <path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+      </svg>
+      <p>Sin sugerencias pendientes para el rango seleccionado.<br>
+        <span class="text-muted">Consultá un rango de fechas para detectar días sin actividad.</span>
+      </p>
+    </div>
+
+    <div class="suggestions-wrap" *ngIf="!loadingSuggestions && suggestions.length > 0">
+      <div class="suggestions-info">
+        <span>Se encontraron <strong>{{ suggestions.length }}</strong> días sin actividad registrada.
+          Seleccioná el estado para cada uno y guardá.</span>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table suggestions-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Placa</th>
+              <th>Afiliado</th>
+              <th>Mantenimiento</th>
+              <th>Estado <span class="required">*</span></th>
+              <th>Observación</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of suggestions" class="table-row suggestion-row">
+
+              <td class="td-date">{{ s.downtime_date }}</td>
+
+              <td><span class="badge badge--placa">{{ s.plate }}</span></td>
+
+              <td>{{ s.affiliate_name }}</td>
+
+              <!-- Indica si estaba en taller -->
+              <td>
+                <span *ngIf="s.maintenance_id" class="badge badge-taller">
+                  🔧 Taller
+                </span>
+                <span *ngIf="!s.maintenance_id" class="text-muted">—</span>
+              </td>
+
+              <!-- Select de estado inline -->
+              <td class="td-status">
+                <select class="form-control-inline"
+                  [(ngModel)]="s.selectedStatusId"
+                  [class.select-empty]="!s.selectedStatusId">
+                  <option [ngValue]="null">Seleccionar...</option>
+                  <option *ngFor="let st of statuses" [value]="st.id">{{ st.name }}</option>
+                </select>
+              </td>
+
+              <!-- Input observación inline -->
+              <td class="td-obs">
+                <input type="text" class="form-control-inline"
+                  [(ngModel)]="s.observations"
+                  placeholder="Observación opcional...">
+              </td>
+
+              <!-- Guardar -->
+              <td class="td-action">
+                <button class="btn-save-row"
+                  (click)="saveSuggestion(s)"
+                  [disabled]="s.saving || !s.selectedStatusId">
+                  <span *ngIf="!s.saving">Guardar</span>
+                  <span *ngIf="s.saving">...</span>
+                </button>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB REGISTROS ════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'records'">
+    <app-data-table
+      [columns]="columns"
+      [actions]="actions"
+      [data]="records"
+      [total]="total"
+      [loading]="loading"
+      exportName="control-vehiculos"
+      (pageChange)="onPageChange($event)"
+      (actionSelect)="onAction($event)">
+    </app-data-table>
+  </div>
+
+</div>

@@ -1,0 +1,24 @@
+<div class="modal-wrapper">
+  <div class="modal-header">
+    <h2 class="modal-title">{{ title }}</h2>
+    <button class="modal-close" (click)="close()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label class="form-label">Nombre <span class="required">*</span></label>
+      <input type="text" class="form-control" [(ngModel)]="form.name"
+        placeholder="Ej: Llantas, Eléctrico, Latonería...">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-secondary" (click)="close()" [disabled]="saving">Cancelar</button>
+    <button class="btn-primary"   (click)="save()"  [disabled]="saving">
+      <span *ngIf="!saving">{{ isEdit ? 'Actualizar' : 'Guardar' }}</span>
+      <span *ngIf="saving">Guardando...</span>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="page-wrapper">
+
+  <header class="page-header">
+    <div class="header-left">
+      <span class="header-label">TRAZABILIDAD</span>
+      <h1 class="header-title">Mantenimientos</h1>
+    </div>
+    <div class="actions-bar">
+      <button class="btn-primary" *appHasRole="[1, 2]" (click)="openModal()">
+        + Nuevo Mantenimiento
+      </button>
+    </div>
+  </header>
+
+  <section class="table-section">
+    <app-data-table
+      [columns]="columns"
+      [actions]="actions"
+      [data]="records"
+      [total]="total"
+      [loading]="loading"
+      exportName="mantenimientos"
+      (pageChange)="onPageChange($event)"
+      (actionSelect)="onAction($event)">
+    </app-data-table>
+  </section>
+
+</div>

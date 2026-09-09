@@ -1,0 +1,146 @@
+<div class="modal-wrapper">
+
+  <div class="modal-header">
+    <h2 class="modal-title">{{ title }}</h2>
+    <button class="modal-close" (click)="close()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="modal-body">
+
+    <!-- Fila 1: Fechas -->
+    <div class="form-row cols-2">
+      <div class="form-group">
+        <label class="form-label">Fecha Ingreso <span class="required">*</span></label>
+        <input type="date" class="form-control" [(ngModel)]="form.entry_date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha Salida</label>
+        <input type="date" class="form-control" [(ngModel)]="form.exit_date">
+      </div>
+    </div>
+
+    <!-- Fila 2: Placa + Afiliado (readonly auto) -->
+    <div class="form-row cols-2">
+      <div class="form-group">
+        <label class="form-label">Placa <span class="required">*</span></label>
+        <select class="form-control" [(ngModel)]="form.vehicle_id" (ngModelChange)="onVehicleChange()">
+          <option [ngValue]="null">Seleccionar...</option>
+          <option *ngFor="let v of vehicles" [value]="v.id">{{ v.plate }}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Afiliado</label>
+        <select class="form-control" [(ngModel)]="form.affiliate_id">
+          <option [ngValue]="null">— Auto desde placa —</option>
+          <option *ngFor="let a of affiliates" [value]="a.id">{{ a.name }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Fila 3: Marca + Placa Trailer -->
+    <div class="form-row cols-2">
+
+      <!-- Marca -->
+      <div class="form-group">
+        <label class="form-label">Marca</label>
+        <div class="select-with-add">
+          <select class="form-control" [(ngModel)]="form.brand_id" [disabled]="showNewBrand">
+            <option [ngValue]="null">Seleccionar...</option>
+            <option *ngFor="let b of brands" [value]="b.id">{{ b.name }}</option>
+          </select>
+          <!-- <button class="btn-add-inline" type="button" (click)="showNewBrand = !showNewBrand"
+            [class.active]="showNewBrand" title="Agregar marca">
+            {{ showNewBrand ? '✕' : '+' }}
+          </button> -->
+        </div>
+        <div class="inline-add-row" *ngIf="showNewBrand">
+          <input type="text" class="form-control" [(ngModel)]="newBrandName" placeholder="Nueva marca...">
+          <button class="btn-save-inline" (click)="saveBrand()">Guardar</button>
+        </div>
+      </div>
+
+      <!-- Placa Trailer -->
+      <div class="form-group">
+        <label class="form-label">Placa Trailer</label>
+        <div class="select-with-add">
+          <select class="form-control" [(ngModel)]="form.trailer_plate_id" [disabled]="showNewTrailer">
+            <option [ngValue]="null">Seleccionar...</option>
+            <option *ngFor="let t of trailerPlates" [value]="t.id">{{ t.plate }}</option>
+          </select>
+          <!-- <button class="btn-add-inline" type="button" (click)="showNewTrailer = !showNewTrailer"
+            [class.active]="showNewTrailer" title="Agregar placa trailer">
+            {{ showNewTrailer ? '✕' : '+' }}
+          </button> -->
+        </div>
+        <div class="inline-add-row" *ngIf="showNewTrailer">
+          <input type="text" class="form-control" [(ngModel)]="newTrailerPlate"
+            placeholder="Ej: R33285" style="text-transform:uppercase">
+          <button class="btn-save-inline" (click)="saveTrailerPlate()">Guardar</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Fila 4: Tipo MTTO -->
+    <div class="form-row cols-1">
+      <div class="form-group">
+        <label class="form-label">Tipo de Mantenimiento</label>
+        <div class="select-with-add">
+          <select class="form-control" [(ngModel)]="form.maintenance_type_id" [disabled]="showNewType">
+            <option [ngValue]="null">Seleccionar...</option>
+            <option *ngFor="let t of maintenanceTypes" [value]="t.id">{{ t.name }}</option>
+          </select>
+          <!-- <button class="btn-add-inline" type="button" (click)="showNewType = !showNewType"
+            [class.active]="showNewType" title="Agregar tipo">
+            {{ showNewType ? '✕' : '+' }}
+          </button> -->
+        </div>
+        <div class="inline-add-row" *ngIf="showNewType">
+          <input type="text" class="form-control" [(ngModel)]="newTypeName" placeholder="Nuevo tipo...">
+          <button class="btn-save-inline" (click)="saveType()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Operación en taller -->
+    <div class="form-row">
+      <div class="form-group full">
+        <label class="form-label">Operación en Taller <span class="required">*</span></label>
+        <textarea class="form-control" [(ngModel)]="form.operation_detail"
+          rows="3" placeholder="Describe el trabajo realizado..."></textarea>
+      </div>
+    </div>
+
+    <!-- Costos -->
+    <div class="form-row cols-3">
+      <div class="form-group">
+        <label class="form-label">Costo Mano de Obra</label>
+        <input type="number" class="form-control" [(ngModel)]="form.labor_cost" min="0" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Costo Repuestos</label>
+        <input type="number" class="form-control" [(ngModel)]="form.parts_cost" min="0" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Total</label>
+        <div class="form-control form-control--total">
+          $ {{ totalCosto | number:'1.0-0' }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn-secondary" (click)="close()" [disabled]="saving">Cancelar</button>
+    <button class="btn-primary"   (click)="save()"  [disabled]="saving">
+      <span *ngIf="!saving">{{ isEdit ? 'Actualizar' : 'Guardar' }}</span>
+      <span *ngIf="saving">Guardando...</span>
+    </button>
+  </div>
+
+</div>
