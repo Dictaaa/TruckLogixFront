@@ -50,7 +50,7 @@ export class MaintenancesComponent implements OnInit {
 
   get actions() {
     const base: any[] = [];
-    if (this.auth.hasRole([1, 2])) base.push({ label: 'Editar',   action: 'edit' });
+    if (this.auth.hasRole([1, 2, 4])) base.push({ label: 'Editar',   action: 'edit' });
     if (this.auth.hasRole([1]))    base.push({ label: 'Eliminar', action: 'delete', danger: true });
     return base;
   }
