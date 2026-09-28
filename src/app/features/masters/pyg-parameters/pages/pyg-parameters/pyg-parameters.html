@@ -1,0 +1,101 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Maestros</span>
+      <h1 class="page-title">Parámetros PYG</h1>
+    </div>
+    <button class="btn-primary" (click)="openModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+        <path d="M12 5v14M5 12h14"/>
+      </svg>
+      Nueva versión
+    </button>
+  </div>
+
+  <!-- Valores generales que aplican hoy -->
+  <section class="pyg-current" *ngIf="!loading && rows.length">
+    <div class="pyg-current-title">Valores generales vigentes hoy</div>
+    <div class="pyg-current-grid">
+      <div class="pyg-current-item" *ngFor="let f of fields">
+        <span class="pyg-current-label">{{ f.label }}</span>
+        <span class="pyg-current-value mono">{{ fmt(current[f.key], f.kind) || '—' }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="table-section">
+
+    <div class="pyg-toolbar" *ngIf="!loading && rows.length">
+      <label class="pyg-toolbar-label" for="scopeFilter">Mostrar</label>
+      <select id="scopeFilter" class="form-control pyg-toolbar-select" [(ngModel)]="scopeFilter">
+        <option value="">Todas las versiones</option>
+        <option value="general">Solo generales</option>
+        <option *ngFor="let p of plates" [value]="p.id">Placa {{ p.plate }}</option>
+      </select>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table pyg-params-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Estado</th>
+            <th>Vigente desde</th>
+            <th>Aplica a</th>
+            <th *ngFor="let f of fields" class="col-num-right">{{ f.label }}</th>
+            <th>Nota</th>
+            <th class="col-actions">Opciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="loading">
+            <td [attr.colspan]="fields.length + 6">
+              <div class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando…</span>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let r of filteredRows" class="table-row" [class.row-old]="status(r) === 'anterior'">
+              <td class="text-muted">{{ r.id }}</td>
+              <td>
+                <span class="badge"
+                  [class.badge-active]="status(r) === 'vigente'"
+                  [class.badge-future]="status(r) === 'futura'"
+                  [class.badge-inactive]="status(r) === 'anterior'">
+                  {{ status(r) === 'vigente' ? 'Vigente' : status(r) === 'futura' ? 'Programada' : 'Anterior' }}
+                </span>
+              </td>
+              <td class="mono">{{ r.valid_from | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <span *ngIf="!r.vehicle_id" class="badge badge-general">General</span>
+                <span *ngIf="r.vehicle_id" class="badge badge--placa">{{ r.vehicle?.plate ?? ('#' + r.vehicle_id) }}</span>
+              </td>
+              <td *ngFor="let f of fields" class="mono col-num-right">
+                <span *ngIf="isSet(r[f.key])">{{ fmt(r[f.key], f.kind) }}</span>
+                <span *ngIf="!isSet(r[f.key])" class="text-muted" title="Toma el valor de la versión anterior o del general">hereda</span>
+              </td>
+              <td class="col-notes" [title]="r.notes || ''">{{ r.notes || '—' }}</td>
+              <td class="col-actions">
+                <app-table-actions
+                  [actions]="actions"
+                  (actionSelected)="onAction($event, r)">
+                </app-table-actions>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredRows.length === 0">
+              <td [attr.colspan]="fields.length + 6" class="empty-state">
+                <p>No hay parámetros registrados. Crea la primera versión general para que el PYG tenga con qué calcular.</p>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>

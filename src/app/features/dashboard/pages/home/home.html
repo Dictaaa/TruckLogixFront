@@ -3,7 +3,7 @@
   <div class="page-header">
     <div class="page-header-left">
       <span class="page-eyebrow">Dashboard</span>
-      <h1 class="page-title">Producción {{ year }}</h1>
+      <h1 class="page-title">Dashboard {{ year }}</h1>
     </div>
     <div class="header-controls">
       <div class="filter-group" *appHasRole="[1]">
@@ -13,407 +13,712 @@
         </select>
       </div>
       <select class="filter-select" [(ngModel)]="year" (ngModelChange)="load()">
-        <option *ngFor="let y of yearOptions" [value]="y">{{ y }}</option>
+        <option *ngFor="let y of yearOptions" [ngValue]="y">{{ y }}</option>
       </select>
     </div>
   </div>
 
   <div class="loading-cell" *ngIf="loading">
     <div class="spinner"></div>
-    <span>Calculando producción…</span>
+    <span>Calculando…</span>
   </div>
 
   <ng-container *ngIf="!loading">
-    <!-- KPI Cards -->
-    <div class="kpi-grid" *ngIf="kpis && !loading && !isFuelRole">
 
-      <!-- Presupuesto del mes -->
-      <div class="kpi-card" style="--accent: #1a6fdb">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="5" width="20" height="14" rx="2" />
-            <line x1="2" y1="10" x2="22" y2="10" />
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-value">{{ formatMoney(summaryAnimated['presupuestoMes']) }}</div>
-          <div class="kpi-label">Presupuesto del Mes</div>
-          <div class="kpi-sub">Meta {{ monthNames[thisMonth] }} {{ year }}</div>
-        </div>
-        <div class="kpi-bar-bg">
-          <div class="kpi-bar-fill"></div>
-        </div>
-      </div>
+    <!-- ═══════════════════════════ PRODUCCIÓN ═══════════════════════════ -->
+    <section class="acc" [class.open]="open.produccion" *ngIf="!isFuelRole" style="--accent: #10b981">
+      <button type="button" class="acc-header" (click)="toggle('produccion')" [attr.aria-expanded]="open.produccion">
+        <span class="acc-dot"></span>
+        <span class="acc-title">Producción</span>
+        <span class="acc-summary">
+          {{ formatMoney(summaryKpis.produccionMes) }} en {{ monthNames[thisMonth] }}
+          <span class="acc-pill" [style.color]="getCumplimientoColor(summaryKpis.cumplimiento)">
+            {{ summaryKpis.cumplimiento }}%
+          </span>
+        </span>
+        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
+      </button>
 
-      <!-- Producción del mes -->
-      <div class="kpi-card" style="--accent: #10b981">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="1" x2="12" y2="23" />
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-value">{{ formatMoney(summaryAnimated['produccionMes']) }}</div>
-          <div class="kpi-label">Producción del Mes</div>
-          <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }} · {{ kpis.thisMonthTrips }} viajes</div>
-        </div>
-        <div class="kpi-bar-bg">
-          <div class="kpi-bar-fill"></div>
-        </div>
-      </div>
+      <div class="acc-body" *ngIf="open.produccion">
 
-      <!-- Cumplimiento -->
-      <div class="kpi-card kpi-card-cumplimiento"
-        style="--accent: {{ getCumplimientoColor(summaryKpis.cumplimiento) }}">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-cumpl-wrap">
-            <!-- Círculo grande -->
-            <svg viewBox="0 0 36 36" class="kpi-circle" width="56" height="56">
-              <circle class="prog-bg" cx="18" cy="18" r="15.9" />
-              <circle class="prog-fill" cx="18" cy="18" r="15.9"
-                [style.strokeDasharray]="getCircleDash(summaryAnimated['cumplimiento'], 100)"
-                [style.stroke]="getCumplimientoColor(summaryKpis.cumplimiento)" />
-            </svg>
-            <div class="kpi-cumpl-text">
-              <div class="kpi-value" [style.color]="getCumplimientoColor(summaryKpis.cumplimiento)">
-                {{ summaryAnimated['cumplimiento'] }}%
-              </div>
-              <div class="kpi-label">Cumplimiento</div>
-              <div class="kpi-sub">
-                {{ summaryKpis.cumplimiento >= 100 ? '✓ Meta alcanzada' :
-               summaryKpis.cumplimiento >= 70  ? 'En progreso' : 'Por debajo' }}
+        <div class="kpi-grid" *ngIf="kpis">
+          <div class="kpi-card" style="--accent: #1a6fdb">
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
+              </svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ formatMoney(summaryAnimated['presupuestoMes']) }}</div>
+              <div class="kpi-label">Presupuesto del Mes</div>
+              <div class="kpi-sub">Meta {{ monthNames[thisMonth] }} {{ year }}</div>
+            </div>
+            <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
+          </div>
+
+          <div class="kpi-card" style="--accent: #10b981">
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-value">{{ formatMoney(summaryAnimated['produccionMes']) }}</div>
+              <div class="kpi-label">Producción del Mes</div>
+              <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }} · {{ kpis.thisMonthTrips }} viajes</div>
+            </div>
+            <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
+          </div>
+
+          <div class="kpi-card kpi-card-cumplimiento"
+            style="--accent: {{ getCumplimientoColor(summaryKpis.cumplimiento) }}">
+            <div class="kpi-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+            </div>
+            <div class="kpi-body">
+              <div class="kpi-cumpl-wrap">
+                <svg viewBox="0 0 36 36" class="kpi-circle" width="56" height="56">
+                  <circle class="prog-bg" cx="18" cy="18" r="15.9" />
+                  <circle class="prog-fill" cx="18" cy="18" r="15.9"
+                    [style.strokeDasharray]="getCircleDash(summaryAnimated['cumplimiento'], 100)"
+                    [style.stroke]="getCumplimientoColor(summaryKpis.cumplimiento)" />
+                </svg>
+                <div class="kpi-cumpl-text">
+                  <div class="kpi-value" [style.color]="getCumplimientoColor(summaryKpis.cumplimiento)">
+                    {{ summaryAnimated['cumplimiento'] }}%
+                  </div>
+                  <div class="kpi-label">Cumplimiento</div>
+                  <div class="kpi-sub">
+                    {{ summaryKpis.cumplimiento >= 100 ? '✓ Meta alcanzada' :
+                       summaryKpis.cumplimiento >= 70 ? 'En progreso' : 'Por debajo' }}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-    </div>
-
-    <div class="kpi-grid fuel-kpi-grid" *ngIf="fuel && !loading">
-
-      <div class="kpi-card" style="--accent: #f59e0b">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 22V8l9-6 9 6v14H3z" />
-            <path d="M10 22v-6h4v6" />
-            <path d="M19 8h2a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-2" />
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-value">{{ fuelAnimated['totalGallons'] | number:'1.1-1' }} gal</div>
-          <div class="kpi-label">Galones del Mes</div>
-          <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }}</div>
-        </div>
-        <div class="kpi-bar-bg">
-          <div class="kpi-bar-fill"></div>
-        </div>
-      </div>
-
-      <div class="kpi-card" style="--accent: #ef4444">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="1" x2="12" y2="23" />
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-value">{{ formatMoney(fuelAnimated['totalValue']) }}</div>
-          <div class="kpi-label">Gasto en Combustible</div>
-          <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }}</div>
-        </div>
-        <div class="kpi-bar-bg">
-          <div class="kpi-bar-fill"></div>
-        </div>
-      </div>
-
-      <div class="kpi-card" style="--accent: #7c3aed">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-value">{{ fuelAnimated['avgKmPerGallon'] | number:'1.1-1' }} km/gal</div>
-          <div class="kpi-label">Rendimiento Promedio</div>
-          <div class="kpi-sub">{{ fuel.kpis.totalKmDriven | number:'1.0-0' }} km recorridos</div>
-        </div>
-        <div class="kpi-bar-bg">
-          <div class="kpi-bar-fill"></div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Gráfica facturación mensual -->
-    <!-- Gráfica facturación mensual - línea de tendencia -->
-    <div class="chart-card" *ngIf="monthlyBillingBars.length && !loading && !isFuelRole">
-      <div class="chart-title">Tendencia de Facturación — {{ year }}</div>
-
-      <div class="line-chart-wrap" (mouseleave)="activeTooltip = null">
-
-        <!-- SVG línea -->
-        <svg class="line-chart-svg" viewBox="0 0 800 220" preserveAspectRatio="none">
-
-          <!-- Grid lines horizontales -->
-          <line *ngFor="let g of gridLines" [attr.x1]="40" [attr.y1]="g.y" [attr.x2]="780" [attr.y2]="g.y"
-            stroke="#e2e8f0" stroke-width="1" />
-
-          <!-- Labels eje Y -->
-          <text *ngFor="let g of gridLines" [attr.x]="35" [attr.y]="g.y + 4" text-anchor="end" font-size="10"
-            fill="#94a3b8">
-            {{ g.label }}
-          </text>
-
-          <!-- Área bajo la curva -->
-          <path [attr.d]="areaPath" fill="url(#greenGradient)" opacity="0.3" />
-
-          <!-- Definición del gradiente -->
-          <defs>
-            <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#10b981" stop-opacity="0.4" />
-              <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
-            </linearGradient>
-          </defs>
-
-          <!-- Línea principal -->
-          <path [attr.d]="linePath" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"
-            stroke-linejoin="round" class="line-anim" />
-
-          <!-- Puntos interactivos -->
-          <g *ngFor="let b of monthlyBillingBars; let i = index">
-            <circle [attr.cx]="getPointX(i)" [attr.cy]="getPointY(b.value)"
-              [attr.r]="activeTooltip?.index === i ? 7 : 5" [attr.fill]="b.color === '#1a6fdb' ? '#1a6fdb' : '#10b981'"
-              stroke="white" stroke-width="2" style="cursor:pointer; transition: r 0.15s"
-              (mouseenter)="showTooltip(i, b, $event)" (mousemove)="showTooltip(i, b, $event)" />
-          </g>
-
-        </svg>
-
-        <!-- Tooltip -->
-        <div class="line-tooltip" *ngIf="activeTooltip" [style.left.px]="activeTooltip.x"
-          [style.top.px]="activeTooltip.y">
-          <div class="tooltip-month">{{ activeTooltip.label }}</div>
-          <div class="tooltip-value">$ {{ (activeTooltip.value / 1_000_000).toFixed(2) }}M</div>
-          <div class="tooltip-arrow"></div>
+        <div class="chart-card" *ngIf="monthlyBillingBars.length">
+          <div class="chart-title">Tendencia de Facturación — {{ year }}</div>
+          <div class="line-chart-wrap" (mouseleave)="activeTooltip = null">
+            <svg class="line-chart-svg" viewBox="0 0 800 220" preserveAspectRatio="none">
+              <line *ngFor="let g of gridLines" [attr.x1]="40" [attr.y1]="g.y" [attr.x2]="780" [attr.y2]="g.y"
+                stroke="#e2e8f0" stroke-width="1" />
+              <text *ngFor="let g of gridLines" [attr.x]="35" [attr.y]="g.y + 4" text-anchor="end" font-size="10"
+                fill="#94a3b8">{{ g.label }}</text>
+              <path [attr.d]="areaPath" fill="url(#greenGradient)" opacity="0.3" />
+              <defs>
+                <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#10b981" stop-opacity="0.4" />
+                  <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <path [attr.d]="linePath" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round" class="line-anim" />
+              <g *ngFor="let b of monthlyBillingBars; let i = index">
+                <circle [attr.cx]="getPointX(i)" [attr.cy]="getPointY(b.value)"
+                  [attr.r]="activeTooltip?.index === i ? 7 : 5" [attr.fill]="b.color"
+                  stroke="white" stroke-width="2" style="cursor:pointer; transition: r 0.15s"
+                  (mouseenter)="showTooltip(i, b, $event)" (mousemove)="showTooltip(i, b, $event)" />
+              </g>
+            </svg>
+            <div class="line-tooltip" *ngIf="activeTooltip" [style.left.px]="activeTooltip.x"
+              [style.top.px]="activeTooltip.y">
+              <div class="tooltip-month">{{ activeTooltip.label }}</div>
+              <div class="tooltip-value">$ {{ (activeTooltip.value / 1_000_000).toFixed(2) }}M</div>
+              <div class="tooltip-arrow"></div>
+            </div>
+            <div class="line-x-labels">
+              <span *ngFor="let b of monthlyBillingBars" class="x-label" [class.x-label-current]="b.color === '#1a6fdb'">
+                {{ b.label }}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <!-- Labels eje X -->
-        <div class="line-x-labels">
-          <span *ngFor="let b of monthlyBillingBars" class="x-label" [class.x-label-current]="b.color === '#1a6fdb'">
-            {{ b.label }}
-          </span>
-        </div>
+        <div class="affiliate-block" *ngFor="let aff of affiliates; trackBy: trackAffiliate">
+          <div class="affiliate-header">
+            <span class="affiliate-name">{{ aff.name }}</span>
+            <div class="affiliate-header-right">
+              <span class="affiliate-stat">Mes: <strong>$ {{ aff.monthTotal | number:'1.0-0' }}</strong></span>
+              <span class="affiliate-stat">Año: <strong>$ {{ aff.yearTotal | number:'1.0-0' }}</strong></span>
+            </div>
+          </div>
 
-      </div>
-    </div>
-
-    <!-- Tablas por afiliado -->
-    <!-- ... el resto del HTML que ya tienes ... -->
-<ng-container *ngIf="!isFuelRole">
-    <div class="affiliate-block" *ngFor="let aff of affiliates; trackBy: trackAffiliate">
-
-      <div class="affiliate-header">
-        <span class="affiliate-name">{{ aff.name }}</span>
-        <div class="affiliate-header-right">
-          <span class="affiliate-stat">Mes: <strong>$ {{ aff.monthTotal | number:'1.0-0' }}</strong></span>
-          <span class="affiliate-stat">Año: <strong>$ {{ aff.yearTotal | number:'1.0-0' }}</strong></span>
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table class="data-table production-table">
-          <thead>
-            <tr>
-              <th class="col-placa">Placa</th>
-              <th *ngFor="let m of activeMonths" class="col-mes" [class.col-current]="m === thisMonth">
-                {{ monthNames[m] }}
-              </th>
-              <th class="col-mes">Total Año</th>
-              <th class="col-num">V.Ayer</th>
-              <th class="col-num">V.Mes</th>
-              <th class="col-num">V.Año</th>
-              <th class="col-docs">Docs</th>
-              <th class="col-proy">Proyección</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let v of aff.plates" class="table-row">
-
-              <td><span class="badge badge--placa">{{ v.plate }}</span></td>
-
-              <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
-                <span *ngIf="getMonthVal(v.months, m) > 0">
-                  $ {{ getMonthVal(v.months, m) | number:'1.0-0' }}
-                </span>
-                <span *ngIf="getMonthVal(v.months, m) === 0" class="text-muted">—</span>
-              </td>
-
-              <td class="td-money td-strong">$ {{ v.totalYear | number:'1.0-0' }}</td>
-              <td class="td-center">
-                <span *ngIf="v.yesterdayTrips > 0" class="badge badge-ok">{{ v.yesterdayTrips }}</span>
-                <span *ngIf="v.yesterdayTrips === 0" class="text-muted">—</span>
-              </td>
-              <td class="td-center">{{ v.monthTrips }}</td>
-              <td class="td-center">{{ v.totalTrips }}</td>
-
-              <!-- Documentos -->
-              <td class="td-docs">
-                <span *ngIf="v.docAlerts.length === 0" class="badge badge-ok">✓</span>
-                <span *ngFor="let doc of v.docAlerts" class="badge doc-badge" [ngClass]="docStatusClass(doc.status)"
-                  [title]="doc.expiration">
-                  {{ doc.type }} {{ doc.daysLeft < 0 ? '⚠' : doc.daysLeft + 'd' }} </span>
-              </td>
-
-              <!-- Proyección -->
-              <td class="td-money td-proy">
-                <div class="proy-value">$ {{ v.proyeccion | number:'1.0-0' }}</div>
-                <div class="proy-meta">{{ daysRemaining }}d rest.</div>
-              </td>
-
-            </tr>
-
-            <!-- Total fila -->
-            <tr class="row-total">
-              <td><strong>TOTAL</strong></td>
-
-              <!-- Meses -->
-              <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
-                <strong>$ {{ sumMonthValue(aff.plates, m) | number:'1.0-0' }}</strong>
-              </td>
-
-              <!-- Total año -->
-              <td class="td-money td-strong">
-                <strong>$ {{ aff.yearTotal | number:'1.0-0' }}</strong>
-              </td>
-
-              <!-- Viajes mes / año -->
-              <!-- En row-total, después de totalTrips -->
-              <td class="td-center">
-                <strong>{{ aff.plates | sumProp:'yesterdayTrips' }}</strong>
-              </td>
-              <td class="td-center"><strong>{{ aff.plates | sumProp:'monthTrips' }}</strong></td>
-              <td class="td-center"><strong>{{ aff.plates | sumProp:'totalTrips' }}</strong></td>
-
-              <!-- Docs vacío -->
-              <td></td>
-
-              <!-- Proyección total afiliado -->
-              <td class="td-money td-proy">
-                <strong>$ {{ aff.proyeccion | number:'1.0-0' }}</strong>
-              </td>
-            </tr>
-            <tr class="row-total row-compliance">
-              <td><strong>% CUMPLIMIENTO</strong></td>
-
-              <!-- % por mes con círculo mini -->
-              <td *ngFor="let m of activeMonths" class="td-prog" [class.td-current]="m === thisMonth">
-                <ng-container *ngIf="aff.monthlyCompliance[m] !== null && aff.monthlyCompliance[m] !== undefined">
-                  <div class="prog-wrap">
-                    <svg viewBox="0 0 36 36" class="prog-circle">
-                      <circle class="prog-bg" cx="18" cy="18" r="15.9" />
-                      <circle class="prog-fill" cx="18" cy="18" r="15.9"
-                        [style.strokeDasharray]="getCircleDash(sumMonthValue(aff.plates, m), aff.budgets[+m] ?? aff.budgets[m])"
-                        [style.stroke]="getCircleColor(sumMonthValue(aff.plates, m), aff.budgets[+m] ?? aff.budgets[m])" />
-                    </svg>
-                    <span class="prog-pct" [style.color]="getCircleColor(sumMonthValue(aff.plates, m), aff.budgets[m])">
-                      {{ aff.monthlyCompliance[m] }}%
+          <div class="table-wrapper">
+            <table class="data-table production-table">
+              <thead>
+                <tr>
+                  <th class="col-placa">Placa</th>
+                  <th *ngFor="let m of activeMonths" class="col-mes" [class.col-current]="m === thisMonth">
+                    {{ monthNames[m] }}
+                  </th>
+                  <th class="col-mes">Total Año</th>
+                  <th class="col-num">V.Ayer</th>
+                  <th class="col-num">V.Mes</th>
+                  <th class="col-num">V.Año</th>
+                  <th class="col-docs">Docs</th>
+                  <th class="col-proy">Proyección</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let v of aff.plates" class="table-row">
+                  <td><span class="badge badge--placa">{{ v.plate }}</span></td>
+                  <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
+                    <span *ngIf="getMonthVal(v.months, m) > 0">$ {{ getMonthVal(v.months, m) | number:'1.0-0' }}</span>
+                    <span *ngIf="getMonthVal(v.months, m) === 0" class="text-muted">—</span>
+                  </td>
+                  <td class="td-money td-strong">$ {{ v.totalYear | number:'1.0-0' }}</td>
+                  <td class="td-center">
+                    <span *ngIf="v.yesterdayTrips > 0" class="badge badge-ok">{{ v.yesterdayTrips }}</span>
+                    <span *ngIf="v.yesterdayTrips === 0" class="text-muted">—</span>
+                  </td>
+                  <td class="td-center">{{ v.monthTrips }}</td>
+                  <td class="td-center">{{ v.totalTrips }}</td>
+                  <td class="td-docs">
+                    <span *ngIf="v.docAlerts.length === 0" class="badge badge-ok">✓</span>
+                    <span *ngFor="let doc of v.docAlerts" class="badge doc-badge" [ngClass]="docStatusClass(doc.status)"
+                      [title]="doc.expiration">
+                      {{ doc.type }} {{ doc.daysLeft < 0 ? '⚠' : doc.daysLeft + 'd' }}
                     </span>
-                  </div>
-                </ng-container>
-                <span *ngIf="aff.monthlyCompliance[m] === null || aff.monthlyCompliance[m] === undefined"
-                  class="text-muted" style="font-size:11px">—</span>
-              </td>
+                  </td>
+                  <td class="td-money td-proy">
+                    <div class="proy-value">$ {{ v.proyeccion | number:'1.0-0' }}</div>
+                    <div class="proy-meta">{{ daysRemaining }}d rest.</div>
+                  </td>
+                </tr>
 
-              <!-- Columnas restantes vacías + círculo anual -->
-              <td colspan="6"></td>
-            </tr>
+                <tr class="row-total">
+                  <td><strong>TOTAL</strong></td>
+                  <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
+                    <strong>$ {{ sumMonthValue(aff.plates, m) | number:'1.0-0' }}</strong>
+                  </td>
+                  <td class="td-money td-strong"><strong>$ {{ aff.yearTotal | number:'1.0-0' }}</strong></td>
+                  <td class="td-center"><strong>{{ aff.plates | sumProp:'yesterdayTrips' }}</strong></td>
+                  <td class="td-center"><strong>{{ aff.plates | sumProp:'monthTrips' }}</strong></td>
+                  <td class="td-center"><strong>{{ aff.plates | sumProp:'totalTrips' }}</strong></td>
+                  <td></td>
+                  <td class="td-money td-proy"><strong>$ {{ aff.proyeccion | number:'1.0-0' }}</strong></td>
+                </tr>
 
-          </tbody>
-        </table>
-      </div>
-    </div>
-    </ng-container>
+                <tr class="row-total row-compliance">
+                  <td><strong>% CUMPLIMIENTO</strong></td>
+                  <td *ngFor="let m of activeMonths" class="td-prog" [class.td-current]="m === thisMonth">
+                    <ng-container *ngIf="aff.monthlyCompliance[m] !== null && aff.monthlyCompliance[m] !== undefined">
+                      <div class="prog-wrap">
+                        <svg viewBox="0 0 36 36" class="prog-circle">
+                          <circle class="prog-bg" cx="18" cy="18" r="15.9" />
+                          <circle class="prog-fill" cx="18" cy="18" r="15.9"
+                            [style.strokeDasharray]="getCircleDash(sumMonthValue(aff.plates, m), aff.budgets[m])"
+                            [style.stroke]="getCircleColor(sumMonthValue(aff.plates, m), aff.budgets[m])" />
+                        </svg>
+                        <span class="prog-pct" [style.color]="getCircleColor(sumMonthValue(aff.plates, m), aff.budgets[m])">
+                          {{ aff.monthlyCompliance[m] }}%
+                        </span>
+                      </div>
+                    </ng-container>
+                    <span *ngIf="aff.monthlyCompliance[m] === null || aff.monthlyCompliance[m] === undefined"
+                      class="text-muted" style="font-size:11px">—</span>
+                  </td>
+                  <td colspan="6"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-    <div class="empty-state" *ngIf="affiliates.length === 0">
-      <p>No hay datos de producción para {{ year }}</p>
-    </div>
-
-    <div class="fuel-section" *ngIf="fuel?.byPlate?.length && !loading">
-
-      <div class="section-header">
-        <div class="section-header-left">
-          <span class="section-eyebrow">Trazabilidad</span>
-          <h2 class="section-title">Combustible por Vehículo — {{ monthNames[thisMonth] }} {{ year }}</h2>
+        <div class="acc-empty" *ngIf="affiliates.length === 0">
+          No hay datos de producción para {{ year }}
         </div>
       </div>
+    </section>
 
+    <!-- ═══════════════════════════ COMBUSTIBLE ═══════════════════════════ -->
+    <section class="acc" [class.open]="open.combustible" style="--accent: #f59e0b">
+      <button type="button" class="acc-header" (click)="toggle('combustible')" [attr.aria-expanded]="open.combustible">
+        <span class="acc-dot"></span>
+        <span class="acc-title">Combustible</span>
+        <span class="acc-summary" *ngIf="fuel">
+          {{ formatMoney(fuel.kpis.totalValue) }} en {{ monthNames[thisMonth] }}
+          <span class="acc-pill">{{ fuel.kpis.avgKmPerGallon | number:'1.1-1' }} km/gal</span>
+        </span>
+        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
+      </button>
+
+      <div class="acc-body" *ngIf="open.combustible">
+
+        <div class="acc-empty" *ngIf="!fuel">No llegaron datos de combustible del servidor.</div>
+
+        <ng-container *ngIf="fuel">
+          <div class="kpi-grid">
+            <div class="kpi-card" style="--accent: #f59e0b">
+              <div class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 22V8l9-6 9 6v14H3z" />
+                  <path d="M10 22v-6h4v6" />
+                  <path d="M19 8h2a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-2" />
+                </svg>
+              </div>
+              <div class="kpi-body">
+                <div class="kpi-value">{{ fuelAnimated['totalGallons'] | number:'1.1-1' }} gal</div>
+                <div class="kpi-label">Galones del Mes</div>
+                <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }}</div>
+              </div>
+              <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
+            </div>
+
+            <div class="kpi-card" style="--accent: #ef4444">
+              <div class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+              <div class="kpi-body">
+                <div class="kpi-value">{{ formatMoney(fuelAnimated['totalValue']) }}</div>
+                <div class="kpi-label">Gasto en Combustible</div>
+                <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }}</div>
+              </div>
+              <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
+            </div>
+
+            <div class="kpi-card" style="--accent: #7c3aed">
+              <div class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+              </div>
+              <div class="kpi-body">
+                <div class="kpi-value">{{ fuelAnimated['avgKmPerGallon'] | number:'1.1-1' }} km/gal</div>
+                <div class="kpi-label">Rendimiento Promedio</div>
+                <div class="kpi-sub">{{ fuel.kpis.totalKmDriven | number:'1.0-0' }} km recorridos</div>
+              </div>
+              <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
+            </div>
+          </div>
+
+          <!-- Mes actual -->
+          <div class="acc-sub">
+            <h3 class="acc-sub-title">Por vehículo — {{ monthNames[thisMonth] }} {{ year }}</h3>
+
+            <div class="table-wrapper" *ngIf="fuel.byPlate?.length; else noFuelMonth">
+              <table class="data-table fuel-table">
+                <thead>
+                  <tr>
+                    <th>Placa</th>
+                    <th>Afiliado</th>
+                    <th class="td-right">Galones</th>
+                    <th class="td-right">$ Combustible</th>
+                    <th class="td-right">Km Recorridos</th>
+                    <th class="td-right">Km / Galón</th>
+                    <th>Rendimiento</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let p of fuel.byPlate" class="table-row">
+                    <td><span class="badge badge--placa">{{ p.plate }}</span></td>
+                    <td>{{ p.affiliate }}</td>
+                    <td class="td-right">{{ p.gallons | number:'1.1-1' }}</td>
+                    <td class="td-right td-money">$ {{ p.value | number:'1.0-0' }}</td>
+                    <td class="td-right">{{ p.kmDriven | number:'1.0-0' }} km</td>
+                    <td class="td-right"><strong>{{ p.kmPerGallon | number:'1.1-1' }}</strong></td>
+                    <td class="td-bar">
+                      <div class="render-bar-wrap">
+                        <div class="render-bar" [style.width.%]="getFuelRenderPct(p.kmPerGallon)"
+                          [style.background]="getFuelRenderColor(p.kmPerGallon)"></div>
+                        <span class="render-label" [style.color]="getFuelRenderColor(p.kmPerGallon)">
+                          {{ getFuelRenderLabel(p.kmPerGallon) }}
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="row-total">
+                    <td colspan="2"><strong>TOTAL</strong></td>
+                    <td class="td-right"><strong>{{ fuel.kpis.totalGallons | number:'1.1-1' }}</strong></td>
+                    <td class="td-right td-money"><strong>$ {{ fuel.kpis.totalValue | number:'1.0-0' }}</strong></td>
+                    <td class="td-right"><strong>{{ fuel.kpis.totalKmDriven | number:'1.0-0' }} km</strong></td>
+                    <td class="td-right"><strong>{{ fuel.kpis.avgKmPerGallon | number:'1.1-1' }}</strong></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <ng-template #noFuelMonth>
+              <div class="acc-empty">Sin registros de combustible para {{ monthNames[thisMonth] }} {{ year }}</div>
+            </ng-template>
+          </div>
+
+          <!-- Mes a mes -->
+          <div class="acc-sub">
+            <h3 class="acc-sub-title">Mes a mes — {{ year }}</h3>
+
+            <div class="table-wrapper" *ngIf="fuel.monthly?.byPlate?.length; else noFuelYear">
+              <table class="data-table production-table fuel-monthly-table">
+                <thead>
+                  <tr>
+                    <th class="col-placa">Placa</th>
+                    <th>Afiliado</th>
+                    <th *ngFor="let m of activeMonths" class="col-mes" [class.col-current]="m === thisMonth">
+                      {{ monthNames[m] }}
+                    </th>
+                    <th class="col-mes">Total Año</th>
+                    <th class="col-mes">Galones Año</th>
+                    <th class="col-mes">Km / Gal Año</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let p of fuel.monthly.byPlate; trackBy: trackByPlate" class="table-row">
+                    <td><span class="badge badge--placa">{{ p.plate }}</span></td>
+                    <td>{{ p.affiliate }}</td>
+                    <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
+                      <ng-container *ngIf="getFuelMonth(p, m) as fm; else noFuel">
+                        <div>$ {{ fm.value | number:'1.0-0' }}</div>
+                        <div class="cell-sub">{{ fm.gallons | number:'1.1-1' }} gal · {{ fm.kmPerGallon | number:'1.1-1' }} km/gal</div>
+                      </ng-container>
+                      <ng-template #noFuel><span class="text-muted">—</span></ng-template>
+                    </td>
+                    <td class="td-money td-strong">$ {{ p.value | number:'1.0-0' }}</td>
+                    <td class="td-money">{{ p.gallons | number:'1.1-1' }}</td>
+                    <td class="td-money"><strong>{{ p.kmPerGallon | number:'1.1-1' }}</strong></td>
+                  </tr>
+
+                  <tr class="row-total">
+                    <td colspan="2"><strong>TOTAL</strong></td>
+                    <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
+                      <strong>$ {{ fuel.monthly.totals[m]?.value | number:'1.0-0' }}</strong>
+                      <div class="cell-sub">{{ fuel.monthly.totals[m]?.gallons | number:'1.1-1' }} gal</div>
+                    </td>
+                    <td class="td-money td-strong"><strong>$ {{ fuel.monthly.yearTotals.value | number:'1.0-0' }}</strong></td>
+                    <td class="td-money"><strong>{{ fuel.monthly.yearTotals.gallons | number:'1.1-1' }}</strong></td>
+                    <td class="td-money"><strong>{{ fuel.monthly.yearTotals.kmPerGallon | number:'1.1-1' }}</strong></td>
+                  </tr>
+
+                  <tr class="row-total">
+                    <td colspan="2"><strong>KM / GALÓN</strong></td>
+                    <td *ngFor="let m of activeMonths" class="td-center" [class.td-current]="m === thisMonth">
+                      <strong *ngIf="fuel.monthly.totals[m]?.kmPerGallon">{{ fuel.monthly.totals[m].kmPerGallon | number:'1.1-1' }}</strong>
+                      <span *ngIf="!fuel.monthly.totals[m]?.kmPerGallon" class="text-muted">—</span>
+                    </td>
+                    <td colspan="3"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <ng-template #noFuelYear>
+              <div class="acc-empty acc-empty--warn" *ngIf="!fuel.monthly">
+                El servidor no envió el histórico mensual. Revisa que el controlador del dashboard esté actualizado y reinicia Node.
+              </div>
+              <div class="acc-empty" *ngIf="fuel.monthly">Sin registros de combustible en {{ year }}</div>
+            </ng-template>
+          </div>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════ MANTENIMIENTO ═══════════════════════════ -->
+    <section class="acc" [class.open]="open.mantenimiento" *ngIf="!isFuelRole" style="--accent: #0ea5e9">
+      <button type="button" class="acc-header" (click)="toggle('mantenimiento')" [attr.aria-expanded]="open.mantenimiento">
+        <span class="acc-dot"></span>
+        <span class="acc-title">Mantenimiento</span>
+        <span class="acc-summary" *ngIf="maintenance">
+          {{ formatMoney(maintenance.kpis.thisMonthTotal) }} en {{ monthNames[thisMonth] }}
+          <span class="acc-pill">{{ maintenance.kpis.thisMonthCount }} mttos</span>
+        </span>
+        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
+      </button>
+
+      <div class="acc-body" *ngIf="open.mantenimiento">
+
+        <div class="acc-empty acc-empty--warn" *ngIf="!maintenance">
+          El servidor no envió datos de mantenimiento. Revisa que el controlador del dashboard esté actualizado,
+          que <code>Maintenance</code> y <code>TrailerPlate</code> estén exportados en <code>models/index.js</code> y reinicia Node.
+        </div>
+
+        <ng-container *ngIf="maintenance">
+          <div class="kpi-grid">
+            <div class="kpi-card" style="--accent: #0ea5e9">
+              <div class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                </svg>
+              </div>
+              <div class="kpi-body">
+                <div class="kpi-value">{{ formatMoney(mttoAnimated['thisMonthTotal']) }}</div>
+                <div class="kpi-label">Mantenimiento del Mes</div>
+                <div class="kpi-sub">
+                  M.O. {{ formatMoney(maintenance.kpis.thisMonthLabor) }} · Rep. {{ formatMoney(maintenance.kpis.thisMonthParts) }}
+                </div>
+              </div>
+              <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
+            </div>
+
+            <div class="kpi-card" style="--accent: #6366f1">
+              <div class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+              </div>
+              <div class="kpi-body">
+                <div class="kpi-value">{{ formatMoney(mttoAnimated['yearTotal']) }}</div>
+                <div class="kpi-label">Mantenimiento del Año</div>
+                <div class="kpi-sub">{{ maintenance.kpis.yearCount }} mantenimientos en {{ year }}</div>
+              </div>
+              <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
+            </div>
+
+            <div class="kpi-card" style="--accent: #f97316">
+              <div class="kpi-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+              </div>
+              <div class="kpi-body">
+                <div class="kpi-value">{{ mttoAnimated['thisMonthCount'] }}</div>
+                <div class="kpi-label">Mantenimientos del Mes</div>
+                <div class="kpi-sub">{{ monthNames[thisMonth] }} {{ year }}</div>
+              </div>
+              <div class="kpi-bar-bg"><div class="kpi-bar-fill"></div></div>
+            </div>
+          </div>
+
+          <div class="chart-card" *ngIf="mttoBars.length">
+            <div class="chart-title">Gasto de Mantenimiento por Mes — {{ year }}</div>
+            <div class="mtto-bars">
+              <div class="mtto-bar-col" *ngFor="let b of mttoBars" [class.current]="b.current" [title]="formatMoney(b.value)">
+                <span class="mtto-bar-val">{{ shortMoney(b.value) }}</span>
+                <div class="mtto-bar-track">
+                  <div class="mtto-bar" [style.height.%]="b.pct"></div>
+                </div>
+                <span class="mtto-bar-label">{{ b.label }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="affiliate-block" *ngFor="let aff of maintenance.affiliates; trackBy: trackById">
+            <div class="affiliate-header">
+              <span class="affiliate-name">{{ aff.name }}</span>
+              <div class="affiliate-header-right">
+                <span class="affiliate-stat">Mes: <strong>$ {{ aff.monthTotal | number:'1.0-0' }}</strong></span>
+                <span class="affiliate-stat">Año: <strong>$ {{ aff.yearTotal | number:'1.0-0' }}</strong></span>
+              </div>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="data-table production-table">
+                <thead>
+                  <tr>
+                    <th class="col-placa">Placa</th>
+                    <th *ngFor="let m of activeMonths" class="col-mes" [class.col-current]="m === thisMonth">
+                      {{ monthNames[m] }}
+                    </th>
+                    <th class="col-mes">Total Año</th>
+                    <th class="col-mes">Mano de Obra</th>
+                    <th class="col-mes">Repuestos</th>
+                    <th class="col-num">Mtto Mes</th>
+                    <th class="col-num">Mtto Año</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let v of aff.plates; trackBy: trackByPlate" class="table-row">
+                    <td><span class="badge badge--placa">{{ v.plate }}</span></td>
+                    <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
+                      <span *ngIf="getMonthVal(v.months, m) > 0">$ {{ getMonthVal(v.months, m) | number:'1.0-0' }}</span>
+                      <span *ngIf="getMonthVal(v.months, m) === 0" class="text-muted">—</span>
+                    </td>
+                    <td class="td-money td-strong">$ {{ v.totalYear | number:'1.0-0' }}</td>
+                    <td class="td-money">$ {{ v.labor | number:'1.0-0' }}</td>
+                    <td class="td-money">$ {{ v.parts | number:'1.0-0' }}</td>
+                    <td class="td-center">{{ v.monthCount }}</td>
+                    <td class="td-center">{{ v.count }}</td>
+                  </tr>
+
+                  <tr class="row-total">
+                    <td><strong>TOTAL</strong></td>
+                    <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
+                      <strong>$ {{ aff.monthTotals[m] | number:'1.0-0' }}</strong>
+                    </td>
+                    <td class="td-money td-strong"><strong>$ {{ aff.yearTotal | number:'1.0-0' }}</strong></td>
+                    <td class="td-money"><strong>$ {{ aff.labor | number:'1.0-0' }}</strong></td>
+                    <td class="td-money"><strong>$ {{ aff.parts | number:'1.0-0' }}</strong></td>
+                    <td class="td-center"><strong>{{ aff.monthCount }}</strong></td>
+                    <td class="td-center"><strong>{{ aff.count }}</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="acc-empty" *ngIf="!maintenance.affiliates?.length">
+            No hay mantenimientos registrados para {{ year }}
+          </div>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════ PYG ═══════════════════════════ -->
+    <section class="acc" [class.open]="open.pyg" *ngIf="!isFuelRole" style="--accent: #7c3aed">
+      <button type="button" class="acc-header" (click)="toggle('pyg')" [attr.aria-expanded]="open.pyg">
+        <span class="acc-dot"></span>
+        <span class="acc-title">PYG</span>
+        <span class="acc-summary" *ngIf="pyg?.totals">
+          Utilidad neta {{ formatMoney(pyg.totals.utilidadNeta) }} en {{ monthNames[pygMonth] }}
+          <span class="acc-pill" [style.color]="marginColor(pyg.totals.margenNeto)">
+            {{ pyg.totals.margenNeto ?? '—' }}{{ pyg.totals.margenNeto !== null ? '%' : '' }}
+          </span>
+        </span>
+        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
+      </button>
+
+      <div class="acc-body" *ngIf="open.pyg">
+
+        <div class="pyg-toolbar">
+          <div class="pyg-month">
+            <label class="pyg-month-label" for="pygMonth">Mes</label>
+            <select id="pygMonth" class="filter-select" [(ngModel)]="pygMonth" (ngModelChange)="loadPyg()">
+              <option *ngFor="let m of pygMonthOptions" [ngValue]="m">{{ monthNames[m] }} {{ year }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="loading-cell" *ngIf="pygLoading">
+          <div class="spinner"></div><span>Calculando PYG…</span>
+        </div>
+
+        <div class="acc-empty acc-empty--warn" *ngIf="pygError && !pygLoading">
+          No se pudo cargar el PYG. Revisa que la ruta <code>/dashboard/pyg</code> exista, que el modelo
+          <code>PygParameter</code> esté en <code>models/index.js</code> y que la tabla <code>pyg_parameters</code> esté creada.
+        </div>
+
+        <ng-container *ngIf="pyg && !pygLoading">
+
+          <div class="acc-empty" *ngIf="!pygBlocks.length">
+            No hay viajes, combustible ni mantenimientos en {{ monthNames[pygMonth] }} {{ year }}.
+          </div>
+
+          <!-- Total general (solo si hay varios afiliados) -->
+          <div class="affiliate-block pyg-block" *ngIf="pygGeneral">
+            <div class="affiliate-header">
+              <span class="affiliate-name">Total general</span>
+              <div class="affiliate-header-right">
+                <span class="affiliate-stat">{{ pyg.totals.trips }} viajes</span>
+              </div>
+            </div>
+            <ng-container *ngTemplateOutlet="pygTable; context: { cols: pygGeneral.cols, total: pygGeneral.total, totalLabel: 'TOTAL' }"></ng-container>
+          </div>
+
+          <!-- Un bloque por afiliado -->
+          <div class="affiliate-block pyg-block" *ngFor="let b of pygBlocks; trackBy: trackById">
+            <div class="affiliate-header">
+              <span class="affiliate-name">{{ b.name }}</span>
+              <div class="affiliate-header-right">
+                <span class="affiliate-stat">Neta: <strong>{{ formatMoney(b.total.utilidadNeta) }}</strong></span>
+                <span class="affiliate-stat">Margen: <strong>{{ b.total.margenNeto ?? '—' }}{{ b.total.margenNeto !== null ? '%' : '' }}</strong></span>
+              </div>
+            </div>
+            <ng-container *ngTemplateOutlet="pygTable; context: { cols: b.cols, total: b.total, totalLabel: b.cols.length > 1 ? 'TOTAL' : null }"></ng-container>
+          </div>
+
+          <p class="pyg-foot">
+            Laborales = salario + comisión por viaje sobre el flete. Provisiones = (SOAT + tecnomecánica + mantenimiento anual
+            + dotación × entregas) ÷ 12. Llantas y Lavado y engrase salen de los mantenimientos con ese tipo.
+          </p>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- Tabla PYG reutilizable: filas = conceptos, columnas = placas (o afiliados) -->
+    <ng-template #pygTable let-cols="cols" let-total="total" let-totalLabel="totalLabel">
       <div class="table-wrapper">
-        <table class="data-table fuel-table">
+        <table class="data-table pyg-table">
           <thead>
             <tr>
-              <th>Placa</th>
-              <th>Afiliado</th>
-              <th class="td-right">Galones</th>
-              <th class="td-right">$ Combustible</th>
-              <th class="td-right">Km Recorridos</th>
-              <th class="td-right">Km / Galón</th>
-              <th>Rendimiento</th>
+              <th class="pyg-concept">Concepto</th>
+              <th *ngFor="let c of cols" class="pyg-col">
+                <span class="badge badge--placa" *ngIf="c.v">{{ c.label }}</span>
+                <span *ngIf="!c.v">{{ c.label }}</span>
+                <span class="pyg-own" *ngIf="c.v?.detail?.ownValues" title="Tiene valores propios">●</span>
+              </th>
+              <th *ngIf="totalLabel" class="pyg-col pyg-col-total">{{ totalLabel }}</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let p of fuel.byPlate" class="table-row">
-
-              <td><span class="badge badge--placa">{{ p.plate }}</span></td>
-              <td>{{ p.affilate }}</td>
-              <td class="td-right">{{ p.gallons | number:'1.1-1' }}</td>
-              <td class="td-right td-money">$ {{ p.value | number:'1.0-0' }}</td>
-              <td class="td-right">{{ p.kmDriven | number:'1.0-0' }} km</td>
-              <td class="td-right">
-                <strong>{{ p.kmPerGallon | number:'1.1-1' }}</strong>
-              </td>
-
-              <!-- Barra de rendimiento relativa al mejor -->
-              <td class="td-bar">
-                <div class="render-bar-wrap">
-                  <div class="render-bar" [style.width.%]="getFuelRenderPct(p.kmPerGallon)"
-                    [style.background]="getFuelRenderColor(p.kmPerGallon)">
-                  </div>
-                  <span class="render-label" [style.color]="getFuelRenderColor(p.kmPerGallon)">
-                    {{ getFuelRenderLabel(p.kmPerGallon) }}
-                  </span>
-                </div>
-              </td>
-
+            <tr class="pyg-row-strong">
+              <td>Facturación</td>
+              <td *ngFor="let c of cols" class="td-money">{{ formatMoney(c.d.facturacion) }}</td>
+              <td *ngIf="totalLabel" class="td-money pyg-col-total">{{ formatMoney(total.facturacion) }}</td>
+            </tr>
+            <tr class="pyg-row-muted">
+              <td>Viajes</td>
+              <td *ngFor="let c of cols" class="td-money">{{ c.d.trips }}</td>
+              <td *ngIf="totalLabel" class="td-money pyg-col-total">{{ total.trips }}</td>
             </tr>
 
-            <!-- Fila total -->
+            <tr class="pyg-row-section"><td [attr.colspan]="cols.length + (totalLabel ? 2 : 1)">Costos generales</td></tr>
+
+            <tr *ngFor="let l of pyg.costLines">
+              <td>{{ l.label }}</td>
+              <td *ngFor="let c of cols" class="td-money"
+                [title]="c.v && l.key === 'laborales' ? laboralesTitle(c.v) : ''">
+                <span *ngIf="c.d.lines[l.key]">{{ formatMoney(c.d.lines[l.key]) }}</span>
+                <span *ngIf="!c.d.lines[l.key]" class="text-muted">$ -</span>
+              </td>
+              <td *ngIf="totalLabel" class="td-money pyg-col-total">{{ formatMoney(total.lines[l.key]) }}</td>
+            </tr>
+
             <tr class="row-total">
-              <td colspan="2"><strong>TOTAL</strong></td>
-              <td class="td-right"><strong>{{ fuel.kpis.totalGallons | number:'1.1-1' }}</strong></td>
-              <td class="td-right td-money"><strong>$ {{ fuel.kpis.totalValue | number:'1.0-0' }}</strong></td>
-              <td class="td-right"><strong>{{ fuel.kpis.totalKmDriven | number:'1.0-0' }} km</strong></td>
-              <td class="td-right"><strong>{{ fuel.kpis.avgKmPerGallon | number:'1.1-1' }}</strong></td>
-              <td></td>
+              <td><strong>Total costos de transporte</strong></td>
+              <td *ngFor="let c of cols" class="td-money"><strong>{{ formatMoney(c.d.totalCostos) }}</strong></td>
+              <td *ngIf="totalLabel" class="td-money pyg-col-total"><strong>{{ formatMoney(total.totalCostos) }}</strong></td>
             </tr>
 
+            <tr class="pyg-row-strong">
+              <td>Utilidad bruta</td>
+              <td *ngFor="let c of cols" class="td-money" [class.pyg-neg]="c.d.utilidadBruta < 0">{{ formatMoney(c.d.utilidadBruta) }}</td>
+              <td *ngIf="totalLabel" class="td-money pyg-col-total" [class.pyg-neg]="total.utilidadBruta < 0">{{ formatMoney(total.utilidadBruta) }}</td>
+            </tr>
+            <tr>
+              <td>Margen bruto</td>
+              <td *ngFor="let c of cols" class="td-money">
+                <span class="pyg-pct" [style.color]="marginColor(c.d.margenBruto)">{{ c.d.margenBruto !== null ? (c.d.margenBruto | number:'1.0-0') + '%' : '—' }}</span>
+              </td>
+              <td *ngIf="totalLabel" class="td-money pyg-col-total">
+                <span class="pyg-pct" [style.color]="marginColor(total.margenBruto)">{{ total.margenBruto !== null ? (total.margenBruto | number:'1.0-0') + '%' : '—' }}</span>
+              </td>
+            </tr>
+
+            <tr>
+              <td>Provisiones</td>
+              <td *ngFor="let c of cols" class="td-money" [title]="c.v ? provisionesTitle(c.v) : ''">{{ formatMoney(c.d.provisiones) }}</td>
+              <td *ngIf="totalLabel" class="td-money pyg-col-total">{{ formatMoney(total.provisiones) }}</td>
+            </tr>
+
+            <tr class="row-total pyg-row-net">
+              <td><strong>Utilidad neta</strong></td>
+              <td *ngFor="let c of cols" class="td-money" [class.pyg-neg]="c.d.utilidadNeta < 0"><strong>{{ formatMoney(c.d.utilidadNeta) }}</strong></td>
+              <td *ngIf="totalLabel" class="td-money pyg-col-total" [class.pyg-neg]="total.utilidadNeta < 0"><strong>{{ formatMoney(total.utilidadNeta) }}</strong></td>
+            </tr>
+            <tr>
+              <td>Porcentaje neto</td>
+              <td *ngFor="let c of cols" class="td-money">
+                <span class="pyg-pct" [style.color]="marginColor(c.d.margenNeto)">{{ c.d.margenNeto !== null ? (c.d.margenNeto | number:'1.0-0') + '%' : '—' }}</span>
+              </td>
+              <td *ngIf="totalLabel" class="td-money pyg-col-total">
+                <span class="pyg-pct" [style.color]="marginColor(total.margenNeto)">{{ total.margenNeto !== null ? (total.margenNeto | number:'1.0-0') + '%' : '—' }}</span>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
-
-    </div>
-
-    <div class="fuel-empty" *ngIf="!fuel?.byPlate?.length && !loading">
-      <span>Sin registros de combustible para {{ monthNames[thisMonth] }} {{ year }}</span>
-    </div>
+    </ng-template>
 
   </ng-container>
-
 </div>

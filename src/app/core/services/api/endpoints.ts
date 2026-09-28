@@ -43,7 +43,7 @@ export const ENDPOINTS = {
   },
   OPERATIONS: { LIST: '/api/v1/operations', CREATE: '/api/v1/operations', UPDATE: (id: number) => `/api/v1/operations/${id}`, DELETE: (id: number) => `/api/v1/operations/${id}` },
   VEHICLES: { LIST: '/api/v1/vehicles', CREATE: '/api/v1/vehicles', UPDATE: (id: number) => `/api/v1/vehicles/${id}`, DELETE: (id: number) => `/api/v1/vehicles/${id}` },
-  DASHBOARD: { LIST: '/api/v1/dashboard' },
+  DASHBOARD: { LIST: '/api/v1/dashboard', PYG: `/api/v1/pyg-parameters/dashboard/pyg` },
   BUDGETS: {
     LIST: '/api/v1/affiliate-budgets',
     CREATE: '/api/v1/affiliate-budgets',
@@ -91,4 +91,12 @@ export const ENDPOINTS = {
     STATUSES: '/api/v1/vehicle-downtime/statuses',
     CREATE_STATUS: '/api/v1/vehicle-downtime/statuses',
   },
+
+  PYG_PARAMETERS: {
+  LIST:     `/api/v1/pyg-parameters`,
+  RESOLVED: `/api/v1/pyg-parameters/resolved`,
+  CREATE:   `/api/v1/pyg-parameters`,
+UPDATE:   (id: number) => `/api/v1/pyg-parameters/${id}`,
+  DELETE:   (id: number) => `/api/v1/pyg-parameters/${id}`,
+},
 };

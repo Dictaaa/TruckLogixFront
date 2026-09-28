@@ -147,12 +147,19 @@ export const routes: Routes = [
         canActivate: [roleGuard([1])]
       },
       {
-  path: 'vehicle-downtime',
-  loadComponent: () =>
-    import('./features/vehicle-downtime/pages/vehicle-downtime/vehicle-downtime')
-      .then(m => m.VehicleDowntime),
-  canActivate: [roleGuard([1, 4])]
-},
+        path: 'vehicle-downtime',
+        loadComponent: () =>
+          import('./features/vehicle-downtime/pages/vehicle-downtime/vehicle-downtime')
+            .then(m => m.VehicleDowntime),
+        canActivate: [roleGuard([1, 4])]
+      },
+      {
+        path: 'pyg-parameters',
+        loadComponent: () =>
+          import('./features/masters/pyg-parameters/pages/pyg-parameters/pyg-parameters')
+            .then(m => m.PygParametersComponent),
+        canActivate: [roleGuard([1])]
+      },
     ],
   },
 

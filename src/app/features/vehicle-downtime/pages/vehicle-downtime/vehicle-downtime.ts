@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../../core/services/api/api.service';
 import { ENDPOINTS } from '../../../../core/services/api/endpoints';
 import { ToastService } from '../../../../core/services/toast/toast';
-import { HasRoleDirective } from '../../../../core/directives/has-role';
 import { DataTableComponent, TableColumn, TablePage } from '../../../../core/components/data-table/data-table';
 import { MatDialog } from '@angular/material/dialog';
 import { VehicleDowntimeFormModal } from '../../modals/vehicle-downtime-form-modal/vehicle-downtime-form-modal';
@@ -12,7 +11,7 @@ import { VehicleDowntimeFormModal } from '../../modals/vehicle-downtime-form-mod
 @Component({
   selector: 'app-vehicle-downtime',
   standalone: true,
-  imports: [CommonModule, FormsModule, HasRoleDirective, DataTableComponent],
+  imports: [CommonModule, FormsModule, DataTableComponent],
   templateUrl: './vehicle-downtime.html',
   styleUrls: ['./vehicle-downtime.scss'],
 })
