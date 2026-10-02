@@ -1,17 +1,31 @@
 import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormControl } from '@angular/forms';
+import { Observable, of } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { ApiService } from '../../../../core/services/api/api.service';
 import { ENDPOINTS } from '../../../../core/services/api/endpoints';
 import { ToastService } from '../../../../core/services/toast/toast';
+import { AuthService } from '../../../../core/services/auth.service';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { DataTableComponent, TableColumn, TablePage } from '../../../../core/components/data-table/data-table';
+import { FilterPanelComponent } from '../../../../core/components/filter-panel/filter-panel';
 import { MatDialog } from '@angular/material/dialog';
 import { VehicleDowntimeFormModal } from '../../modals/vehicle-downtime-form-modal/vehicle-downtime-form-modal';
+
+type AutoKey = 'vehicle_id' | 'affiliate_id';
+
+interface AutoFilter {
+  ctrl: FormControl;
+  field: string;
+  all: any[];
+  filtered$: Observable<any[]>;
+}
 
 @Component({
   selector: 'app-vehicle-downtime',
   standalone: true,
-  imports: [CommonModule, FormsModule, DataTableComponent],
+  imports: [CommonModule, FormsModule, DataTableComponent, FilterPanelComponent, MatAutocompleteModule],
   templateUrl: './vehicle-downtime.html',
   styleUrls: ['./vehicle-downtime.scss'],
 })
@@ -21,11 +35,15 @@ export class VehicleDowntime implements OnInit {
   private dialog = inject(MatDialog);
   private cdr    = inject(ChangeDetectorRef);
   private toast  = inject(ToastService);
+  private auth   = inject(AuthService);
+
+  /** Afiliado (rol 3): solo consulta los registros de sus placas */
+  isAffiliate = this.auth.hasRole([3]);
 
   // ─── Tabs ──────────────────────────────────────────────────────────────────
-  activeTab: 'suggestions' | 'records' = 'suggestions';
+  activeTab: 'suggestions' | 'records' = this.isAffiliate ? 'records' : 'suggestions';
 
-  // ─── Filtro de rango ───────────────────────────────────────────────────────
+  // ─── Rango para sugerencias ────────────────────────────────────────────────
   fechaDesde = '';
   fechaHasta = '';
 
@@ -43,6 +61,16 @@ export class VehicleDowntime implements OnInit {
     page: 1, limit: 20, search: '', column: '', sortBy: 'fecha', sortDir: 'desc'
   };
 
+  // ─── Panel de filtros (registros guardados) ───────────────────────────────
+  filterOpen = false;
+  activeFilterCount = 0;
+  filters = this.emptyFilters();
+
+  ac: Record<AutoKey, AutoFilter> = {
+    vehicle_id:   this.newAuto('plate'),
+    affiliate_id: this.newAuto('name'),
+  };
+
   columns: TableColumn[] = [
     { key: 'fecha',    label: 'Fecha',    format: 'date', sortable: true },
     { key: 'placa',    label: 'Placa',    format: 'placa'               },
@@ -53,6 +81,7 @@ export class VehicleDowntime implements OnInit {
   ];
 
   get actions() {
+    if (this.isAffiliate) return [];
     return [
       { label: 'Editar',   action: 'edit'   },
       { label: 'Eliminar', action: 'delete', danger: true },
@@ -60,36 +89,17 @@ export class VehicleDowntime implements OnInit {
   }
 
   ngOnInit(): void {
-  this.loadStatuses();
-  this.loadSuggestions();
-}
+    this.loadStatuses();
+    this.loadFilterCatalogs();
 
-loadSuggestions(): void {
-  this.loadingSuggestions = true;
-  // Últimos 30 días automático
-  const today  = new Date();
-  const desde  = new Date(today);
-  desde.setDate(desde.getDate() - 30);
-  const fmt = (d: Date) => d.toISOString().substring(0, 10);
+    if (this.isAffiliate) {
+      this.loadRecords(this.lastParams);
+    } else {
+      this.loadSuggestions();
+    }
+  }
 
-  const url = `${ENDPOINTS.VEHICLE_DOWNTIME.SUGGESTIONS}?fecha_desde=${fmt(desde)}&fecha_hasta=${fmt(today)}`;
-  this.api.getAuth(url).subscribe({
-    next: (res: any) => {
-      this.suggestions = res.suggestions.map((s: any) => ({
-        ...s,
-        selectedStatusId: s.maintenance_id
-          ? this.statuses.find((st: any) => st.name.toLowerCase().includes('taller'))?.id || null
-          : null,
-        observations: '',
-        saving: false,
-      }));
-      this.loadingSuggestions = false;
-      this.cdr.detectChanges();
-    },
-    error: () => { this.loadingSuggestions = false; }
-  });
-}
-
+  // ─── CATÁLOGOS ────────────────────────────────────────────────────────────
   loadStatuses(): void {
     this.api.getAuth(ENDPOINTS.VEHICLE_DOWNTIME.STATUSES).subscribe((d: any) => {
       this.statuses = Array.isArray(d) ? d : [];
@@ -97,8 +107,46 @@ loadSuggestions(): void {
     });
   }
 
+  private loadFilterCatalogs(): void {
+    this.api.getAuth(ENDPOINTS.VEHICLES.LIST).subscribe((d: any) => this.bindAuto('vehicle_id', d));
+    if (!this.isAffiliate) {
+      this.api.getAuth(ENDPOINTS.AFFILIATES.LIST).subscribe((d: any) => this.bindAuto('affiliate_id', d));
+    }
+  }
+
   // ─── SUGERENCIAS ──────────────────────────────────────────────────────────
+  private mapSuggestion(s: any): any {
+    return {
+      ...s,
+      selectedStatusId: s.maintenance_id
+        ? this.statuses.find((st: any) => st.name.toLowerCase().includes('taller'))?.id || null
+        : null,
+      observations: '',
+      saving: false,
+    };
+  }
+
+  loadSuggestions(): void {
+    if (this.isAffiliate) return;
+    this.loadingSuggestions = true;
+    const today = new Date();
+    const desde = new Date(today);
+    desde.setDate(desde.getDate() - 30);
+    const fmt = (d: Date) => d.toISOString().substring(0, 10);
+
+    const url = `${ENDPOINTS.VEHICLE_DOWNTIME.SUGGESTIONS}?fecha_desde=${fmt(desde)}&fecha_hasta=${fmt(today)}`;
+    this.api.getAuth(url).subscribe({
+      next: (res: any) => {
+        this.suggestions = res.suggestions.map((s: any) => this.mapSuggestion(s));
+        this.loadingSuggestions = false;
+        this.cdr.detectChanges();
+      },
+      error: () => { this.loadingSuggestions = false; }
+    });
+  }
+
   consultSuggestions(): void {
+    if (this.isAffiliate) return;
     if (!this.fechaDesde || !this.fechaHasta) {
       this.toast.error('Seleccioná el rango de fechas');
       return;
@@ -107,15 +155,7 @@ loadSuggestions(): void {
     const url = `${ENDPOINTS.VEHICLE_DOWNTIME.SUGGESTIONS}?fecha_desde=${this.fechaDesde}&fecha_hasta=${this.fechaHasta}`;
     this.api.getAuth(url).subscribe({
       next: (res: any) => {
-        this.suggestions = res.suggestions.map((s: any) => ({
-          ...s,
-          // Pre-llenar estado si es taller
-          selectedStatusId:  s.maintenance_id
-            ? this.statuses.find(st => st.name.toLowerCase().includes('taller'))?.id || null
-            : null,
-          observations: '',
-          saving: false,
-        }));
+        this.suggestions = res.suggestions.map((s: any) => this.mapSuggestion(s));
         this.loadingSuggestions = false;
         this.cdr.detectChanges();
       },
@@ -124,6 +164,7 @@ loadSuggestions(): void {
   }
 
   saveSuggestion(s: any): void {
+    if (this.isAffiliate) return;
     if (!s.selectedStatusId) {
       this.toast.error('Seleccioná un estado');
       return;
@@ -140,7 +181,6 @@ loadSuggestions(): void {
     this.api.postAuth(ENDPOINTS.VEHICLE_DOWNTIME.FROM_SUGGESTION, payload).subscribe({
       next: () => {
         this.toast.success('Registro guardado');
-        // Quitar de sugerencias
         this.suggestions = this.suggestions.filter(x =>
           !(x.vehicle_id === s.vehicle_id && x.downtime_date === s.downtime_date)
         );
@@ -165,8 +205,10 @@ loadSuggestions(): void {
     let url = `${ENDPOINTS.VEHICLE_DOWNTIME.LIST}?page=${params.page}&limit=${params.limit}`;
     if (params.search) url += `&search=${encodeURIComponent(params.search)}`;
     if (params.sortBy) url += `&sortBy=${params.sortBy}&sortDir=${params.sortDir}`;
-    // if (this.fechaDesde) url += `&fecha_desde=${this.fechaDesde}`;
-    // if (this.fechaHasta) url += `&fecha_hasta=${this.fechaHasta}`;
+
+    Object.entries(this.filters).forEach(([k, v]) => {
+      if (v !== '' && v !== null && v !== undefined) url += `&${k}=${encodeURIComponent(String(v))}`;
+    });
 
     this.api.getAuth(url).subscribe({
       next: (res: any) => {
@@ -179,7 +221,6 @@ loadSuggestions(): void {
           estado:   r.status?.name      || '',
           obs:      r.observations      || '',
           taller:   r.maintenance ? `Mtto #${r.maintenance.id}` : '',
-          // raw para editar
           _raw:     r,
         }));
         this.loading = false;
@@ -189,7 +230,65 @@ loadSuggestions(): void {
     });
   }
 
+  // ─── FILTROS ──────────────────────────────────────────────────────────────
+  private emptyFilters() {
+    return {
+      fecha_desde:  '',
+      fecha_hasta:  '',
+      status_id:    '' as string | number,
+      vehicle_id:   '' as string | number,
+      affiliate_id: '' as string | number,
+    };
+  }
+
+  private newAuto(field: string): AutoFilter {
+    return { ctrl: new FormControl(''), field, all: [], filtered$: of([]) };
+  }
+
+  private bindAuto(key: AutoKey, data: any): void {
+    const a = this.ac[key];
+    a.all = Array.isArray(data) ? data : data?.data ?? [];
+    a.filtered$ = a.ctrl.valueChanges.pipe(
+      startWith(''),
+      map(v => {
+        const q = (typeof v === 'string' ? v : '').toLowerCase();
+        return q ? a.all.filter(x => String(x[a.field] ?? '').toLowerCase().includes(q)) : a.all.slice();
+      })
+    );
+    a.ctrl.valueChanges.subscribe(v => {
+      if (typeof v === 'string') this.filters[key] = '';
+    });
+    this.cdr.detectChanges();
+  }
+
+  onSelect(key: AutoKey, item: any): void {
+    this.filters[key] = item?.id ?? '';
+  }
+
+  displayFn(field: string) {
+    return (item: any): string => item ? (item[field] ?? '') : '';
+  }
+
+  applyFilters(): void {
+    this.activeFilterCount = Object.values(this.filters).filter(v => v !== '').length;
+    this.lastParams = { ...this.lastParams, page: 1 };
+    this.activeTab = 'records';
+    this.loadRecords(this.lastParams);
+    this.filterOpen = false;
+  }
+
+  clearFilters(): void {
+    this.filters = this.emptyFilters();
+    (Object.keys(this.ac) as AutoKey[]).forEach(k => this.ac[k].ctrl.setValue('', { emitEvent: false }));
+    this.activeFilterCount = 0;
+    this.lastParams = { ...this.lastParams, page: 1 };
+    this.loadRecords(this.lastParams);
+    this.filterOpen = false;
+  }
+
+  // ─── ACCIONES ─────────────────────────────────────────────────────────────
   onAction(event: { action: string; row: any }): void {
+    if (this.isAffiliate) return;
     if (event.action === 'edit')   this.edit(event.row);
     if (event.action === 'delete') this.confirmDelete(event.row);
   }
@@ -211,8 +310,8 @@ loadSuggestions(): void {
     });
   }
 
-  // ─── CREAR MANUAL ─────────────────────────────────────────────────────────
   openCreateModal(): void {
+    if (this.isAffiliate) return;
     const ref = this.dialog.open(VehicleDowntimeFormModal, {
       data: { record: null, statuses: this.statuses },
       panelClass: 'dialog-panel',
@@ -221,13 +320,13 @@ loadSuggestions(): void {
     ref.afterClosed().subscribe(r => {
       if (r?.saved) {
         this.loadRecords(this.lastParams);
-        // Refrescar sugerencias si están cargadas
         if (this.suggestions.length) this.consultSuggestions();
       }
     });
   }
 
   setTab(tab: 'suggestions' | 'records'): void {
+    if (this.isAffiliate && tab === 'suggestions') return;
     this.activeTab = tab;
     if (tab === 'records' && this.records.length === 0) {
       this.loadRecords(this.lastParams);

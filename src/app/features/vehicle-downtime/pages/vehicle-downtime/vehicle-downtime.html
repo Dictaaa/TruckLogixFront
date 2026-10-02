@@ -6,12 +6,12 @@
       <h1 class="header-title">Control de Vehículos</h1>
     </div>
     <div class="actions-bar">
-      <button class="btn-primary" (click)="openCreateModal()">+ Registrar Día No Trabajado</button>
+      <button class="btn-primary" *ngIf="!isAffiliate" (click)="openCreateModal()">+ Registrar Día No Trabajado</button>
     </div>
   </header>
 
-  <!-- Filtro de rango -->
-  <div class="range-bar">
+  <!-- Rango para sugerencias (no aplica al afiliado) -->
+  <div class="range-bar" *ngIf="!isAffiliate">
     <div class="range-group">
       <label class="range-label">Desde</label>
       <input type="date" class="filter-input" [(ngModel)]="fechaDesde">
@@ -30,7 +30,7 @@
 
   <!-- Tabs -->
   <div class="tabs">
-    <button class="tab-btn" [class.tab-btn--active]="activeTab === 'suggestions'"
+    <button class="tab-btn" *ngIf="!isAffiliate" [class.tab-btn--active]="activeTab === 'suggestions'"
       (click)="setTab('suggestions')">
       Sugerencias Pendientes
       <span class="tab-badge" *ngIf="suggestions.length">{{ suggestions.length }}</span>
@@ -42,7 +42,7 @@
   </div>
 
   <!-- ═══ TAB SUGERENCIAS ═══════════════════════════════════════════════════ -->
-  <div *ngIf="activeTab === 'suggestions'">
+  <div *ngIf="activeTab === 'suggestions' && !isAffiliate">
 
     <div class="loading-cell" *ngIf="loadingSuggestions">
       <div class="spinner"></div>
@@ -79,22 +79,13 @@
           </thead>
           <tbody>
             <tr *ngFor="let s of suggestions" class="table-row suggestion-row">
-
               <td class="td-date">{{ s.downtime_date }}</td>
-
               <td><span class="badge badge--placa">{{ s.plate }}</span></td>
-
               <td>{{ s.affiliate_name }}</td>
-
-              <!-- Indica si estaba en taller -->
               <td>
-                <span *ngIf="s.maintenance_id" class="badge badge-taller">
-                  🔧 Taller
-                </span>
+                <span *ngIf="s.maintenance_id" class="badge badge-taller">🔧 Taller</span>
                 <span *ngIf="!s.maintenance_id" class="text-muted">—</span>
               </td>
-
-              <!-- Select de estado inline -->
               <td class="td-status">
                 <select class="form-control-inline"
                   [(ngModel)]="s.selectedStatusId"
@@ -103,15 +94,11 @@
                   <option *ngFor="let st of statuses" [value]="st.id">{{ st.name }}</option>
                 </select>
               </td>
-
-              <!-- Input observación inline -->
               <td class="td-obs">
                 <input type="text" class="form-control-inline"
                   [(ngModel)]="s.observations"
                   placeholder="Observación opcional...">
               </td>
-
-              <!-- Guardar -->
               <td class="td-action">
                 <button class="btn-save-row"
                   (click)="saveSuggestion(s)"
@@ -120,7 +107,6 @@
                   <span *ngIf="s.saving">...</span>
                 </button>
               </td>
-
             </tr>
           </tbody>
         </table>
@@ -137,9 +123,81 @@
       [total]="total"
       [loading]="loading"
       exportName="control-vehiculos"
+      [showFilterBtn]="true"
       (pageChange)="onPageChange($event)"
-      (actionSelect)="onAction($event)">
+      (actionSelect)="onAction($event)"
+      (filterClick)="filterOpen = true">
     </app-data-table>
   </div>
 
 </div>
+
+<app-filter-panel
+  [open]="filterOpen"
+  [activeCount]="activeFilterCount"
+  title="Filtros de Control de Vehículos"
+  (closed)="filterOpen = false"
+  (apply)="applyFilters()"
+  (clear)="clearFilters()">
+
+  <!-- Fecha -->
+  <div class="filter-section">
+    <div class="filter-section-label">Fecha</div>
+    <div class="filter-row-2">
+      <div class="filter-field">
+        <label class="filter-label">Desde</label>
+        <input type="date" class="form-control" [(ngModel)]="filters.fecha_desde">
+      </div>
+      <div class="filter-field">
+        <label class="filter-label">Hasta</label>
+        <input type="date" class="form-control" [(ngModel)]="filters.fecha_hasta">
+      </div>
+    </div>
+
+    <div class="filter-field" *ngIf="statuses.length">
+      <label class="filter-label">Estado</label>
+      <select class="form-control" [(ngModel)]="filters.status_id">
+        <option value="">Todos</option>
+        <option *ngFor="let st of statuses" [value]="st.id">{{ st.name }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Vehículo -->
+  <div class="filter-section">
+    <div class="filter-section-label">Vehículo</div>
+
+    <div class="filter-field">
+      <label class="filter-label">Placa</label>
+      <div class="input-icon-wrap">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="form-control has-icon" placeholder="Buscar placa…"
+          [ngModel]="ac.vehicle_id.ctrl.value" (ngModelChange)="ac.vehicle_id.ctrl.setValue($event)"
+          [matAutocomplete]="autoVehiculo">
+      </div>
+      <mat-autocomplete #autoVehiculo="matAutocomplete" [displayWith]="displayFn('plate')"
+        (optionSelected)="onSelect('vehicle_id', $event.option.value)">
+        <mat-option *ngFor="let v of ac.vehicle_id.filtered$ | async" [value]="v">{{ v.plate }}</mat-option>
+      </mat-autocomplete>
+    </div>
+
+    <div class="filter-field" *ngIf="!isAffiliate">
+      <label class="filter-label">Afiliado</label>
+      <div class="input-icon-wrap">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="form-control has-icon" placeholder="Buscar afiliado…"
+          [ngModel]="ac.affiliate_id.ctrl.value" (ngModelChange)="ac.affiliate_id.ctrl.setValue($event)"
+          [matAutocomplete]="autoAfiliado">
+      </div>
+      <mat-autocomplete #autoAfiliado="matAutocomplete" [displayWith]="displayFn('name')"
+        (optionSelected)="onSelect('affiliate_id', $event.option.value)">
+        <mat-option *ngFor="let a of ac.affiliate_id.filtered$ | async" [value]="a">{{ a.name }}</mat-option>
+      </mat-autocomplete>
+    </div>
+  </div>
+
+</app-filter-panel>

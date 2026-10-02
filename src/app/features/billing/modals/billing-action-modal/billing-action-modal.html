@@ -1,0 +1,159 @@
+<div class="modal-header">
+  <div class="modal-header-left">
+    <span class="modal-eyebrow">Facturación</span>
+    <h2 class="modal-title">{{ title }}</h2>
+  </div>
+  <button class="btn-close" (click)="close()" aria-label="Cerrar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </button>
+</div>
+
+<mat-dialog-content class="modal-body">
+
+  <!-- Resumen de la selección -->
+  <div class="ba-selection">
+    <span><strong>{{ data.count }}</strong> viaje(s) seleccionado(s)</span>
+    <span class="mono"><strong>{{ formatMoney(data.value) }}</strong></span>
+  </div>
+
+  <!-- ═══ Campos según la acción ═══ -->
+  <div class="form-section">
+
+    <!-- OC TEMPORAL -->
+    <ng-container *ngIf="data.mode === 'temp'">
+      <p class="ba-help">Se generará el siguiente consecutivo (OCTEMP…) y se asignará a todos los viajes seleccionados.</p>
+      <div class="form-group">
+        <label class="form-label">Nota (opcional)</label>
+        <input type="text" class="form-control" maxlength="255" [(ngModel)]="form.notes"
+          placeholder="Ej: viajes cliente X semana 39">
+      </div>
+    </ng-container>
+
+    <!-- ORDEN DE COMPRA -->
+    <ng-container *ngIf="data.mode === 'po'">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Orden de compra <span class="required">*</span></label>
+          <input type="text" class="form-control mono" maxlength="60" [(ngModel)]="form.purchase_order"
+            (ngModelChange)="onFormChange()" placeholder="Número de OC"
+            [class.field-error]="fieldErrors['purchase_order']">
+        </div>
+        <div class="form-group">
+          <label class="form-label">OC temporal del grupo</label>
+          <select class="form-control" [(ngModel)]="form.temp_order_id" (ngModelChange)="onFormChange()">
+            <option value="">Automática (la de la mayoría)</option>
+            <option *ngFor="let t of tempOrders" [ngValue]="t.id">{{ t.code }} · {{ t.trips }} viaje(s)</option>
+          </select>
+        </div>
+      </div>
+      <p class="ba-help">Si algún viaje no tiene OC temporal o tiene una diferente, te avisaremos antes de guardar.</p>
+    </ng-container>
+
+    <!-- FACTURA -->
+    <ng-container *ngIf="data.mode === 'invoice'">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Número de factura <span class="required">*</span></label>
+          <input type="text" class="form-control mono" maxlength="60" [(ngModel)]="form.invoice_number"
+            (ngModelChange)="onFormChange()" placeholder="Ej: FE-1001"
+            [class.field-error]="fieldErrors['invoice_number']">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de factura</label>
+          <input type="date" class="form-control" [(ngModel)]="form.invoice_date">
+        </div>
+      </div>
+      <p class="ba-help">Si algún viaje no tiene orden de compra o tienen órdenes distintas, te avisaremos antes de guardar.</p>
+    </ng-container>
+
+    <!-- REVERTIR -->
+    <ng-container *ngIf="data.mode === 'revert'">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Qué quitar <span class="required">*</span></label>
+          <select class="form-control" [(ngModel)]="form.step" (ngModelChange)="onFormChange()">
+            <option *ngFor="let s of revertSteps" [value]="s.value">{{ s.label }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Motivo <span class="required">*</span></label>
+          <input type="text" class="form-control" maxlength="255" [(ngModel)]="form.reason"
+            placeholder="Ej: OC digitada mal" [class.field-error]="fieldErrors['reason']">
+        </div>
+      </div>
+      <p class="ba-help">Queda registrado en el historial de cada viaje.</p>
+    </ng-container>
+  </div>
+
+  <!-- ═══ Errores (no se puede continuar) ═══ -->
+  <div class="ba-issues" *ngIf="errors.length">
+    <div class="ba-issue ba-issue--error" *ngFor="let e of errors; let i = index">
+      <div class="ba-issue-head">
+        <span class="ba-issue-icon" aria-hidden="true">✕</span>
+        <span class="ba-issue-msg">{{ e.message }}</span>
+        <button type="button" class="ba-toggle" *ngIf="e.trips?.length" (click)="toggleTrips(i)">
+          {{ expanded.has(i) ? 'Ocultar' : 'Ver viajes' }}
+        </button>
+      </div>
+      <ng-container *ngTemplateOutlet="tripList; context: { trips: e.trips, show: expanded.has(i) }"></ng-container>
+    </div>
+  </div>
+
+  <!-- ═══ Advertencias (el usuario decide) ═══ -->
+  <div class="ba-issues" *ngIf="warnings.length">
+    <div class="ba-confirm-title" *ngIf="needsConfirm">Revisa antes de continuar</div>
+    <div class="ba-issue ba-issue--warn" *ngFor="let w of warnings; let i = index">
+      <div class="ba-issue-head">
+        <span class="ba-issue-icon" aria-hidden="true">!</span>
+        <span class="ba-issue-msg">{{ w.message }}</span>
+        <button type="button" class="ba-toggle" *ngIf="w.trips?.length" (click)="toggleTrips(100 + i)">
+          {{ expanded.has(100 + i) ? 'Ocultar' : 'Ver viajes' }}
+        </button>
+      </div>
+      <ng-container *ngTemplateOutlet="tripList; context: { trips: w.trips, show: expanded.has(100 + i) }"></ng-container>
+    </div>
+  </div>
+
+  <!-- Lista de viajes afectados -->
+  <ng-template #tripList let-trips="trips" let-show="show">
+    <div class="ba-trips" *ngIf="show && trips?.length">
+      <table class="ba-trips-table">
+        <thead>
+          <tr>
+            <th>Fecha</th><th>Placa</th><th>Contenedor</th><th class="r">Flete</th><th>OC temporal</th><th>OC</th><th>Factura</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of trips">
+            <td class="mono">{{ t.trip_date | date:'dd/MM/yyyy' }}</td>
+            <td class="mono">{{ t.plate || '—' }}</td>
+            <td class="mono">{{ t.container || '—' }}</td>
+            <td class="mono r">{{ formatMoney(t.freight_value) }}</td>
+            <td class="mono">{{ t.temp_order || '—' }}</td>
+            <td class="mono">{{ t.purchase_order || '—' }}</td>
+            <td class="mono">{{ t.invoice_number || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-template>
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="modal-footer">
+  <button class="btn-cancel" (click)="close()">Cancelar</button>
+
+  <!-- Paso normal -->
+  <button class="btn-save" *ngIf="!needsConfirm" (click)="submit(false)" [disabled]="saving || errors.length > 0">
+    <div *ngIf="saving" class="spinner" style="width:14px;height:14px;border-width:2px;border-top-color:#fff"></div>
+    {{ saving ? 'Guardando…' : (data.mode === 'revert' ? 'Revertir' : 'Guardar') }}
+  </button>
+
+  <!-- Hay advertencias: el usuario acepta y se reenvía con confirm: true -->
+  <button class="btn-save ba-btn-confirm" *ngIf="needsConfirm" (click)="submit(true)" [disabled]="saving">
+    <div *ngIf="saving" class="spinner" style="width:14px;height:14px;border-width:2px;border-top-color:#fff"></div>
+    {{ saving ? 'Guardando…' : 'Continuar de todas formas' }}
+  </button>
+</mat-dialog-actions>

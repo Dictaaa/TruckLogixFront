@@ -71,6 +71,36 @@
       </div>
     </div>
 
+    <!-- Billing — visible para rol 1 -->
+    <div class="nav-group" *appHasRole="[1, 2, 3]">
+      <button class="nav-item nav-item--group"
+        [class.nav-item--active]="isBillingActive()"
+        [class.nav-item--open]="billingOpen"
+        (click)="toggleBilling()">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path d="M4 6h16M4 10h16M4 14h8M4 18h8"/>
+          </svg>
+        </span>
+        <span class="nav-label">Facturación</span>
+        <span class="nav-chevron" [class.nav-chevron--open]="billingOpen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </span>
+      </button>
+
+      <div class="nav-children" [class.nav-children--open]="billingOpen">
+        <a *ngFor="let item of filteredBillingItems"
+          [routerLink]="item.route"
+          routerLinkActive="nav-child--active"
+          class="nav-child">
+          <span class="nav-child-icon" [innerHTML]="item.icon"></span>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      </div>
+    </div>
+
     <!-- Grupo Maestros — visible para rol 1 -->
     <div class="nav-group" *appHasRole="[1]">
       <button class="nav-item nav-item--group"

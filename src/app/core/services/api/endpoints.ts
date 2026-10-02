@@ -99,4 +99,14 @@ export const ENDPOINTS = {
 UPDATE:   (id: number) => `/api/v1/pyg-parameters/${id}`,
   DELETE:   (id: number) => `/api/v1/pyg-parameters/${id}`,
 },
+
+BILLING: {
+  TRIPS:           `/api/v1/billing/trips`,
+  HISTORY:         (id: number) => `/api/v1/billing/trips/${id}/history`,
+  SUMMARY:         `/api/v1/billing/summary`,
+  TEMP_ORDERS:     `/api/v1/billing/temp-orders`,      // GET lista · POST genera OCTEMP
+  PURCHASE_ORDERS: `/api/v1/billing/purchase-orders`,
+  INVOICES:        `/api/v1/billing/invoices`,
+  REVERT:          `/api/v1/billing/revert`,
+},
 };

@@ -34,6 +34,7 @@ export class Sidebar {
   mastersOpen = false;
   operationsOpen = false;
   maintenancesOpen = false;
+  billingOpen = false;
 
   mainItems: NavItem[] = [
     {
@@ -164,6 +165,14 @@ export class Sidebar {
     // }
   ];
 
+  billingItems: NavItem[] = [
+    {
+      label: 'Facturación',
+      route: '/billing',
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V8l9-6 9 6v14H3z"/><path d="M12 22V12H8v10"/><path d="M16 22v-4a2 2 0 0 0-2-2h-4"/></svg>`
+    },
+  ];
+
   isMasterActive(): boolean {
     return this.masterItems.some(item => this.router.url.startsWith(item.route));
   }
@@ -174,6 +183,14 @@ export class Sidebar {
 
   isOperationActive(): boolean {
     return this.operationItems.some(item => this.router.url.startsWith(item.route));
+  }
+
+  isBillingActive(): boolean {
+    return this.router.url.startsWith('/billing');
+  }
+
+  toggleBilling(): void {
+    this.billingOpen = !this.billingOpen;
   }
 
   toggleMaintenances(): void {
@@ -215,5 +232,9 @@ export class Sidebar {
 
   get filteredMaintenanceItems(): NavItem[] {
     return this.maintenanceItems;
+  }
+
+  get filteredBillingItems(): NavItem[] {
+    return this.billingItems;
   }
 }

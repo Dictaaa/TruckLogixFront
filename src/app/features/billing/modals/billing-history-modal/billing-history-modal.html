@@ -1,0 +1,47 @@
+<div class="modal-header">
+  <div class="modal-header-left">
+    <span class="modal-eyebrow">Facturación · Viaje #{{ trip.id }}</span>
+    <h2 class="modal-title">Historial</h2>
+  </div>
+  <button class="btn-close" (click)="close()" aria-label="Cerrar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </button>
+</div>
+
+<mat-dialog-content class="modal-body">
+
+  <div class="bh-trip">
+    <span class="mono">{{ trip.trip_date | date:'dd/MM/yyyy' }}</span>
+    <span class="badge badge--placa" *ngIf="trip.vehicle?.plate">{{ trip.vehicle.plate }}</span>
+    <span>{{ trip.client?.name }}</span>
+  </div>
+
+  <div class="loading-cell" *ngIf="loading">
+    <div class="spinner"></div><span>Cargando…</span>
+  </div>
+
+  <p class="text-muted" *ngIf="!loading && !events.length">Este viaje aún no tiene movimientos de facturación.</p>
+
+  <ol class="bh-list" *ngIf="!loading && events.length">
+    <li *ngFor="let e of events" class="bh-item" [class.bh-item--revert]="isRevert(e.action)">
+      <div class="bh-head">
+        <strong>{{ actionLabel(e.action) }}</strong>
+        <span class="bh-date mono">{{ e.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      <div class="bh-body">
+        <span *ngIf="e.from_label || e.to_label">{{ e.from_label || '—' }} → {{ e.to_label || '—' }}</span>
+        <span *ngIf="e.tempOrder?.code">OC temporal: <b class="mono">{{ e.tempOrder.code }}</b></span>
+        <span *ngIf="e.purchase_order">OC: <b class="mono">{{ e.purchase_order }}</b></span>
+        <span *ngIf="e.invoice_number">Factura: <b class="mono">{{ e.invoice_number }}</b></span>
+      </div>
+      <div class="bh-detail" *ngIf="e.detail">{{ e.detail }}</div>
+    </li>
+  </ol>
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="modal-footer">
+  <button class="btn-cancel" (click)="close()">Cerrar</button>
+</mat-dialog-actions>

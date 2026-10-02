@@ -1,0 +1,359 @@
+// Solo estilos propios de Facturación; tabla, badges, filtros y botones vienen de tus estilos globales.
+
+// ── Colores por estado ────────────────────────────────────────────────
+$st-temp: #64748b;
+$st-oc:   #f59e0b;
+$st-fact: #1a6fdb;
+$st-done: #10b981;
+
+.st-temp { --st: #{$st-temp}; }
+.st-oc   { --st: #{$st-oc}; }
+.st-fact { --st: #{$st-fact}; }
+.st-done { --st: #{$st-done}; }
+
+// ── Tarjetas de resumen ───────────────────────────────────────────────
+.bill-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+
+  @media (max-width: 1000px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 520px)  { grid-template-columns: 1fr; }
+}
+
+.bill-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  text-align: left;
+  font: inherit;
+  background: #fff;
+  border: 1px solid #dde3ec;
+  border-top: 3px solid var(--st, #94a3b8);
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.15s, transform 0.15s;
+
+  &:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+  &:focus-visible { outline: 2px solid var(--st); outline-offset: 2px; }
+
+  &--active {
+    background: color-mix(in srgb, var(--st) 6%, white);
+    border-color: var(--st);
+  }
+}
+
+.bill-card-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--st);
+}
+
+.bill-card-count {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: 'IBM Plex Mono', monospace;
+  small { font-size: 12px; font-weight: 500; color: #94a3b8; font-family: inherit; }
+}
+
+.bill-card-value { font-size: 13px; color: #475569; font-family: 'IBM Plex Mono', monospace; }
+
+// ── Pestañas ──────────────────────────────────────────────────────────
+.bill-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid #dde3ec;
+  margin-bottom: 14px;
+  overflow-x: auto;
+}
+
+.bill-tab {
+  padding: 10px 14px;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover { color: #0f172a; }
+  &--active { color: #1a6fdb; border-bottom-color: #1a6fdb; }
+}
+
+// ── Toolbar ───────────────────────────────────────────────────────────
+// ── Barra de búsqueda por columna ─────────────────────────────────────
+.bill-toolbar {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+// Selector de columna: queda pegado al buscador como un solo control
+.bill-search-col {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 180px;
+  height: 38px;
+  margin-right: -10px;                 // anula el gap para unirlo al buscador
+  padding: 0 34px 0 12px;
+  border: 1px solid #dde3ec;
+  border-radius: 8px 0 0 8px;
+  background-color: #f8fafc;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  background-size: 13px;
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover { background-color: #f1f5f9; }
+
+  &:focus {
+    outline: none;
+    position: relative;
+    z-index: 1;
+    border-color: #1a6fdb;
+    box-shadow: 0 0 0 3px rgba(26, 111, 219, 0.12);
+  }
+}
+
+// Buscador
+.bill-search {
+  position: relative;
+  flex: 1 1 280px;
+  min-width: 220px;
+
+  .input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: #94a3b8;
+    pointer-events: none;
+  }
+
+  .form-control {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px 0 36px;
+    border: 1px solid #dde3ec;
+    border-radius: 0 8px 8px 0;
+    background: #fff;
+    font: inherit;
+    font-size: 13px;
+    color: #0f172a;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &::placeholder { color: #94a3b8; }
+
+    &:focus {
+      outline: none;
+      border-color: #1a6fdb;
+      box-shadow: 0 0 0 3px rgba(26, 111, 219, 0.12);
+    }
+  }
+}
+
+// Botón Filtros
+.btn-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  background: #fff;
+  border: 1px solid #dde3ec;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  svg { color: #64748b; }
+
+  &:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+  }
+}
+
+.btn-filter-count {
+  min-width: 18px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: #1a6fdb;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+// En pantallas pequeñas: selector arriba, buscador abajo
+@media (max-width: 640px) {
+  .bill-search-col {
+    flex: 1 1 100%;
+    margin-right: 0;
+    border-radius: 8px;
+  }
+
+  .bill-search .form-control {
+    border-radius: 8px;
+  }
+}
+
+// ── Barra de selección ────────────────────────────────────────────────
+.bill-selection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 13px;
+  transition: background 0.15s, border-color 0.15s;
+
+  &--on { background: #eff6ff; border-color: #bfdbfe; }
+}
+
+.bill-selection-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  color: #334155;
+}
+
+.link-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a6fdb;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+  &:disabled { color: #94a3b8; cursor: default; text-decoration: none; }
+}
+
+.bill-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.bill-action {
+  padding: 7px 12px;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: #f1f5f9; }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  &--primary {
+    background: #1a6fdb;
+    border-color: #1a6fdb;
+    color: #fff;
+    &:hover:not(:disabled) { background: #155bb5; }
+  }
+
+  &--danger {
+    color: #dc2626;
+    border-color: #fecdd3;
+    &:hover:not(:disabled) { background: #fff1f2; }
+  }
+}
+
+// ── Tabla ─────────────────────────────────────────────────────────────
+.bill-table {
+  th, td { white-space: nowrap; }
+
+  .col-check { width: 36px; text-align: center; }
+  .col-check input { width: 16px; height: 16px; cursor: pointer; accent-color: #1a6fdb; }
+  .col-right { text-align: right; }
+
+  .sortable { cursor: pointer; user-select: none; &:hover { color: #0f172a; } }
+  .sort-ind { font-size: 9px; margin-left: 2px; }
+
+  .table-row { cursor: pointer; }
+  .row-selected td { background: #eff6ff; }
+}
+
+.bill-code {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.bill-status {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--st);
+  background: color-mix(in srgb, var(--st) 12%, white);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 6px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 16px;
+  color: #64748b;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: #f1f5f9; border-color: #e2e8f0; color: #0f172a; }
+  &:disabled { opacity: 0.4; cursor: default; }
+}
+
+// ── Paginación ────────────────────────────────────────────────────────
+.bill-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 4px 0;
+  font-size: 13px;
+}
+
+.bill-pager-right { display: flex; align-items: center; gap: 8px; }
+.bill-pager-limit { width: auto; padding-top: 4px; padding-bottom: 4px; }

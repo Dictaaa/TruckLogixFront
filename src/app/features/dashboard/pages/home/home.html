@@ -238,6 +238,181 @@
       </div>
     </section>
 
+    <!-- ═══════════════════════════ FACTURACIÓN ═══════════════════════════ -->
+    <section class="acc" [class.open]="open.facturacion" *ngIf="!isFuelRole" style="--accent: #1a6fdb">
+      <button type="button" class="acc-header" (click)="toggle('facturacion')" [attr.aria-expanded]="open.facturacion">
+        <span class="acc-dot"></span>
+        <span class="acc-title">Facturación</span>
+        <span class="acc-summary" *ngIf="billing?.totals">
+          Por facturar {{ formatMoney(billing.totals.porFacturar) }}
+          <span class="acc-pill" [style.color]="billingPctColor(billing.totals.pctFacturado)">
+            {{ billing.totals.pctFacturado ?? 0 }}% facturado
+          </span>
+        </span>
+        <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
+      </button>
+
+      <div class="acc-body" *ngIf="open.facturacion">
+
+        <div class="acc-empty acc-empty--warn" *ngIf="!billing">
+          El servidor no envió datos de facturación. Revisa que el controlador del dashboard esté actualizado,
+          que la tabla <code>trips</code> tenga la columna <code>billing_status</code> y reinicia Node.
+        </div>
+
+        <ng-container *ngIf="billing">
+
+          <!-- Tarjetas por estado -->
+          <div class="bdash-grid">
+            <div class="bdash-card" *ngFor="let s of billingStatuses" [style.--st]="s.color">
+              <span class="bdash-label">{{ s.label }}</span>
+              <span class="bdash-value">{{ formatMoney(billing.totals.byStatus[s.key].value) }}</span>
+              <span class="bdash-sub">
+                {{ billing.totals.byStatus[s.key].trips }} viajes ·
+                {{ sharePct(billing.totals.byStatus[s.key].value, billing.totals.value) }}% del año
+              </span>
+              <div class="bdash-bar">
+                <div class="bdash-bar-fill"
+                  [style.width.%]="sharePct(billing.totals.byStatus[s.key].value, billing.totals.value)"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Avance general del año -->
+          <div class="bdash-progress">
+            <div class="bdash-progress-head">
+              <span>Avance de facturación {{ year }}</span>
+              <strong [style.color]="billingPctColor(billing.totals.pctFacturado)">
+                {{ billing.totals.pctFacturado ?? 0 }}%
+              </strong>
+            </div>
+            <div class="bdash-stack" [attr.aria-label]="'Distribución de la producción por estado de facturación'">
+              <div class="bdash-stack-seg" *ngFor="let s of billingStatuses"
+                [style.width.%]="sharePct(billing.totals.byStatus[s.key].value, billing.totals.value)"
+                [style.background]="s.color"
+                [title]="s.label + ': ' + formatMoney(billing.totals.byStatus[s.key].value)"></div>
+            </div>
+            <div class="bdash-legend">
+              <span *ngFor="let s of billingStatuses"><i [style.background]="s.color"></i>{{ s.label }}</span>
+            </div>
+          </div>
+
+          <!-- Mes a mes -->
+          <div class="acc-sub">
+            <h3 class="acc-sub-title">Mes a mes — {{ year }} <small class="text-muted">(por fecha del viaje)</small></h3>
+            <div class="table-wrapper">
+              <table class="data-table production-table">
+                <thead>
+                  <tr>
+                    <th class="col-placa">Estado</th>
+                    <th *ngFor="let m of activeMonths" class="col-mes" [class.col-current]="m === thisMonth">
+                      {{ monthNames[m] }}
+                    </th>
+                    <th class="col-mes">Total Año</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let s of billingStatuses" class="table-row">
+                    <td><span class="bdash-dot" [style.background]="s.color"></span>{{ s.label }}</td>
+                    <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
+                      <ng-container *ngIf="billing.monthly[m]?.byStatus[s.key].value; else noBill">
+                        <div>{{ formatMoney(billing.monthly[m].byStatus[s.key].value) }}</div>
+                        <div class="cell-sub">{{ billing.monthly[m].byStatus[s.key].trips }} viajes</div>
+                      </ng-container>
+                      <ng-template #noBill><span class="text-muted">—</span></ng-template>
+                    </td>
+                    <td class="td-money td-strong">{{ formatMoney(billing.totals.byStatus[s.key].value) }}</td>
+                  </tr>
+
+                  <tr class="row-total">
+                    <td><strong>TOTAL</strong></td>
+                    <td *ngFor="let m of activeMonths" class="td-money" [class.td-current]="m === thisMonth">
+                      <strong>{{ formatMoney(billing.monthly[m]?.value) }}</strong>
+                    </td>
+                    <td class="td-money td-strong"><strong>{{ formatMoney(billing.totals.value) }}</strong></td>
+                  </tr>
+
+                  <tr class="row-total">
+                    <td><strong>% FACTURADO</strong></td>
+                    <td *ngFor="let m of activeMonths" class="td-center" [class.td-current]="m === thisMonth">
+                      <strong *ngIf="billing.monthly[m]?.pctFacturado !== null"
+                        [style.color]="billingPctColor(billing.monthly[m]?.pctFacturado)">
+                        {{ billing.monthly[m]?.pctFacturado | number:'1.0-0' }}%
+                      </strong>
+                      <span *ngIf="billing.monthly[m]?.pctFacturado === null" class="text-muted">—</span>
+                    </td>
+                    <td class="td-center">
+                      <strong [style.color]="billingPctColor(billing.totals.pctFacturado)">
+                        {{ (billing.totals.pctFacturado ?? 0) | number:'1.0-0' }}%
+                      </strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Por afiliado -->
+          <div class="acc-sub">
+            <h3 class="acc-sub-title">Por afiliado — {{ year }}</h3>
+            <div class="table-wrapper" *ngIf="billing.affiliates?.length; else noBillAff">
+              <table class="data-table production-table">
+                <thead>
+                  <tr>
+                    <th>Afiliado</th>
+                    <th *ngFor="let s of billingStatuses" class="col-mes">{{ s.label }}</th>
+                    <th class="col-mes">Total</th>
+                    <th class="col-mes">Por facturar</th>
+                    <th>% Facturado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let a of billing.affiliates; trackBy: trackById" class="table-row">
+                    <td><strong>{{ a.name }}</strong></td>
+                    <td *ngFor="let s of billingStatuses" class="td-money">
+                      <ng-container *ngIf="a.byStatus[s.key].value; else noAffVal">
+                        <div>{{ formatMoney(a.byStatus[s.key].value) }}</div>
+                        <div class="cell-sub">{{ a.byStatus[s.key].trips }} viajes</div>
+                      </ng-container>
+                      <ng-template #noAffVal><span class="text-muted">—</span></ng-template>
+                    </td>
+                    <td class="td-money td-strong">{{ formatMoney(a.value) }}</td>
+                    <td class="td-money" [class.bdash-pending]="a.porFacturar > 0">{{ formatMoney(a.porFacturar) }}</td>
+                    <td class="td-bar">
+                      <div class="render-bar-wrap">
+                        <div class="render-bar" [style.width.%]="a.pctFacturado ?? 0"
+                          [style.background]="billingPctColor(a.pctFacturado)"></div>
+                        <span class="render-label" [style.color]="billingPctColor(a.pctFacturado)">
+                          {{ (a.pctFacturado ?? 0) | number:'1.0-0' }}%
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <tr class="row-total" *ngIf="billing.affiliates.length > 1">
+                    <td><strong>TOTAL</strong></td>
+                    <td *ngFor="let s of billingStatuses" class="td-money">
+                      <strong>{{ formatMoney(billing.totals.byStatus[s.key].value) }}</strong>
+                    </td>
+                    <td class="td-money td-strong"><strong>{{ formatMoney(billing.totals.value) }}</strong></td>
+                    <td class="td-money"><strong>{{ formatMoney(billing.totals.porFacturar) }}</strong></td>
+                    <td class="td-center">
+                      <strong [style.color]="billingPctColor(billing.totals.pctFacturado)">
+                        {{ (billing.totals.pctFacturado ?? 0) | number:'1.0-0' }}%
+                      </strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <ng-template #noBillAff>
+              <div class="acc-empty">No hay viajes en {{ year }}.</div>
+            </ng-template>
+          </div>
+
+        </ng-container>
+      </div>
+    </section>
+
     <!-- ═══════════════════════════ COMBUSTIBLE ═══════════════════════════ -->
     <section class="acc" [class.open]="open.combustible" style="--accent: #f59e0b">
       <button type="button" class="acc-header" (click)="toggle('combustible')" [attr.aria-expanded]="open.combustible">

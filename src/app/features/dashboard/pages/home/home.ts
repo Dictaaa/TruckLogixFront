@@ -7,7 +7,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { HasRoleDirective } from '../../../../core/directives/has-role';
 import { SumPropPipe } from '../../../../shared/pipes/sum-prop.pipe';
 
-type AccKey = 'produccion' | 'combustible' | 'mantenimiento' | 'pyg';
+type AccKey = 'produccion' | 'facturacion' | 'combustible' | 'mantenimiento' | 'pyg';
 
 const MONTH_NAMES = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
   'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -61,6 +61,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   mttoAnimated: Record<string, number> = { thisMonthTotal: 0, yearTotal: 0, thisMonthCount: 0 };
   mttoBars: { label: string; value: number; pct: number; current: boolean }[] = [];
 
+  // Facturación
+  billing: any = null;
+  billingStatuses = [
+    { key: 'pendiente_oc_temporal', label: 'Pendiente OC temporal',     color: '#64748b' },
+    { key: 'pendiente_oc',          label: 'Pendiente orden de compra', color: '#f59e0b' },
+    { key: 'pendiente_factura',     label: 'Pendiente factura',         color: '#1a6fdb' },
+    { key: 'facturado',             label: 'Facturado',                 color: '#10b981' },
+  ];
+
   private timers: any[] = [];
 
   // ─── ACORDEONES ───────────────────────────────────────────────────────────
@@ -73,7 +82,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   private loadAccState() {
-    const def = { produccion: true, combustible: true, mantenimiento: true, pyg: true };
+    const def = { produccion: true, facturacion: true, combustible: true, mantenimiento: true, pyg: true };
     try {
       const saved = JSON.parse(localStorage.getItem(this.ACC_KEY) || '{}');
       return { ...def, ...saved };
@@ -127,6 +136,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         });
         this.loadFuel(res.fuel);
         this.loadMaintenance(res.maintenance, res.thisMonth);
+        this.billing = res.billing ?? null;
 
         // PYG: por defecto el mes actual (o diciembre si es un año anterior)
         const maxM = this.maxMonth(res.thisMonth);
@@ -256,6 +266,19 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   trackById(_: number, a: any) { return a.id; }
   trackByPlate(_: number, p: any) { return p.plate; }
+
+  // ─── FACTURACIÓN ───────────────────────────────────────────────────────────
+  /** % que representa un valor dentro del total (para las barras) */
+  sharePct(value: number, total: number): number {
+    return total > 0 ? Math.round((value / total) * 100) : 0;
+  }
+
+  billingPctColor(pct: number | null): string {
+    if (pct === null || pct === undefined) return '#94a3b8';
+    if (pct >= 90) return '#10b981';
+    if (pct >= 60) return '#f59e0b';
+    return '#ef4444';
+  }
 
   // ─── PYG ──────────────────────────────────────────────────────────────────
   pyg: any = null;

@@ -125,14 +125,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/fuel-logs/pages/fuel-logs/fuel-logs/fuel-logs')
             .then((m) => m.FuelLogs),
-        canActivate: [roleGuard([1, 4])]
+        canActivate: [roleGuard([1, 3, 4])]
       },
       {
         path: 'maintenances',
         loadComponent: () =>
           import('./features/maintenances/pages/maintenances/maintenances')
             .then((m) => m.MaintenancesComponent),
-        canActivate: [roleGuard([1, 4])]
+        canActivate: [roleGuard([1, 3, 4])]
       },
       {
         path: 'maintenance-types',
@@ -151,7 +151,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/vehicle-downtime/pages/vehicle-downtime/vehicle-downtime')
             .then(m => m.VehicleDowntime),
-        canActivate: [roleGuard([1, 4])]
+        canActivate: [roleGuard([1, 3, 4])]
       },
       {
         path: 'pyg-parameters',
@@ -159,6 +159,13 @@ export const routes: Routes = [
           import('./features/masters/pyg-parameters/pages/pyg-parameters/pyg-parameters')
             .then(m => m.PygParametersComponent),
         canActivate: [roleGuard([1])]
+      },
+      {
+        path: 'billing',
+        loadComponent: () =>
+          import('./features/billing/pages/billing/billing')
+            .then(m => m.BillingComponent),
+        canActivate: [roleGuard([1, 2, 3])]
       },
     ],
   },

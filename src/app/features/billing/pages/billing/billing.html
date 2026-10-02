@@ -1,0 +1,303 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Facturación</span>
+      <h1 class="page-title">Facturación de Viajes</h1>
+    </div>
+  </div>
+
+  <!-- ═══ Resumen por estado (también funcionan como pestañas) ═══ -->
+  <div class="bill-summary">
+    <button type="button" class="bill-card" *ngFor="let t of tabs.slice(0, 4)"
+      [class.bill-card--active]="activeTab === t.key"
+      [ngClass]="statusClass(t.key)"
+      (click)="setTab(t.key)">
+      <span class="bill-card-label">{{ t.label }}</span>
+      <span class="bill-card-count">{{ summary[t.key]?.trips ?? 0 }} <small>viajes</small></span>
+      <span class="bill-card-value">{{ formatMoney(summary[t.key]?.value ?? 0) }}</span>
+    </button>
+  </div>
+
+  <!-- ═══ Pestañas ═══ -->
+  <div class="bill-tabs">
+    <button type="button" class="bill-tab" *ngFor="let t of tabs"
+      [class.bill-tab--active]="activeTab === t.key"
+      (click)="setTab(t.key)">
+      {{ t.label }}
+    </button>
+  </div>
+
+    <!-- ═══ Barra de herramientas ═══ -->
+  <div class="bill-toolbar">
+    <select class="form-control bill-search-col" [(ngModel)]="searchColumn"
+      (ngModelChange)="onSearchColumnChange()" aria-label="Columna de búsqueda">
+      <option *ngFor="let c of searchColumns" [value]="c.key">{{ c.label }}</option>
+    </select>
+
+    <div class="input-icon-wrap bill-search">
+      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" class="form-control has-icon" [placeholder]="searchPlaceholder"
+        [ngModel]="search" (ngModelChange)="onSearch($event)">
+    </div>
+
+    <button type="button" class="btn-filter" (click)="filterOpen = true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+      </svg>
+      Filtros
+      <span class="btn-filter-count" *ngIf="activeFilterCount">{{ activeFilterCount }}</span>
+    </button>
+  </div>
+
+  <!-- ═══ Barra de selección y acciones ═══ -->
+  <div class="bill-selection" *ngIf="!isAffiliate" [class.bill-selection--on]="selectedCount > 0">
+    <div class="bill-selection-info">
+      <ng-container *ngIf="selectedCount; else noSel">
+        <strong>{{ selectedCount }}</strong> viaje(s) seleccionado(s) ·
+        <strong class="mono">{{ formatMoney(selectedValue) }}</strong>
+        <button type="button" class="link-btn" (click)="clearSelection()">Quitar selección</button>
+      </ng-container>
+      <ng-template #noSel>
+        <span class="text-muted">Marca los viajes para generar OC temporal, orden de compra o factura.</span>
+      </ng-template>
+      <button type="button" class="link-btn" *ngIf="total > rows.length && total > selectedCount"
+        [disabled]="selectingAll" (click)="selectAllFiltered()">
+        {{ selectingAll ? 'Seleccionando…' : 'Seleccionar los ' + total + ' viajes filtrados' }}
+      </button>
+    </div>
+
+    <div class="bill-actions">
+      <button type="button" class="bill-action" [class.bill-action--primary]="primaryMode === 'temp'"
+        [disabled]="!selectedCount" (click)="openAction('temp')">Generar OC temporal</button>
+      <button type="button" class="bill-action" [class.bill-action--primary]="primaryMode === 'po'"
+        [disabled]="!selectedCount" (click)="openAction('po')">Asignar orden de compra</button>
+      <button type="button" class="bill-action" [class.bill-action--primary]="primaryMode === 'invoice'"
+        [disabled]="!selectedCount" (click)="openAction('invoice')">Asignar factura</button>
+      <button type="button" class="bill-action bill-action--danger"
+        [disabled]="!selectedCount" (click)="openAction('revert')">Revertir</button>
+    </div>
+  </div>
+
+  <!-- ═══ Tabla ═══ -->
+  <section class="table-section">
+    <div class="table-wrapper">
+      <table class="data-table bill-table">
+        <thead>
+          <tr>
+            <th class="col-check" *ngIf="!isAffiliate">
+              <input type="checkbox" aria-label="Seleccionar página"
+                [checked]="pageAllSelected" [indeterminate]="pageSomeSelected"
+                [disabled]="!rows.length" (change)="togglePage()">
+            </th>
+            <th class="sortable" (click)="sort('fecha')">
+              Fecha <span class="sort-ind" *ngIf="sortBy === 'fecha'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th>Placa</th>
+            <th>Contenedor</th>
+            <th>Afiliado</th>
+            <th>Cliente</th>
+            <th class="sortable col-right" (click)="sort('flete')">
+              Flete <span class="sort-ind" *ngIf="sortBy === 'flete'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th>OC temporal</th>
+            <th class="sortable" (click)="sort('ordenCompra')">
+              Orden de compra <span class="sort-ind" *ngIf="sortBy === 'ordenCompra'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th class="sortable" (click)="sort('factura')">
+              Factura <span class="sort-ind" *ngIf="sortBy === 'factura'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+            </th>
+            <th>Estado</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="loading">
+            <td [attr.colspan]="colCount">
+              <div class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando…</span>
+              </div>
+            </td>
+          </tr>
+
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let r of rows; trackBy: trackById" class="table-row"
+              [class.row-selected]="isSelected(r.id)" [class.row-readonly]="isAffiliate" (click)="toggle(r)">
+              <td class="col-check" *ngIf="!isAffiliate" (click)="$event.stopPropagation()">
+                <input type="checkbox" [checked]="isSelected(r.id)" (change)="toggle(r)"
+                  [attr.aria-label]="'Seleccionar viaje ' + r.id">
+              </td>
+              <td class="mono">{{ r.trip_date | date:'dd/MM/yyyy' }}</td>
+              <td><span class="badge badge--placa" *ngIf="r.vehicle?.plate">{{ r.vehicle.plate }}</span></td>
+              <td class="mono">{{ r.container?.number || '—' }}</td>
+              <td>{{ r.affiliate?.name || '—' }}</td>
+              <td>{{ r.client?.name || '—' }}</td>
+              <td class="mono col-right">{{ formatMoney(r.freight_value) }}</td>
+              <td class="mono">
+                <span *ngIf="r.temp_order_code" class="bill-code">{{ r.temp_order_code }}</span>
+                <span *ngIf="!r.temp_order_code" class="text-muted">—</span>
+              </td>
+              <td class="mono">{{ r.purchase_order || '—' }}</td>
+              <td class="mono">{{ r.invoice_number || '—' }}</td>
+              <td>
+                <span class="bill-status" [ngClass]="statusClass(r.billing_status)">
+                  {{ statusLabels[r.billing_status] || r.billing_status }}
+                </span>
+              </td>
+              <td class="col-actions" (click)="$event.stopPropagation()">
+                <button type="button" class="icon-btn" title="Historial" (click)="openHistory(r)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+                    <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="rows.length === 0">
+              <td [attr.colspan]="colCount" class="empty-state">
+                <p>No hay viajes para mostrar con estos filtros.</p>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="bill-pager" *ngIf="!loading && total > 0">
+      <span class="text-muted">{{ pageFrom }}–{{ pageTo }} de {{ total }}</span>
+      <div class="bill-pager-right">
+        <select class="form-control bill-pager-limit" [(ngModel)]="limit" (ngModelChange)="onLimitChange()">
+          <option *ngFor="let l of limitOptions" [ngValue]="l">{{ l }} por página</option>
+        </select>
+        <button type="button" class="icon-btn" [disabled]="page === 1" (click)="goTo(page - 1)" aria-label="Anterior">‹</button>
+        <span class="mono">{{ page }} / {{ totalPages }}</span>
+        <button type="button" class="icon-btn" [disabled]="page === totalPages" (click)="goTo(page + 1)" aria-label="Siguiente">›</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═══ PANEL DE FILTROS ═══ -->
+<app-filter-panel
+  [open]="filterOpen"
+  [activeCount]="activeFilterCount"
+  title="Filtros de Facturación"
+  (closed)="filterOpen = false"
+  (apply)="applyFilters()"
+  (clear)="clearFilters()">
+
+  <!-- Fecha del viaje -->
+  <div class="filter-section">
+    <div class="filter-section-label">Fecha del viaje</div>
+    <div class="filter-row-2">
+      <div class="filter-field">
+        <label class="filter-label">Desde</label>
+        <input type="date" class="form-control" [(ngModel)]="filters.fecha_desde">
+      </div>
+      <div class="filter-field">
+        <label class="filter-label">Hasta</label>
+        <input type="date" class="form-control" [(ngModel)]="filters.fecha_hasta">
+      </div>
+    </div>
+  </div>
+
+  <!-- Viaje -->
+  <div class="filter-section">
+    <div class="filter-section-label">Viaje</div>
+
+    <div class="filter-field">
+      <label class="filter-label">Cliente</label>
+      <div class="input-icon-wrap">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="form-control has-icon" placeholder="Buscar cliente…"
+          [ngModel]="ac.client_id.ctrl.value" (ngModelChange)="ac.client_id.ctrl.setValue($event)"
+          [matAutocomplete]="autoCliente">
+      </div>
+      <mat-autocomplete #autoCliente="matAutocomplete" [displayWith]="displayFn('name')"
+        (optionSelected)="onSelect('client_id', $event.option.value)">
+        <mat-option *ngFor="let c of ac.client_id.filtered$ | async" [value]="c">{{ c.name }}</mat-option>
+      </mat-autocomplete>
+    </div>
+
+    <div class="filter-field" *ngIf="!isAffiliate">
+      <label class="filter-label">Afiliado</label>
+      <div class="input-icon-wrap">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="form-control has-icon" placeholder="Buscar afiliado…"
+          [ngModel]="ac.affiliate_id.ctrl.value" (ngModelChange)="ac.affiliate_id.ctrl.setValue($event)"
+          [matAutocomplete]="autoAfiliado">
+      </div>
+      <mat-autocomplete #autoAfiliado="matAutocomplete" [displayWith]="displayFn('name')"
+        (optionSelected)="onSelect('affiliate_id', $event.option.value)">
+        <mat-option *ngFor="let a of ac.affiliate_id.filtered$ | async" [value]="a">{{ a.name }}</mat-option>
+      </mat-autocomplete>
+    </div>
+
+    <div class="filter-field">
+      <label class="filter-label">Placa</label>
+      <div class="input-icon-wrap">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="form-control has-icon" placeholder="Buscar placa…"
+          [ngModel]="ac.vehicle_id.ctrl.value" (ngModelChange)="ac.vehicle_id.ctrl.setValue($event)"
+          [matAutocomplete]="autoPlaca">
+      </div>
+      <mat-autocomplete #autoPlaca="matAutocomplete" [displayWith]="displayFn('plate')"
+        (optionSelected)="onSelect('vehicle_id', $event.option.value)">
+        <mat-option *ngFor="let v of ac.vehicle_id.filtered$ | async" [value]="v">{{ v.plate }}</mat-option>
+      </mat-autocomplete>
+    </div>
+
+    <div class="filter-field">
+      <label class="filter-label">Contenedor</label>
+      <div class="input-icon-wrap">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="form-control has-icon mono" placeholder="Buscar contenedor…"
+          [ngModel]="ac.container_id.ctrl.value" (ngModelChange)="ac.container_id.ctrl.setValue($event)"
+          [matAutocomplete]="autoContenedor">
+      </div>
+      <mat-autocomplete #autoContenedor="matAutocomplete" [displayWith]="displayFn('number')"
+        (optionSelected)="onSelect('container_id', $event.option.value)">
+        <mat-option *ngFor="let c of ac.container_id.filtered$ | async" [value]="c">{{ c.number }}</mat-option>
+      </mat-autocomplete>
+    </div>
+  </div>
+
+  <!-- Facturación -->
+  <div class="filter-section">
+    <div class="filter-section-label">Facturación</div>
+
+    <div class="filter-field">
+      <label class="filter-label">OC temporal</label>
+      <select class="form-control" [(ngModel)]="filters.temp_order_id">
+        <option value="">Todas</option>
+        <option *ngFor="let t of tempOrders" [ngValue]="t.id">
+          {{ t.code }} · {{ t.trips }} viaje(s){{ t.purchase_orders?.length ? ' · OC ' + t.purchase_orders.join(', ') : '' }}
+        </option>
+      </select>
+    </div>
+
+    <div class="filter-field">
+      <label class="filter-label">Orden de compra</label>
+      <input type="text" class="form-control mono" placeholder="Número de OC" [(ngModel)]="filters.purchase_order">
+    </div>
+
+    <div class="filter-field">
+      <label class="filter-label">Factura</label>
+      <input type="text" class="form-control mono" placeholder="Número de factura" [(ngModel)]="filters.invoice_number">
+    </div>
+  </div>
+
+</app-filter-panel>

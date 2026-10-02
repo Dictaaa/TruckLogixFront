@@ -21,6 +21,7 @@ export const PYG_MONTHLY_FIELDS: PygField[] = [
   { key: 'social_security', label: 'Seguridad social',   kind: 'money' },
   { key: 'satellite',       label: 'Satelital',          kind: 'money' },
   { key: 'insurance',       label: 'Seguro todo riesgo', kind: 'money' },
+  { key: 'affiliation',     label: 'Afiliación',         kind: 'money' },
   { key: 'parking',         label: 'Parqueadero',        kind: 'money' },
 ];
 
