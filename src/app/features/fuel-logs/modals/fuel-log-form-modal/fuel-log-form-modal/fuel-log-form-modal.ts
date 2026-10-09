@@ -58,12 +58,24 @@ export class FuelLogFormModal implements OnInit {
   }
 
   private loadCatalogs(): void {
-    this.api.getAuth(ENDPOINTS.VEHICLES.LIST).subscribe((d: any) => {
+        this.api.getAuth(ENDPOINTS.VEHICLES.LIST).subscribe((d: any) => {
       this.vehicles = Array.isArray(d) ? d : (d.data ?? []);
+      // Registros antiguos sin afiliado: completarlo desde la placa
+      if (this.form.vehicle_id && !this.form.affiliate_id) {
+        this.onVehicleChange(this.form.vehicle_id);
+      }
     });
     this.api.getAuth(ENDPOINTS.AFFILIATES.LIST).subscribe((d: any) => {
       this.affiliates = Array.isArray(d) ? d : (d.data ?? []);
     });
+  }
+
+    /** Al elegir la placa, se asigna automáticamente su afiliado */
+  onVehicleChange(vehicleId: any): void {
+    this.form.vehicle_id = vehicleId;
+    const vehicle = this.vehicles.find(v => Number(v.id) === Number(vehicleId));
+    // vehicles.company_id = afiliado dueño de la placa
+    this.form.affiliate_id = vehicle?.company_id ?? vehicle?.affiliate_id ?? null;
   }
 
   private fillForm(data: any): void {
