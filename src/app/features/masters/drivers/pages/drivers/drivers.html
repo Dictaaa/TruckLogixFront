@@ -5,85 +5,116 @@
       <span class="page-eyebrow">Maestros</span>
       <h1 class="page-title">Conductores</h1>
     </div>
+
     <button class="btn-primary" (click)="openModal()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-        <path d="M12 5v14M5 12h14"/>
+        <path d="M12 5v14M5 12h14" />
       </svg>
       Nuevo conductor
     </button>
   </div>
 
   <section class="table-section">
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Documento</th>
-            <th>Teléfono</th>
-            <th>Categoría</th>
-            <th>N° Licencia</th>
-            <th>Vencimiento</th>
-            <th class="col-status">Estado</th>
-            <th class="col-actions">Opciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="loading">
-            <td colspan="9">
-              <div class="loading-cell">
-                <div class="spinner"></div>
-                <span>Cargando…</span>
-              </div>
-            </td>
-          </tr>
-
-          <ng-container *ngIf="!loading">
-            <tr *ngFor="let d of drivers" class="table-row">
-              <td class="text-muted">{{ d.id }}</td>
-              <td>{{ d.name }}</td>
-              <td class="mono">{{ d.document ?? '—' }}</td>
-              <td class="mono">{{ d.phone ?? '—' }}</td>
-              <td>
-                <span *ngIf="d.license_category_id" class="badge badge--cat">
-                  {{ licenseCategories[d.license_category_id] || d.license_category_id }}
-                </span>
-                <span *ngIf="!d.license_category_id">—</span>
-              </td>
-              <td class="mono">{{ d.license_number ?? '—' }}</td>
-              <td>
-                <span *ngIf="d.license_expiration"
-                  class="badge"
-                  [class.badge-expired]="isExpired(d.license_expiration)"
-                  [class.badge-warning]="!isExpired(d.license_expiration) && isExpiringSoon(d.license_expiration)"
-                  [class.badge-ok]="!isExpired(d.license_expiration) && !isExpiringSoon(d.license_expiration)">
-                  {{ d.license_expiration | date:'dd/MM/yyyy' }}
-                </span>
-                <span *ngIf="!d.license_expiration">—</span>
-              </td>
-              <td>
-                <span class="badge" [class.badge-active]="d.active" [class.badge-inactive]="!d.active">
-                  {{ d.active ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
-              <td class="col-actions">
-                <app-table-actions
-                  [actions]="actions"
-                  (actionSelected)="onAction($event, d)">
-                </app-table-actions>
-              </td>
-            </tr>
-
-            <tr *ngIf="drivers.length === 0">
-              <td colspan="9" class="empty-state">
-                <p>No hay conductores registrados</p>
-              </td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </div>
+    <app-data-table [columns]="columns" [actions]="actions" [data]="table.rows" [total]="table.total"
+      [loading]="loading" exportName="conductores" [showFilterBtn]="true" (pageChange)="onPageChange($event)"
+      (actionSelect)="onAction($event)" (filterClick)="filterOpen = true">
+    </app-data-table>
   </section>
 
 </div>
+
+<app-filter-panel [open]="filterOpen" [activeCount]="activeFilterCount" title="Filtros de conductores"
+  (closed)="filterOpen = false" (apply)="applyFilters()" (clear)="clearFilters()">
+
+  <div class="filter-fields">
+
+    <!-- Fecha de creación -->
+    <div class="filter-field">
+      <label class="filter-label">Fecha de creación</label>
+
+      <div class="filter-row-2">
+
+        <div class="filter-field">
+          <label class="filter-label">Desde</label>
+
+          <input
+            type="date"
+            class="form-control"
+            [max]="filters.fechaHasta || null"
+            [(ngModel)]="filters.fechaDesde">
+        </div>
+
+        <div class="filter-field">
+          <label class="filter-label">Hasta</label>
+
+          <input
+            type="date"
+            class="form-control"
+            [min]="filters.fechaDesde || null"
+            [(ngModel)]="filters.fechaHasta">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="filter-field">
+      <label for="driverNombre" class="filter-label">Nombre</label>
+      <input id="driverNombre" type="text" class="form-control" [(ngModel)]="filters.nombre"
+        placeholder="Buscar por nombre">
+    </div>
+
+    <div class="filter-field">
+      <label for="driverDocumento" class="filter-label">Documento</label>
+      <input id="driverDocumento" type="text" class="form-control" [(ngModel)]="filters.documento"
+        placeholder="Número de documento">
+    </div>
+
+    <div class="filter-field">
+      <label for="driverTelefono" class="filter-label">Teléfono</label>
+      <input id="driverTelefono" type="text" class="form-control" [(ngModel)]="filters.telefono"
+        placeholder="Número de teléfono">
+    </div>
+
+    <div class="filter-field">
+      <label for="driverCategoria" class="filter-label">Categoría de licencia</label>
+      <select id="driverCategoria" class="form-control" [(ngModel)]="filters.categoria">
+        <option value="">Todas las categorías</option>
+        <option value="1">A1</option>
+        <option value="2">A2</option>
+        <option value="3">B1</option>
+        <option value="4">B2</option>
+        <option value="5">B3</option>
+        <option value="6">C1</option>
+        <option value="7">C2</option>
+        <option value="8">C3</option>
+      </select>
+    </div>
+
+    <div class="filter-field">
+      <label for="driverLicencia" class="filter-label">Número de licencia</label>
+      <input id="driverLicencia" type="text" class="form-control" [(ngModel)]="filters.licencia"
+        placeholder="Número de licencia">
+    </div>
+
+    <div class="filter-field">
+      <label for="driverVencimientoDesde" class="filter-label">Vencimiento desde</label>
+      <input id="driverVencimientoDesde" type="date" class="form-control" [(ngModel)]="filters.vencimientoDesde">
+    </div>
+
+    <div class="filter-field">
+      <label for="driverVencimientoHasta" class="filter-label">Vencimiento hasta</label>
+      <input id="driverVencimientoHasta" type="date" class="form-control" [(ngModel)]="filters.vencimientoHasta">
+    </div>
+
+    <div class="filter-field">
+      <label for="driverEstado" class="filter-label">Estado</label>
+      <select id="driverEstado" class="form-control" [(ngModel)]="filters.estado">
+        <option value="">Todos los estados</option>
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
+      </select>
+    </div>
+
+  </div>
+
+</app-filter-panel>

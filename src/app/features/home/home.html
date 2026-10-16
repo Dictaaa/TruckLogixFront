@@ -1,0 +1,253 @@
+<div class="landing">
+
+  <!-- Barra de progreso de lectura -->
+  <div class="scroll-progress" aria-hidden="true"><span #progressBar></span></div>
+
+  <!-- ═══ NAVBAR ═══════════════════════════════════════════════════════ -->
+  <header class="nav" #navBar>
+    <div class="container nav-inner">
+      <a class="nav-brand" routerLink="/" aria-label="Inicio">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none">
+            <rect x="2" y="14" width="26" height="15" rx="2.5" stroke="currentColor" stroke-width="2.4"/>
+            <path d="M28 18h5.5l4 5v6H28" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <circle cx="9" cy="31" r="3.2" fill="currentColor"/>
+            <circle cx="31" cy="31" r="3.2" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="nav-name">{{ brand.name }}</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Secciones">
+        <button type="button" *ngFor="let n of nav" (click)="scrollTo(n.id)">{{ n.label }}</button>
+      </nav>
+
+      <div class="nav-actions">
+        <app-theme-toggle></app-theme-toggle>
+        <button type="button" class="btn btn-primary-solid" (click)="goToPortal()">
+          {{ isLoggedIn ? 'Ir al portal' : 'Ingresar' }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ HERO CON VIDEO ═══════════════════════════════════════════════ -->
+  <section class="hero">
+    <!-- Video de fondo: silenciado, en bucle, sin controles -->
+    <video #heroVideo class="hero-video"
+      [src]="brand.heroVideo"
+      [attr.poster]="brand.heroPoster || null"
+      autoplay muted loop playsinline preload="auto"
+      disablepictureinpicture disableremoteplayback
+      aria-hidden="true" tabindex="-1"></video>
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <span class="hero-eyebrow hero-anim" style="--d: 0ms">
+          Control de vehículos · {{ brand.location }}
+        </span>
+        <h1 class="hero-title hero-anim" style="--d: 120ms">
+          Tu flota convertida en un <span class="accent">activo productivo</span>
+        </h1>
+        <p class="hero-text hero-anim" style="--d: 240ms">{{ brand.mission }}</p>
+
+        <div class="hero-ctas hero-anim" style="--d: 360ms">
+          <button type="button" class="btn btn-primary-solid btn-lg" (click)="goToPortal()">
+            {{ isLoggedIn ? 'Ir al portal' : 'Ingresar al portal' }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+          <button type="button" class="btn btn-glass btn-lg" (click)="scrollTo('planes')">Ver planes</button>
+        </div>
+
+        <dl class="hero-stats hero-anim" style="--d: 480ms">
+          <div class="stat" *ngFor="let s of stats">
+            <dt>{{ s.label }}</dt>
+            <dd>{{ s.value }}</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Indicador para bajar -->
+    <button type="button" class="hero-scroll" (click)="scrollTo('servicios')" aria-label="Bajar a servicios">
+      <span></span>
+    </button>
+  </section>
+
+  <!-- ═══ SERVICIOS ════════════════════════════════════════════════════ -->
+  <section class="section" id="servicios">
+    <div class="container">
+      <header class="section-head" appReveal>
+        <span class="eyebrow">Lo que hacemos</span>
+        <h2>Todo lo que tu vehículo necesita para producir</h2>
+        <p>Administramos la operación y te mostramos cada número con claridad.</p>
+      </header>
+
+      <div class="features">
+        <article class="feature" *ngFor="let f of features; let i = index"
+          appReveal [revealDelay]="(i % 3) * 110">
+          <span class="feature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path *ngFor="let d of f.icon" [attr.d]="d"/>
+            </svg>
+          </span>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.text }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CÓMO FUNCIONA ════════════════════════════════════════════════ -->
+  <section class="section section-alt" id="como-funciona">
+    <div class="container">
+      <header class="section-head" appReveal>
+        <span class="eyebrow">Cómo funciona</span>
+        <h2>Cuatro pasos, cero complicaciones</h2>
+      </header>
+
+      <ol class="steps">
+        <li class="step" *ngFor="let s of steps; let i = index"
+          appReveal="left" [revealDelay]="i * 140">
+          <span class="step-n">{{ s.n }}</span>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.text }}</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ═══ PARA QUIÉN ═══════════════════════════════════════════════════ -->
+  <section class="section" id="para-quien">
+    <div class="container">
+      <header class="section-head" appReveal>
+        <span class="eyebrow">Para quién es</span>
+        <h2>Pensado para quienes mueven la carga del país</h2>
+      </header>
+
+      <div class="audiences">
+        <article class="audience" *ngFor="let a of audiences; let i = index"
+          [appReveal]="i === 0 ? 'left' : 'right'">
+          <h3>{{ a.title }}</h3>
+          <p>{{ a.text }}</p>
+          <ul>
+            <li *ngFor="let p of a.points">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+              {{ p }}
+            </li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PLANES ═══════════════════════════════════════════════════════ -->
+  <section class="section section-alt" id="planes">
+    <div class="container">
+      <header class="section-head" appReveal>
+        <span class="eyebrow">Planes</span>
+        <h2>Elige cuánto quieres que hagamos por ti</h2>
+        <p>Precios por vehículo. Cambia de plan cuando lo necesites.</p>
+      </header>
+
+      <!-- Mensual / anual -->
+      <div class="billing-toggle" appReveal="fade" role="group" aria-label="Ciclo de pago">
+        <button type="button" [class.active]="billing === 'monthly'" (click)="billing = 'monthly'">Mensual</button>
+        <button type="button" [class.active]="billing === 'annual'" (click)="billing = 'annual'">
+          Anual <span class="save">-{{ annualDiscountPct }}%</span>
+        </button>
+      </div>
+
+      <div class="plans">
+        <article class="plan" *ngFor="let p of plans; let i = index"
+          [class.plan--featured]="p.highlight"
+          appReveal="zoom" [revealDelay]="i * 110">
+
+          <span class="plan-badge" *ngIf="p.highlight">{{ p.tag }}</span>
+
+          <header class="plan-head">
+            <h3>{{ p.name }}</h3>
+            <span class="plan-tag" *ngIf="!p.highlight">{{ p.tag }}</span>
+            <p>{{ p.description }}</p>
+          </header>
+
+          <div class="plan-price">
+            <span class="amount">{{ formatCOP(planPrice(p)) }}</span>
+            <span class="per">/ mes por vehículo</span>
+          </div>
+          <p class="plan-billed">
+            {{ billing === 'annual'
+                ? 'Pago anual de ' + formatCOP(planYearTotal(p))
+                : 'Pago mes a mes, sin permanencia' }}
+          </p>
+
+          <a class="btn btn-lg plan-cta" [class.btn-primary-solid]="p.highlight" [class.btn-ghost]="!p.highlight"
+            [href]="planLink(p)" target="_blank" rel="noopener">
+            Lo quiero
+          </a>
+
+          <ul class="plan-items">
+            <li *ngFor="let it of p.items" [class.off]="!it.included">
+              <svg *ngIf="it.included" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              <svg *ngIf="!it.included" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              <span>{{ it.text }}</span>
+            </li>
+          </ul>
+        </article>
+      </div>
+
+      <p class="plans-note" appReveal="fade">
+        Precios de referencia en pesos colombianos, IVA no incluido. ¿Tienes varios vehículos?
+        <a [href]="'mailto:' + brand.supportEmail">Escríbenos</a> y armamos una tarifa para tu flota.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ══════════════════════════════════════════════════════════ -->
+  <section class="section" id="contacto">
+    <div class="container">
+      <div class="cta" appReveal="zoom">
+        <div>
+          <h2>¿Ya eres afiliado?</h2>
+          <p>Ingresa al portal y revisa la producción, los gastos y la facturación de tus vehículos.</p>
+        </div>
+        <div class="cta-actions">
+          <button type="button" class="btn btn-on-primary btn-lg" (click)="goToPortal()">
+            {{ isLoggedIn ? 'Ir al portal' : 'Ingresar al portal' }}
+          </button>
+          <a class="btn btn-outline-light btn-lg" [href]="'mailto:' + brand.supportEmail">Escríbenos</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══════════════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="logo logo-sm" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none">
+            <rect x="2" y="14" width="26" height="15" rx="2.5" stroke="currentColor" stroke-width="2.6"/>
+            <path d="M28 18h5.5l4 5v6H28" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
+            <circle cx="9" cy="31" r="3.2" fill="currentColor"/>
+            <circle cx="31" cy="31" r="3.2" fill="currentColor"/>
+          </svg>
+        </span>
+        <span>© {{ year }} {{ brand.name }}</span>
+      </div>
+      <div class="footer-links">
+        <a [href]="'mailto:' + brand.supportEmail">{{ brand.supportEmail }}</a>
+        <a routerLink="/login">Portal de clientes</a>
+      </div>
+    </div>
+  </footer>
+</div>

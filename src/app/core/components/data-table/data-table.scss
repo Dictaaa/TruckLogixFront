@@ -1,121 +1,241 @@
-.dt-wrapper { display: flex; flex-direction: column; gap: 0; }
+// Tabla de datos · usa solo variables del tema (claro / oscuro)
+// La tabla, filas, badges, paginación (.page-btn) y estados vienen del styles.scss global.
 
+:host { display: block; }
+
+.dt-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Barra superior: búsqueda + acciones ──────────────────────────────────
 .dt-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #f8fafc;
   gap: 12px;
   flex-wrap: wrap;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
 }
 
 .dt-search-wrap {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
+  align-items: stretch;
+  flex: 1 1 380px;
   min-width: 0;
+  max-width: 560px;
+
+  @media (max-width: 640px) { flex-wrap: wrap; gap: 8px; }
 }
 
+// Selector de columna: pegado al buscador como un solo control
 .dt-col-select {
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-radius: 6px;
-  font-size: 12.5px;
-  padding: 7px 10px;
-  color: #475569;
+  flex-shrink: 0;
+  height: 38px;
+  max-width: 190px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--border);
+  border-right: none;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  background-color: var(--surface-2);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b95a5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  appearance: none;
+  -webkit-appearance: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   outline: none;
   cursor: pointer;
-  white-space: nowrap;
-  &:focus { border-color: #1a6fdb; }
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+
+  &:hover { background-color: var(--surface-3); }
+
+  &:focus {
+    position: relative;
+    z-index: 1;
+    border-right: 1px solid var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-ring);
+  }
+
+  option { background: var(--surface); color: var(--text); }
+
+  @media (max-width: 640px) {
+    flex: 1 1 100%;
+    max-width: none;
+    border-right: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
 }
 
 .dt-search-input-wrap {
   position: relative;
   flex: 1;
   min-width: 0;
+
+  @media (max-width: 640px) { flex: 1 1 100%; }
 }
 
 .dt-search-icon {
   position: absolute;
-  left: 9px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #94a3b8;
+  width: 15px;
+  height: 15px;
+  color: var(--text-dim);
   pointer-events: none;
-  width: 14px;
-  height: 14px;
+  transition: color 0.15s;
 }
+
+.dt-search-input-wrap:focus-within .dt-search-icon { color: var(--primary); }
 
 .dt-search-input {
   width: 100%;
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-radius: 6px;
-  font-size: 13px;
-  padding: 7px 32px 7px 30px;
-  outline: none;
+  height: 38px;
   box-sizing: border-box;
-  &:focus { border-color: #1a6fdb; box-shadow: 0 0 0 3px rgba(26,111,219,0.1); }
-  &::placeholder { color: #a0aab8; }
+  padding: 0 36px 0 36px;
+  border: 1px solid var(--border);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &::placeholder { color: var(--text-dim); }
+
+  &:hover { border-color: var(--border-strong); }
+
+  &:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-ring);
+  }
+
+  @media (max-width: 640px) { border-radius: var(--radius-sm); }
 }
 
 .dt-search-clear {
   position: absolute;
-  right: 8px;
+  right: 6px;
   top: 50%;
   transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: #94a3b8;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
   padding: 0;
-  display: flex;
-  &:hover { color: #475569; }
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover { background: var(--surface-3); color: var(--text); }
 }
 
-.dt-export-wrap { display: flex; gap: 8px; }
+// ── Botones: Filtros / Excel / PDF ───────────────────────────────────────
+.dt-export-wrap {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
 .dt-btn-export {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 7px 12px;
-  border-radius: 6px;
-  font-size: 12px;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
 
-  &.dt-btn-excel {
-    background: #f0fdf4;
-    color: #15803d;
-    border-color: #bbf7d0;
-    &:hover { background: #dcfce7; }
+  svg { flex-shrink: 0; transition: color 0.15s; }
+
+  &:hover { transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+
+  // Filtros: acción principal en naranja suave
+  &.dt-btn-filter {
+    background: var(--primary-soft);
+    border-color: transparent;
+    color: var(--primary-text);
+
+    &:hover { background: var(--primary); color: var(--on-primary); }
   }
 
+  // Excel: neutro con acento verde
+  &.dt-btn-excel {
+    svg { color: var(--success); }
+    &:hover { border-color: var(--success); color: var(--success); background: var(--success-soft); }
+  }
+
+  // PDF: neutro con acento rojo
   &.dt-btn-pdf {
-    background: #fff1f2;
-    color: #be123c;
-    border-color: #fecdd3;
-    &:hover { background: #ffe4e6; }
+    svg { color: var(--danger); }
+    &:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
   }
 }
 
-.dt-scroll { overflow-x: auto; }
+// ── Tabla ────────────────────────────────────────────────────────────────
+.dt-scroll {
+  overflow-x: auto;
+  background: var(--surface);
+}
 
+// Encabezado ordenable: el ícono se resalta en la columna activa
+.sort-icon {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 11px;
+  color: var(--text-dim);
+  transition: color 0.15s;
+
+  &.active { color: var(--primary); }
+}
+
+.th-sortable:hover .sort-icon { color: var(--primary-text); }
+
+.col-actions {
+  width: 1%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+// ── Pie: total + tamaño de página + paginación ───────────────────────────
 .dt-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
-  border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
-  flex-wrap: wrap;
   gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+
+  // La paginación global ya trae fondo y borde; aquí se integra al pie
+  .pagination {
+    padding: 0;
+    border: none;
+    background: transparent;
+    gap: 6px;
+  }
 }
 
 .dt-page-size {
@@ -124,22 +244,30 @@
   gap: 10px;
 }
 
-.dt-total-label { font-size: 12px; color: #64748b; }
-
-.dt-size-select {
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-radius: 6px;
-  font-size: 12px;
-  padding: 5px 8px;
-  color: #475569;
-  outline: none;
-  cursor: pointer;
+.dt-total-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
-.dt-btn-filter {
-  background: #f0f4ff;
-  color: #1a6fdb;
-  border-color: #c7d7f8;
-  &:hover { background: #dce8ff; }
+.dt-size-select {
+  height: 32px;
+  padding: 0 28px 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b95a5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  appearance: none;
+  -webkit-appearance: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  outline: none;
+  cursor: pointer;
+
+  &:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-ring); }
+
+  option { background: var(--surface); color: var(--text); }
 }

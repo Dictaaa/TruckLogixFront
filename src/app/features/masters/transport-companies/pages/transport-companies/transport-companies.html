@@ -5,8 +5,15 @@
       <span class="page-eyebrow">Maestros</span>
       <h1 class="page-title">Empresas de Transporte</h1>
     </div>
+
     <button class="btn-primary" (click)="openModal()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        width="14"
+        height="14">
         <path d="M12 5v14M5 12h14"/>
       </svg>
       Nueva empresa
@@ -14,54 +21,105 @@
   </div>
 
   <section class="table-section">
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th class="col-id">#</th>
-            <th>NIT</th>
-            <th>Nombre</th>
-            <th class="col-status">Estado</th>
-            <th class="col-actions">Opciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="loading">
-            <td colspan="5">
-              <div class="loading-cell">
-                <div class="spinner"></div>
-                <span>Cargando…</span>
-              </div>
-            </td>
-          </tr>
 
-          <ng-container *ngIf="!loading">
-            <tr *ngFor="let c of companies" class="table-row">
-              <td class="text-muted">{{ c.id }}</td>
-              <td class="mono">{{ c.nit ?? '—' }}</td>
-              <td>{{ c.name }}</td>
-              <td>
-                <span class="badge" [class.badge-active]="c.active" [class.badge-inactive]="!c.active">
-                  {{ c.active ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
-              <td class="col-actions">
-                <app-table-actions
-                  [actions]="actions"
-                  (actionSelected)="onAction($event, c)">
-                </app-table-actions>
-              </td>
-            </tr>
+    <app-data-table
+      [columns]="columns"
+      [actions]="actions"
+      [data]="table.rows"
+      [total]="table.total"
+      [loading]="loading"
+      exportName="empresas-transporte"
+      [showFilterBtn]="true"
+      (pageChange)="onPageChange($event)"
+      (actionSelect)="onAction($event)"
+      (filterClick)="filterOpen = true">
+    </app-data-table>
 
-            <tr *ngIf="companies.length === 0">
-              <td colspan="5" class="empty-state">
-                <p>No hay empresas registradas</p>
-              </td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </div>
   </section>
 
 </div>
+
+<!-- PANEL DE FILTROS -->
+<app-filter-panel
+  [open]="filterOpen"
+  [activeCount]="activeFilterCount"
+  title="Filtros de Empresas de Transporte"
+  (closed)="filterOpen = false"
+  (apply)="applyFilters()"
+  (clear)="clearFilters()">
+
+  <div class="filter-section">
+
+    <div class="filter-section-label">
+      Información de la empresa
+    </div>
+
+    <!-- NIT -->
+    <div class="filter-field">
+      <label class="filter-label">NIT</label>
+
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar por NIT..."
+        [(ngModel)]="filters.nit">
+    </div>
+
+    <!-- Nombre -->
+    <div class="filter-field">
+      <label class="filter-label">Nombre</label>
+
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar por nombre..."
+        [(ngModel)]="filters.nombre">
+    </div>
+
+    <!-- Fecha de creación -->
+    <div class="filter-field">
+      <label class="filter-label">Fecha de creación</label>
+
+      <div class="filter-row-2">
+
+        <div class="filter-field">
+          <label class="filter-label">Desde</label>
+
+          <input
+            type="date"
+            class="form-control"
+            [max]="filters.fechaHasta || null"
+            [(ngModel)]="filters.fechaDesde">
+        </div>
+
+        <div class="filter-field">
+          <label class="filter-label">Hasta</label>
+
+          <input
+            type="date"
+            class="form-control"
+            [min]="filters.fechaDesde || null"
+            [(ngModel)]="filters.fechaHasta">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Estado -->
+    <div class="filter-field">
+      <label class="filter-label">Estado</label>
+
+      <select
+        class="form-control"
+        [(ngModel)]="filters.estado">
+
+        <option value="">Todos</option>
+        <option value="activo">Activo</option>
+        <option value="inactivo">Inactivo</option>
+
+      </select>
+    </div>
+
+  </div>
+
+</app-filter-panel>

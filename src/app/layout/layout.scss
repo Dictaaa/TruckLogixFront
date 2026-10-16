@@ -1,23 +1,40 @@
-$sidebar-width:     240px;
-$sidebar-collapsed: 60px;
-$navbar-height:     60px;
+// Estructura: barra superior fija + menú lateral + contenido
+// Las medidas están en variables para que navbar, sidebar y contenido coincidan.
 
-.layout {
+:host {
+  --navbar-h:     60px;
+  --sidebar-w:    252px;
+  --sidebar-rail: 72px;
   display: block;
+}
 
-  .layout-content {
-    margin-top: $navbar-height;
-    margin-left: $sidebar-width;
-    min-height: calc(100vh - #{$navbar-height});
-    transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #f0f4f8;
-  }
+.layout-content {
+  margin-top: var(--navbar-h);
+  margin-left: var(--sidebar-w);
+  min-height: calc(100vh - var(--navbar-h));
+  background: var(--bg);
+  transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  &--collapsed .layout-content {
-    margin-left: $sidebar-collapsed;
-  }
+// Menú contraído a barra de íconos (escritorio)
+.layout--collapsed .layout-content {
+  margin-left: var(--sidebar-rail);
+}
 
-  @media (max-width: 768px) {
-    .layout-content { margin-left: 0; }
-  }
+// Celular: el menú flota encima del contenido
+.layout--mobile .layout-content {
+  margin-left: 0;
+}
+
+.layout-backdrop {
+  position: fixed;
+  inset: var(--navbar-h) 0 0 0;
+  z-index: 94;
+  background: var(--overlay);
+  animation: backdrop-in 0.2s ease both;
+}
+
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

@@ -14,80 +14,82 @@
   </div>
 
   <section class="table-section">
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th class="col-id">#</th>
-            <th>Empresa Transporte</th>
-            <th>Origen</th>
-            <th>Destino</th>
-            <th>Condición</th>
-            <th>Flete 20'</th>
-            <th>Flete 40'</th>
-            <th>Flete 45'</th>
-            <th class="col-status">Estado</th>
-            <th class="col-actions">Opciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Loading -->
-          <tr *ngIf="loading">
-            <td colspan="18">
-              <div class="loading-cell">
-                <div class="spinner"></div>
-                <span>Cargando…</span>
-              </div>
-            </td>
-          </tr>
-
-          <ng-container *ngIf="!loading">
-            <tr *ngFor="let f of freights; let i = index" class="table-row">
-              <td>{{ f.id }}</td>
-              <td>{{ f.transportCompany?.name?.trim() }}
-              </td>
-              <td>{{ f.origin?.name }}
-              </td>
-              <td>{{ f.destination?.name?.trim() }}
-              </td>
-              <!-- En las filas, agrega después de Destino: -->
-<td>
-  <span class="badge"
-    [class.badge-lleno]="f.condition_id == 1"
-    [class.badge-vacio]="f.condition_id == 2"
-    [class.badge-carga]="f.condition_id == 3">
-    {{ f.condition_id == 1 ? 'Lleno' : f.condition_id == 2 ? 'Vacío' : f.condition_id == 3 ? 'Carga suelta' : '—' }}
-  </span>
-</td>
-<td class="td-mono">{{ f.freight_20 ? ('$ ' + (f.freight_20 | number:'1.0-0')) : '—' }}</td>
-<td class="td-mono">{{ f.freight_40 ? ('$ ' + (f.freight_40 | number:'1.0-0')) : '—' }}</td>
-<td class="td-mono">{{ f.freight_45 ? ('$ ' + (f.freight_45 | number:'1.0-0')) : '—' }}</td>
-              <td>$ {{ f.freight | number:'1.0-0' }}
-              </td>
-              <td class="col-status">
-                <span class="badge" [class.badge-active]="f.active" [class.badge-inactive]="!f.active">
-                  {{ f.active ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
-              <td class="col-actions">
-  <app-table-actions
-    (actionSelected)="onAction($event, f)">
-  </app-table-actions>
-</td>
-            </tr>
-
-            <!-- Empty state -->
-            <tr *ngIf="freights.length === 0">
-              <td colspan="7" class="empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
-                  <path d="M9 17H5a2 2 0 0 0-2 2v2h18v-2a2 2 0 0 0-2-2h-4" />
-                  <path d="M12 3v10M8 7l4-4 4 4" />
-                </svg>
-                <p>No hay tarifas registradas</p>
-              </td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </div>
+    <app-data-table
+      [columns]="columns"
+      [actions]="actions"
+      [data]="table.rows"
+      [total]="table.total"
+      [loading]="loading"
+      exportName="tarifas-flete"
+      [showFilterBtn]="true"
+      (pageChange)="onPageChange($event)"
+      (actionSelect)="onAction($event)"
+      (filterClick)="filterOpen = true">
+    </app-data-table>
   </section>
+
+</div>
+
+<!-- ═══ PANEL DE FILTROS ═══ -->
+<app-filter-panel
+  [open]="filterOpen"
+  [activeCount]="activeFilterCount"
+  title="Filtros de Tarifas"
+  (closed)="filterOpen = false"
+  (apply)="applyFilters()"
+  (clear)="clearFilters()">
+
+  <!-- Ruta -->
+  <div class="filter-section">
+    <div class="filter-section-label">Ruta</div>
+
+    <div class="filter-field">
+      <label class="filter-label">Empresa de transporte</label>
+      <select class="form-control" [(ngModel)]="filters.empresa">
+        <option value="">Todas</option>
+        <option *ngFor="let c of companyOptions" [value]="c">{{ c }}</option>
+      </select>
+    </div>
+
+    <div class="filter-row-2">
+      <div class="filter-field">
+        <label class="filter-label">Origen</label>
+        <select class="form-control" [(ngModel)]="filters.origen">
+          <option value="">Todos</option>
+          <option *ngFor="let o of originOptions" [value]="o">{{ o }}</option>
+        </select>
+      </div>
+      <div class="filter-field">
+        <label class="filter-label">Destino</label>
+        <select class="form-control" [(ngModel)]="filters.destino">
+          <option value="">Todos</option>
+          <option *ngFor="let d of destOptions" [value]="d">{{ d }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tarifa -->
+  <div class="filter-section">
+    <div class="filter-section-label">Tarifa</div>
+
+    <div class="filter-row-2">
+      <div class="filter-field">
+        <label class="filter-label">Condición</label>
+        <select class="form-control" [(ngModel)]="filters.condicion">
+          <option value="">Todas</option>
+          <option *ngFor="let c of conditionOptions" [value]="c.value">{{ c.label }}</option>
+        </select>
+      </div>
+      <div class="filter-field">
+        <label class="filter-label">Estado</label>
+        <select class="form-control" [(ngModel)]="filters.estado">
+          <option value="">Todos</option>
+          <option value="activo">Activo</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+</app-filter-panel>

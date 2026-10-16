@@ -1,109 +1,85 @@
-<div class="login-wrapper">
+<div class="login-page">
 
-  <!-- Background decoration -->
-  <div class="bg-grid"></div>
-  <div class="bg-glow"></div>
+  <!-- Fondo sutil -->
+  <div class="login-bg" aria-hidden="true"></div>
 
-  <!-- Brand strip -->
-  <aside class="brand-strip">
-    <div class="brand-inner">
-      <div class="brand-logo">
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="14" width="28" height="16" rx="3" fill="currentColor" opacity="0.15"/>
-          <rect x="2" y="14" width="28" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>
-          <rect x="30" y="18" width="8" height="10" rx="2" fill="currentColor" opacity="0.2"/>
-          <rect x="30" y="18" width="8" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
-          <circle cx="10" cy="31" r="4" fill="currentColor"/>
-          <circle cx="10" cy="31" r="2" fill="white" opacity="0.5"/>
-          <circle cx="26" cy="31" r="4" fill="currentColor"/>
-          <circle cx="26" cy="31" r="2" fill="white" opacity="0.5"/>
-          <path d="M8 14V10a2 2 0 0 1 2-2h10l6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <span class="brand-name">D&M LOGISTICS</span>
-      <p class="brand-tagline">Portal de Clientes</p>
-      <div class="brand-features">
-  <div class="feature-item">🚛 Administración Integral de Flota</div>
-  <div class="feature-item">📈 Rentabilidad e Indicadores</div>
-  <div class="feature-item">🔧 Gestión de Mantenimiento</div>
-  <div class="feature-item">👨‍✈️ Gestión de Conductores</div>
-  <div class="feature-item">💰 Facturación y Liquidación</div>
-  <div class="feature-item">🌎 Trazabilidad en Tiempo Real</div>
-  <div class="feature-item">🛡️ Protección del Patrimonio</div>
-  <div class="feature-item">🤝 Transparencia Total</div>
-  <div class="feature-item">📱 Portal de Gestión 24/7</div>
-</div>
-<p class="brand-tagline-bottom">
-  Transformamos vehículos en activos productivos administrados con datos, control y transparencia.
-</p>
+  <!-- Barra superior: solo el cambio de tema -->
+  <header class="login-topbar">
+    <app-theme-toggle></app-theme-toggle>
+  </header>
 
-      <div class="brand-stats">
-        <div class="stat">
-          <span class="stat-value">24/7</span>
-          <span class="stat-label">Disponibilidad</span>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <span class="stat-value">100%</span>
-          <span class="stat-label">Trazabilidad</span>
-        </div>
-      </div>
-
-    
-    </div>
-  </aside>
-
-  <!-- Login card -->
   <main class="login-main">
     <div class="login-card">
 
-      <header class="card-header">
-        <span class="card-eyebrow">Bienvenido</span>
-        <h2 class="card-title">Inicia sesión</h2>
-        <p class="card-subtitle">Ingresa tus credenciales para acceder al portal</p>
-      </header>
+      <!-- Marca -->
+      <div class="login-brand">
+        <div class="login-logo" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none">
+            <rect x="2" y="14" width="26" height="15" rx="2.5" stroke="currentColor" stroke-width="2.2"/>
+            <path d="M28 18h5.5l4 5v6H28" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+            <line x1="11" y1="14" x2="11" y2="29" stroke="currentColor" stroke-width="1.6" opacity="0.5"/>
+            <line x1="19" y1="14" x2="19" y2="29" stroke="currentColor" stroke-width="1.6" opacity="0.5"/>
+            <circle cx="9" cy="31" r="3.2" fill="currentColor"/>
+            <circle cx="31" cy="31" r="3.2" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="login-brand-text">
+          <span class="login-brand-name">{{ brand.name }}</span>
+          <span class="login-brand-sub">{{ brand.tagline }}</span>
+        </div>
+      </div>
 
-      <form [formGroup]="form" class="login-form" (ngSubmit)="login()">
+      <h1 class="login-title">Inicia sesión</h1>
+      <p class="login-subtitle">Ingresa tus credenciales para continuar.</p>
 
-        <div class="field-group">
+      <form [formGroup]="form" class="login-form" (ngSubmit)="login()" novalidate>
+
+        <!-- Correo -->
+        <div class="field">
           <label class="field-label" for="email">Correo electrónico</label>
-          <div class="field-wrap">
-            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <div class="field-control">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
               <rect x="2" y="4" width="20" height="16" rx="3"/>
               <path d="m2 7 10 7 10-7"/>
             </svg>
-            <input
-              id="email"
-              class="field-input"
-              formControlName="email"
-              type="email"
-              placeholder="usuario@empresa.com"
-              autocomplete="email">
+            <input id="email" class="field-input" formControlName="email" type="email"
+              placeholder="usuario@empresa.com" autocomplete="email"
+              [class.is-invalid]="form.get('email')?.touched && form.get('email')?.invalid">
           </div>
         </div>
 
-        <div class="field-group">
+        <!-- Contraseña -->
+        <div class="field">
           <div class="field-label-row">
             <label class="field-label" for="password">Contraseña</label>
-            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+            <a href="#" class="field-link">¿La olvidaste?</a>
           </div>
-          <div class="field-wrap">
-            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <div class="field-control">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
               <rect x="5" y="11" width="14" height="10" rx="2"/>
               <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-              <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
             </svg>
-            <input
-              id="password"
-              class="field-input"
-              formControlName="password"
-              type="password"
-              placeholder="••••••••"
-              autocomplete="current-password">
+            <input id="password" class="field-input has-action" formControlName="password"
+              [type]="showPassword ? 'text' : 'password'" placeholder="••••••••"
+              autocomplete="current-password"
+              [class.is-invalid]="form.get('password')?.touched && form.get('password')?.invalid">
+            <button type="button" class="field-action" (click)="togglePassword()"
+              [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+              <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
           </div>
         </div>
-                <div class="login-error" *ngIf="errorMsg" role="alert">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+
+        <!-- Error -->
+        <div class="login-error" *ngIf="errorMsg" role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -111,91 +87,43 @@
           <span>{{ errorMsg }}</span>
         </div>
 
-        <button
-  type="submit"
-  class="btn-login"
-  [class.btn-loading]="loading"
-  [disabled]="loading">
+        <!-- Botón -->
+        <button type="submit" class="btn-login" [class.is-loading]="loading" [disabled]="loading">
+          <ng-container *ngIf="!loading">
+            Ingresar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </ng-container>
 
-  <span class="btn-text">
-
-    <!-- Estado normal -->
-    <ng-container *ngIf="!loading">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-        <polyline points="10 17 15 12 10 7"/>
-        <line x1="15" y1="12" x2="3" y2="12"/>
-      </svg>
-      Ingresar al portal
-    </ng-container>
-
-    <!-- Estado cargando: camión animado -->
-    <ng-container *ngIf="loading">
-      <svg class="truck-loader" viewBox="0 0 120 32" width="120" height="32">
-        <style>
-          .tl-road { stroke-dasharray: 6 5; animation: tl-road 0.4s linear infinite; }
-          @keyframes tl-road { to { stroke-dashoffset: -22; } }
-          .tl-truck { animation: tl-bounce 0.1s ease-in-out infinite alternate; }
-          @keyframes tl-bounce { to { transform: translateY(0.5px); } }
-          .tl-wheel { transform-box: fill-box; transform-origin: center; animation: tl-spin 0.35s linear infinite; }
-          @keyframes tl-spin { to { transform: rotate(360deg); } }
-          .tl-smoke { transform-box: fill-box; transform-origin: bottom center; }
-          .tl-s1 { animation: tl-puff 0.5s ease-out infinite; }
-          .tl-s2 { animation: tl-puff 0.5s ease-out 0.17s infinite; }
-          .tl-s3 { animation: tl-puff 0.5s ease-out 0.34s infinite; }
-          @keyframes tl-puff {
-            0%   { opacity: 0.7; transform: scale(0.4) translateY(0); }
-            100% { opacity: 0;   transform: scale(1.6) translateY(-5px); }
-          }
-        </style>
-
-        <!-- Road -->
-        <line class="tl-road" x1="0" y1="28" x2="120" y2="28"
-          stroke="rgba(255,255,255,0.4)" stroke-width="1" fill="none"/>
-
-        <!-- Smoke -->
-        <circle class="tl-smoke tl-s1" cx="10" cy="14" r="2.5" fill="rgba(255,255,255,0.5)"/>
-        <circle class="tl-smoke tl-s2" cx="7"  cy="10" r="2"   fill="rgba(255,255,255,0.4)"/>
-        <circle class="tl-smoke tl-s3" cx="5"  cy="7"  r="1.5" fill="rgba(255,255,255,0.3)"/>
-
-        <!-- Truck -->
-        <g class="tl-truck">
-          <!-- Exhaust pipe -->
-          <rect x="11" y="10" width="2.5" height="7" rx="0.5" fill="rgba(255,255,255,0.6)"/>
-          <!-- Trailer -->
-          <rect x="14" y="12" width="62" height="14" rx="2" fill="rgba(255,255,255,0.25)"/>
-          <!-- Trailer lines -->
-          <line x1="33" y1="13" x2="33" y2="25" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
-          <line x1="50" y1="13" x2="50" y2="25" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
-          <line x1="67" y1="13" x2="67" y2="25" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
-          <!-- Cab -->
-          <rect x="76" y="14" width="22" height="12" rx="2" fill="rgba(255,255,255,0.3)"/>
-          <!-- Window -->
-          <rect x="81" y="16" width="11" height="6" rx="1.5" fill="rgba(255,255,255,0.5)"/>
-          <!-- Headlight -->
-          <rect x="96" y="19" width="2.5" height="3" rx="0.5" fill="rgba(255,255,220,0.9)"/>
-          <!-- Wheels -->
-          <g class="tl-wheel"><circle cx="28" cy="27" r="4" fill="rgba(255,255,255,0.3)"/><circle cx="28" cy="27" r="1.5" fill="rgba(255,255,255,0.6)"/></g>
-          <g class="tl-wheel"><circle cx="42" cy="27" r="4" fill="rgba(255,255,255,0.3)"/><circle cx="42" cy="27" r="1.5" fill="rgba(255,255,255,0.6)"/></g>
-          <g class="tl-wheel"><circle cx="64" cy="27" r="4" fill="rgba(255,255,255,0.3)"/><circle cx="64" cy="27" r="1.5" fill="rgba(255,255,255,0.6)"/></g>
-          <g class="tl-wheel"><circle cx="88" cy="27" r="4" fill="rgba(255,255,255,0.3)"/><circle cx="88" cy="27" r="1.5" fill="rgba(255,255,255,0.6)"/></g>
-        </g>
-      </svg>
-    </ng-container>
-
-  </span>
-
-  <span class="btn-shine"></span>
-</button>
-
+          <!-- Cargando: camión animado -->
+          <svg *ngIf="loading" class="truck-loader" viewBox="0 0 120 32" width="110" height="30" aria-label="Ingresando">
+            <line class="tl-road" x1="0" y1="28" x2="120" y2="28" stroke="currentColor" stroke-opacity="0.45" stroke-width="1"/>
+            <circle class="tl-smoke tl-s1" cx="10" cy="14" r="2.5" fill="currentColor" fill-opacity="0.45"/>
+            <circle class="tl-smoke tl-s2" cx="7"  cy="10" r="2"   fill="currentColor" fill-opacity="0.35"/>
+            <circle class="tl-smoke tl-s3" cx="5"  cy="7"  r="1.5" fill="currentColor" fill-opacity="0.25"/>
+            <g class="tl-truck">
+              <rect x="11" y="10" width="2.5" height="7" rx="0.5" fill="currentColor" fill-opacity="0.6"/>
+              <rect x="14" y="12" width="62" height="14" rx="2" fill="currentColor" fill-opacity="0.25"/>
+              <rect x="76" y="14" width="22" height="12" rx="2" fill="currentColor" fill-opacity="0.35"/>
+              <rect x="81" y="16" width="11" height="6" rx="1.5" fill="currentColor" fill-opacity="0.6"/>
+              <g class="tl-wheel"><circle cx="28" cy="27" r="4" fill="currentColor" fill-opacity="0.4"/></g>
+              <g class="tl-wheel"><circle cx="42" cy="27" r="4" fill="currentColor" fill-opacity="0.4"/></g>
+              <g class="tl-wheel"><circle cx="64" cy="27" r="4" fill="currentColor" fill-opacity="0.4"/></g>
+              <g class="tl-wheel"><circle cx="88" cy="27" r="4" fill="currentColor" fill-opacity="0.4"/></g>
+            </g>
+          </svg>
+        </button>
       </form>
-
-      <footer class="card-footer">
-        <span class="footer-text">¿Problemas para ingresar?</span>
-        <a href="mailto:soporte@trucklogix.co" class="footer-link">Contactar soporte</a>
-      </footer>
-
     </div>
+
+    <p class="login-help">
+      ¿Problemas para ingresar?
+      <a href="mailto:soporte@trucklogix.co">Contactar soporte</a>
+    </p>
   </main>
 
+  <footer class="login-footer">© {{ year }} D&amp;M Logistics</footer>
 </div>

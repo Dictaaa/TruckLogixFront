@@ -1,24 +1,29 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ThemeToggleComponent } from '../../../../core/components/theme-toggle/theme-toggle';
+import { BRAND } from '../../../../core/config/brand.config';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatCardModule, MatInputModule, MatButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, ThemeToggleComponent],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
 export class LoginComponent {
   loading = false;
   errorMsg = '';
+  showPassword = false;
+  year = new Date().getFullYear();
   form!: FormGroup;
+  brand = BRAND;
+
+  private title  = inject(Title);
 
   constructor(
     private fb: FormBuilder,
@@ -40,6 +45,14 @@ export class LoginComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.title.setTitle(`${this.brand.name} · ${this.brand.tagline}`);
+  }
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+
   login(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -57,7 +70,6 @@ export class LoginComponent {
 
     this.authService.login(email!, password!)
       .pipe(
-        // Pase lo que pase (éxito o error), el botón vuelve a su estado normal
         finalize(() => {
           this.loading = false;
           this.cdr.detectChanges();

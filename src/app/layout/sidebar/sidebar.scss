@@ -1,136 +1,122 @@
-$sidebar-width:     240px;
-$sidebar-collapsed: 60px;
-$bg-dark:           #0f1e35;
-$bg-dark-2:         #162845;
-$bg-item-hover:     rgba(255,255,255,0.06);
-$bg-item-active:    rgba(26, 111, 219, 0.18);
-$accent:            #1a6fdb;
-$accent-light:      #4d9fff;
-$text-nav:          rgba(255,255,255,0.65);
-$text-nav-active:   #ffffff;
-$text-nav-label:    rgba(255,255,255,0.28);
-$border-nav:        rgba(255,255,255,0.08);
-$font-body:         'IBM Plex Sans', system-ui, sans-serif;
-$font-mono:         'IBM Plex Mono', monospace;
+// Menú lateral · usa solo variables del tema (claro / oscuro)
 
 .sidebar {
   position: fixed;
-  top: 60px;
+  top: var(--navbar-h, 60px);
   left: 0;
   bottom: 0;
-  width: $sidebar-width;
-  background: linear-gradient(180deg, $bg-dark 0%, $bg-dark-2 100%);
-  border-right: 1px solid rgba(255,255,255,0.06);
+  z-index: 95;
+  width: var(--sidebar-w, 252px);
   display: flex;
   flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  font-family: var(--font-body);
   overflow: hidden;
-  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 90;
-  font-family: $font-body;
+  transition:
+    width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.28s;
 
-  // Subtle grid overlay
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 32px 32px;
-    pointer-events: none;
+  // Contraído: solo íconos
+  &--rail { width: var(--sidebar-rail, 72px); }
+
+  // Celular: flota encima del contenido
+  &--mobile {
+    width: min(280px, 86vw);
+    box-shadow: var(--shadow-lg);
   }
 
-  // Accent top line
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, $accent, $accent-light, transparent);
-  }
-
-  &--collapsed {
-    width: 0;
-  border-right: none;
-  overflow: hidden;
-
-    .nav-section-label,
-    .nav-label,
-    .nav-badge-count,
-    .sidebar-footer { opacity: 0; pointer-events: none; }
-
-    .nav-item { justify-content: center; padding: 0; }
-    .nav-icon  { margin: 0; }
+  &--hidden {
+    transform: translateX(-100%);
+    box-shadow: none;
   }
 }
 
-// ── Nav ───────────────────────────────────────────────────────────────────
+// ── Lista ────────────────────────────────────────────────────────────────
 .sidebar-nav {
   flex: 1;
-  padding: 16px 10px;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: 14px 12px;
   overflow-y: auto;
   overflow-x: hidden;
-  position: relative;
-  z-index: 1;
 
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+  .sidebar--rail & { padding: 14px 12px; }
 }
 
 .nav-section-label {
-  font-size: 9.5px;
+  padding: 16px 12px 6px;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
-  color: $text-nav-label;
-  padding: 10px 10px 4px;
+  color: var(--text-dim);
   white-space: nowrap;
-  overflow: hidden;
   transition: opacity 0.2s;
+
+  // En la barra de íconos se vuelve una línea divisoria
+  .sidebar--rail & {
+    height: 1px;
+    padding: 0;
+    margin: 12px 8px;
+    font-size: 0;
+    background: var(--border);
+  }
 }
 
+// ── Ítem principal / cabecera de grupo ───────────────────────────────────
 .nav-item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 10px;
+  gap: 10px;
+  width: 100%;
   height: 42px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: $text-nav;
+  padding: 0 10px 0 4px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
   font-size: 13.5px;
   font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
-  white-space: nowrap;
-  overflow: hidden;
-  position: relative;
 
   &:hover {
-    background: $bg-item-hover;
-    color: $text-nav-active;
+    background: var(--surface-3);
+    color: var(--text);
   }
 
+  // Página activa (enlace suelto)
   &--active {
-    background: $bg-item-active !important;
-    color: $text-nav-active !important;
-    border: 1px solid rgba($accent, 0.3);
+    background: var(--primary-soft);
+    color: var(--primary-text);
+    font-weight: 600;
 
-    .nav-icon { color: $accent-light; }
-
-    // Active indicator bar
     &::before {
       content: '';
       position: absolute;
-      left: 0; top: 8px; bottom: 8px;
+      left: -12px;
+      top: 9px;
+      bottom: 9px;
       width: 3px;
-      background: $accent-light;
       border-radius: 0 3px 3px 0;
+      background: var(--primary);
     }
+
+    .nav-icon { color: var(--primary); }
+  }
+
+  // Grupo que contiene la página activa
+  &--current {
+    color: var(--text);
+    .nav-icon { color: var(--primary); }
   }
 }
 
@@ -138,146 +124,169 @@ $font-mono:         'IBM Plex Mono', monospace;
   width: 36px;
   height: 36px;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   color: inherit;
   transition: color 0.15s;
 
-  ::ng-deep svg {
-    width: 17px;
-    height: 17px;
-    stroke: currentColor;
+  svg {
+    width: 19px;
+    height: 19px;
     fill: none;
-    stroke-width: 1.8px;
+    stroke: currentColor;
+    stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
-    flex-shrink: 0;
   }
 }
 
 .nav-label {
   flex: 1;
-  transition: opacity 0.2s;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: opacity 0.18s;
 }
 
-.nav-badge-count {
-  background: $accent;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
+.nav-count {
+  min-width: 20px;
   padding: 1px 6px;
-  border-radius: 10px;
-  flex-shrink: 0;
-  transition: opacity 0.2s;
-}
-
-.nav-divider {
-  height: 1px;
-  background: $border-nav;
-  margin: 10px 6px;
-}
-
-// ── Footer ────────────────────────────────────────────────────────────────
-.sidebar-footer {
-  padding: 14px 20px;
-  border-top: 1px solid $border-nav;
-  transition: opacity 0.2s;
-  position: relative;
-  z-index: 1;
-}
-
-.sidebar-version {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  color: $text-nav-label;
-  font-family: $font-mono;
-}
-
-.version-dot {
-  width: 6px;
-  height: 6px;
-  background: #0d9e4f;
-  border-radius: 50%;
-  box-shadow: 0 0 6px rgba(13, 158, 79, 0.5);
-  flex-shrink: 0;
-}
-
-.nav-item--group {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
+  border-radius: 99px;
+  background: var(--surface-3);
+  color: var(--text-dim);
+  font-size: 10.5px;
+  font-weight: 700;
+  text-align: center;
+  transition: opacity 0.18s;
 }
 
 .nav-chevron {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  color: currentColor;
-  opacity: 0.5;
-  transition: transform 0.2s;
-
-  &--open { transform: rotate(180deg); }
-}
-
-.nav-children {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.25s ease;
-
-  &--open { max-height: 600px; }
-}
-
-.nav-child {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px 8px 36px;  // ← indent para indicar jerarquía
-  font-size: 12.5px;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  transition: background 0.12s;
-  opacity: 0.8;
-
-  &:hover { background: rgba(255,255,255,0.06); opacity: 1; }
-
-  &--active {
-    background: rgba(255,255,255,0.1);
-    opacity: 1;
-    font-weight: 600;
-  }
-}
-
-.nav-child-icon {
-  display: flex;
-  align-items: center;
+  width: 15px;
+  height: 15px;
   flex-shrink: 0;
-  opacity: 0.7;
-
-  svg {
-    width: 14px;
-    height: 14px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-  }
-}
-
-.nav-icon svg,
-.nav-child-icon svg {
-  width: 18px;
-  height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+  opacity: 0.55;
+  transition: transform 0.22s, opacity 0.18s;
+
+  .nav-item--open & { transform: rotate(180deg); }
+}
+
+// Barra de íconos: se ocultan los textos
+.sidebar--rail {
+  .nav-item { justify-content: center; padding: 0; }
+  .nav-label, .nav-count, .nav-chevron { opacity: 0; width: 0; flex: 0; pointer-events: none; }
+  .nav-item--active::before { left: -12px; }
+}
+
+// ── Hijos de un grupo (despliegue suave) ─────────────────────────────────
+.nav-children {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s ease;
+
+  &--open { grid-template-rows: 1fr; }
+
+  .sidebar--rail & { display: none; }
+}
+
+.nav-children-inner {
+  overflow: hidden;
+  min-height: 0;
+  margin-left: 22px;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+
+  .nav-children--open & { padding-top: 2px; padding-bottom: 6px; }
+}
+
+.nav-child {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.12s, color 0.12s;
+
+  &:hover {
+    background: var(--surface-3);
+    color: var(--text);
+  }
+
+  &--active {
+    background: var(--primary-soft);
+    color: var(--primary-text);
+    font-weight: 600;
+
+    // Marca sobre la línea guía
+    &::before {
+      content: '';
+      position: absolute;
+      left: -11px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      border-radius: 2px;
+      background: var(--primary);
+    }
+
+    .nav-child-icon { color: var(--primary); opacity: 1; }
+  }
+}
+
+.nav-child-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  opacity: 0.75;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+// ── Pie ──────────────────────────────────────────────────────────────────
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border-light);
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+
+  .sidebar--rail & {
+    justify-content: center;
+    padding: 14px 0;
+    .nav-label { display: none; }
+  }
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar, .nav-children, .nav-chevron { transition: none; }
 }

@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   daysRemaining = 0;
 
   kpis: any = null;
-  monthlyBillingBars: { label: string; value: number; pct: number; color: string }[] = [];
+  monthlyBillingBars: { label: string; value: number; pct: number; current: boolean }[] = [];
   animatedValues: Record<string, number> = {
     yesterdayTrips: 0, thisMonthTrips: 0, thisMonthTotal: 0, yesterdayBilling: 0,
   };
@@ -64,10 +64,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Facturación
   billing: any = null;
   billingStatuses = [
-    { key: 'pendiente_oc_temporal', label: 'Pendiente OC temporal',     color: '#64748b' },
-    { key: 'pendiente_oc',          label: 'Pendiente orden de compra', color: '#f59e0b' },
-    { key: 'pendiente_factura',     label: 'Pendiente factura',         color: '#1a6fdb' },
-    { key: 'facturado',             label: 'Facturado',                 color: '#10b981' },
+    { key: 'pendiente_oc_temporal', label: 'Pendiente OC temporal',     color: 'var(--text-dim)' },
+    { key: 'pendiente_oc',          label: 'Pendiente orden de compra', color: 'var(--warning)' },
+    { key: 'pendiente_factura',     label: 'Pendiente factura',         color: 'var(--info)' },
+    { key: 'facturado',             label: 'Facturado',                 color: 'var(--success)' },
   ];
 
   private timers: any[] = [];
@@ -192,9 +192,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getCumplimientoColor(pct: number): string {
-    if (pct >= 100) return '#10b981';
-    if (pct >= 70) return '#f59e0b';
-    return '#ef4444';
+    if (pct >= 100) return 'var(--success)';
+    if (pct >= 70) return 'var(--warning)';
+    return 'var(--danger)';
   }
 
   // ─── COMBUSTIBLE ──────────────────────────────────────────────────────────
@@ -219,12 +219,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getFuelRenderColor(kmPerGallon: number): string {
-    if (!this.fuel?.byPlate?.length) return '#94a3b8';
+    if (!this.fuel?.byPlate?.length) return 'var(--text-dim)';
     const max = Math.max(...this.fuel.byPlate.map((p: any) => p.kmPerGallon), 1);
     const pct = (kmPerGallon / max) * 100;
-    if (pct >= 80) return '#10b981';
-    if (pct >= 50) return '#f59e0b';
-    return '#ef4444';
+    if (pct >= 80) return 'var(--success)';
+    if (pct >= 50) return 'var(--warning)';
+    return 'var(--danger)';
   }
 
   getFuelRenderLabel(kmPerGallon: number): string {
@@ -274,10 +274,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   billingPctColor(pct: number | null): string {
-    if (pct === null || pct === undefined) return '#94a3b8';
-    if (pct >= 90) return '#10b981';
-    if (pct >= 60) return '#f59e0b';
-    return '#ef4444';
+    if (pct === null || pct === undefined) return 'var(--text-dim)';
+    if (pct >= 90) return 'var(--success)';
+    if (pct >= 60) return 'var(--warning)';
+    return 'var(--danger)';
   }
 
   // ─── PYG ──────────────────────────────────────────────────────────────────
@@ -325,10 +325,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   marginColor(pct: number | null): string {
-    if (pct === null || pct === undefined) return '#94a3b8';
-    if (pct >= 40) return '#10b981';
-    if (pct >= 20) return '#f59e0b';
-    return '#ef4444';
+    if (pct === null || pct === undefined) return 'var(--text-dim)';
+    if (pct >= 40) return 'var(--success)';
+    if (pct >= 20) return 'var(--warning)';
+    return 'var(--danger)';
   }
 
   laboralesTitle(v: any): string {
@@ -379,11 +379,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   getCircleColor(value: number, budget: number): string {
     const b = Number(budget);
-    if (!b) return '#94a3b8';
+    if (!b) return 'var(--text-dim)';
     const pct = (value / b) * 100;
-    if (pct >= 100) return '#10b981';
-    if (pct >= 70) return '#f59e0b';
-    return '#ef4444';
+    if (pct >= 100) return 'var(--success)';
+    if (pct >= 70) return 'var(--warning)';
+    return 'var(--danger)';
   }
 
   // ─── GRÁFICA DE LÍNEA (producción) ────────────────────────────────────────
@@ -407,7 +407,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       label: MONTH_NAMES[m].substring(0, 3),
       value: billing[m] || 0,
       pct: Math.round(((billing[m] || 0) / maxVal) * 100),
-      color: m === thisMonth ? '#1a6fdb' : '#10b981',
+      current: m === thisMonth && Number(this.year) === new Date().getFullYear(),
     }));
 
     this.buildLineChart(maxVal);

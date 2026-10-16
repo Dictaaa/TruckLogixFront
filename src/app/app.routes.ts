@@ -6,9 +6,11 @@ import { roleGuard } from './core/guards/role-guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'home',
     pathMatch: 'full',
   },
+
+  {path: 'home', loadComponent: () => import('./features/home/home').then((m) => m.Home)},
 
   // ✅ Login FUERA del layout → sin navbar ni sidebar
   {

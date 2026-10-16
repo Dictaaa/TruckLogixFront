@@ -1,13 +1,23 @@
-<p>layout works!</p>
-<div class="layout" [class.layout--collapsed]="!sidebarOpen">
+<div class="layout"
+  [class.layout--collapsed]="!sidebarOpen && !isMobile"
+  [class.layout--mobile]="isMobile">
 
   <app-navbar
     [sidebarOpen]="sidebarOpen"
     [pageTitle]="pageTitle"
-    (toggleSidebarEvent)="sidebarOpen = !sidebarOpen">
+    [pageSection]="pageSection"
+    (toggleSidebarEvent)="toggleSidebar()">
   </app-navbar>
 
-  <app-sidebar [open]="sidebarOpen"></app-sidebar>
+  <app-sidebar
+    [open]="sidebarOpen"
+    [mobile]="isMobile"
+    (requestOpen)="openSidebar()"
+    (navigated)="isMobile && closeSidebar()">
+  </app-sidebar>
+
+  <!-- Fondo oscuro detrás del menú en celular -->
+  <div class="layout-backdrop" *ngIf="isMobile && sidebarOpen" (click)="closeSidebar()" aria-hidden="true"></div>
 
   <main class="layout-content">
     <router-outlet></router-outlet>

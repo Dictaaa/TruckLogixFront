@@ -1,365 +1,319 @@
-// ── KPI Grid ──────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// DASHBOARD · usa solo variables del tema (claro / oscuro)
+// Estructura de página, tablas, badges y selects vienen del styles.scss global.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Colores extra solo para distinguir secciones del dashboard
+:host {
+  display: block;
+  --violet: #7c3aed;
+  --teal:   #0d9488;
+}
+
+:host-context([data-theme="dark"]) {
+  --violet: #a78bfa;
+  --teal:   #2dd4bf;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  .filter-select { min-width: 140px; }
+}
+
+// ═══ ACORDEONES ══════════════════════════════════════════════════════════
+.acc {
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.acc-header {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px 16px 22px;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  // Franja de color de la sección
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12px;
+    bottom: 12px;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: var(--accent, var(--primary));
+  }
+
+  &:hover { background: var(--surface-2); }
+  &:focus-visible { outline: 2px solid var(--accent, var(--primary)); outline-offset: -2px; }
+}
+
+.acc-dot {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent, var(--primary));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, var(--primary)) 18%, transparent);
+}
+
+.acc-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.acc-summary {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+
+  @media (max-width: 600px) { margin-left: 22px; width: 100%; }
+}
+
+.acc-pill {
+  padding: 2px 9px;
+  border-radius: 99px;
+  background: var(--surface-3);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.acc-chevron {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: var(--text-dim);
+  transition: transform 0.2s ease;
+}
+
+.acc.open .acc-chevron { transform: rotate(180deg); }
+
+.acc-body {
+  padding: 20px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+
+  .kpi-grid { margin-bottom: 20px; }
+  .chart-card { margin-bottom: 20px; }
+  .affiliate-block:last-child { margin-bottom: 0; }
+
+  @media (max-width: 600px) { padding: 14px; }
+}
+
+.acc-sub + .acc-sub { margin-top: 28px; }
+
+.acc-sub-title {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+
+  small { font-weight: 400; }
+}
+
+.acc-empty {
+  padding: 16px 20px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+
+  code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--surface-3);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  &--warn {
+    border-style: solid;
+    border-color: var(--warning);
+    background: var(--warning-soft);
+    color: var(--warning);
+  }
+}
+
+// ═══ TARJETAS KPI ════════════════════════════════════════════════════════
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
 
   @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
   @media (max-width: 600px)  { grid-template-columns: 1fr; }
 }
 
 .kpi-card {
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-radius: 12px;
-  padding: 20px;
   position: relative;
-  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  padding: 20px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   animation: card-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   &::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 3px;
-    background: var(--accent, #1a6fdb);
-    border-radius: 12px 12px 0 0;
+    background: var(--accent, var(--primary));
   }
+
+  &:nth-child(2) { animation-delay: 80ms; }
+  &:nth-child(3) { animation-delay: 160ms; }
+  &:nth-child(4) { animation-delay: 240ms; }
 }
 
 @keyframes card-in {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
 }
 
-.kpi-card:nth-child(1) { animation-delay: 0ms; }
-.kpi-card:nth-child(2) { animation-delay: 80ms; }
-.kpi-card:nth-child(3) { animation-delay: 160ms; }
-.kpi-card:nth-child(4) { animation-delay: 240ms; }
-
 .kpi-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--accent, #1a6fdb) 12%, white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 46px;
+  height: 46px;
   flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent, var(--primary)) 14%, transparent);
 
   svg {
-    width: 20px;
-    height: 20px;
-    stroke: var(--accent, #1a6fdb);
+    width: 21px;
+    height: 21px;
+    stroke: var(--accent, var(--primary));
   }
 }
 
 .kpi-body { flex: 1; min-width: 0; }
 
 .kpi-value {
+  font-family: var(--font-mono);
   font-size: 22px;
   font-weight: 700;
-  color: #0f172a;
-  font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: -0.5px;
   line-height: 1.2;
+  letter-spacing: -0.5px;
+  color: var(--text);
 }
 
 .kpi-label {
-  font-size: 12px;
+  margin-top: 3px;
+  font-size: 11.5px;
   font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .kpi-sub {
-  font-size: 11px;
-  color: #94a3b8;
   margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--text-dim);
 }
 
 .kpi-bar-bg {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 3px;
-  background: #f1f5f9;
+  background: var(--surface-3);
 }
 
 .kpi-bar-fill {
-  height: 100%;
   width: 60%;
-  background: var(--accent, #1a6fdb);
-  opacity: 0.3;
-  border-radius: 0 2px 2px 0;
-}
-
-.kpi-skeleton {
-  height: 90px;
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border: none;
-}
-
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-// ── Mid grid ──────────────────────────────────────────────────────────────
-.mid-grid {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 16px;
-  margin-bottom: 28px;
-
-  @media (max-width: 900px) { grid-template-columns: 1fr; }
-}
-
-.chart-card,
-.alerts-card {
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-radius: 12px;
-  padding: 20px 24px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
-
-.chart-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #334155;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-// ── Bar chart ─────────────────────────────────────────────────────────────
-.bar-chart {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  height: 160px;
-}
-
-.bar-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
   height: 100%;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent, var(--primary));
+  opacity: 0.35;
 }
 
-.bar-wrap {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  align-items: flex-end;
-}
-
-.bar-fill {
-  width: 100%;
-  border-radius: 4px 4px 0 0;
-  transition: height 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  min-height: 4px;
-}
-
-.bar-label {
-  font-size: 10px;
-  color: #94a3b8;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.bar-value {
-  font-size: 9px;
-  color: #64748b;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-// ── Alerts ────────────────────────────────────────────────────────────────
-.alert-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 220px;
-  overflow-y: auto;
-}
-
-.alert-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid;
-
-  &.alert-expired { background: #fff1f2; border-color: #fecdd3; }
-  &.alert-warning  { background: #fffbeb; border-color: #fde68a; }
-  &.alert-ok       { background: #f0fdf4; border-color: #bbf7d0; }
-}
-
-.alert-left  { display: flex; align-items: center; gap: 8px; }
-.alert-right { display: flex; align-items: center; gap: 10px; }
-
-.alert-type {
-  font-size: 11px;
-  font-weight: 700;
-  color: #475569;
-  background: #f1f5f9;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.alert-date { font-size: 11px; color: #64748b; font-family: 'IBM Plex Mono', monospace; }
-.alert-days { font-size: 12px; font-weight: 700; color: #dc2626; min-width: 36px; text-align: right; }
-
-.alerts-empty {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.empty-ok {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 20px;
-  color: #10b981;
-  p { font-size: 13px; margin: 0; }
-}
-
-// ── Section title ─────────────────────────────────────────────────────────
-.section-title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #94a3b8;
-  margin-bottom: 16px;
-}
-
-// ── Affiliate block ───────────────────────────────────────────────────────
-.affiliate-block {
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
-
-.affiliate-header {
-  background: #0f1e35;
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.affiliate-name {
-  color: #fff;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.affiliate-header-right {
+// Cumplimiento con anillo
+.kpi-cumpl-wrap {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.affiliate-total {
-  color: #93c5fd;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-// ── Production table ──────────────────────────────────────────────────────
-.production-table {
-  th, td { white-space: nowrap; }
-  .col-tipo  { width: 70px; }
-  .col-placa { width: 100px; }
-  .col-mes   { width: 130px; text-align: right; }
-  .col-prod  { width: 110px; }
-  .col-proy  { width: 140px; text-align: right; }
-  .td-money  { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
-}
-
-.row-total {
-  background: #f0f4f8;
-  border-top: 2px solid #dde3ec;
-  td { font-size: 13.5px; }
-}
-
-.header-controls { display: flex; align-items: center; gap: 12px; }
-
-.col-current  { background: rgba(26,111,219,0.06); }
-.td-current   { background: rgba(26,111,219,0.04); font-weight: 600; }
-
-.col-prog     { width: 80px; text-align: center; }
-.td-prog      { text-align: center; padding: 6px 4px; }
-
-.prog-wrap {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.prog-circle {
-  width: 36px;
-  height: 36px;
+.kpi-circle {
+  flex-shrink: 0;
   transform: rotate(-90deg);
-
-  .prog-bg {
-    fill: none;
-    stroke: #e2e8f0;
-    stroke-width: 3;
-  }
-
-  .prog-fill {
-    fill: none;
-    stroke-width: 3;
-    stroke-linecap: round;
-    transition: stroke-dasharray 0.6s ease;
-    stroke-dashoffset: 0;
-  }
 }
 
-.prog-pct {
-  font-size: 10px;
-  font-weight: 700;
-  font-family: 'IBM Plex Mono', monospace;
-  line-height: 1;
+.kpi-cumpl-text {
+  display: flex;
+  flex-direction: column;
 }
 
-.td-strong { font-weight: 700; }
-.td-center { text-align: center; }
+// Anillos de progreso (tarjeta y tabla)
+.prog-bg {
+  fill: none;
+  stroke: var(--surface-3);
+  stroke-width: 3;
+}
 
-.proy-value { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; }
-.proy-meta  { font-size: 10px; color: #94a3b8; }
+.prog-fill {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dashoffset: 0;
+  transition: stroke-dasharray 0.6s ease;
+}
 
-.compliance-pct {
-  font-size: 10px;
+// ═══ GRÁFICA DE FACTURACIÓN ══════════════════════════════════════════════
+.chart-card {
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 12.5px;
   font-weight: 700;
-  font-family: 'IBM Plex Mono', monospace;
-  margin-top: 2px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .line-chart-wrap {
@@ -373,15 +327,38 @@
   overflow: visible;
 }
 
+.chart-grid  { stroke: var(--border-light); stroke-width: 1; }
+.chart-axis  { fill: var(--text-dim); font-size: 10px; font-family: var(--font-mono); }
+.chart-area  { opacity: 0.9; }
+
+.chart-grad-top    { stop-color: var(--success); stop-opacity: 0.28; }
+.chart-grad-bottom { stop-color: var(--success); stop-opacity: 0; }
+
+.chart-line {
+  fill: none;
+  stroke: var(--success);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chart-point {
+  fill: var(--success);
+  stroke: var(--surface);
+  stroke-width: 2;
+  cursor: pointer;
+  transition: r 0.15s;
+
+  &--current { fill: var(--primary); }
+}
+
 .line-anim {
   stroke-dasharray: 2000;
   stroke-dashoffset: 2000;
   animation: draw-line 1.2s ease forwards;
 }
 
-@keyframes draw-line {
-  to { stroke-dashoffset: 0; }
-}
+@keyframes draw-line { to { stroke-dashoffset: 0; } }
 
 .line-x-labels {
   display: flex;
@@ -391,186 +368,200 @@
 
 .x-label {
   font-size: 11px;
-  color: #94a3b8;
   font-weight: 600;
   text-transform: uppercase;
+  color: var(--text-dim);
 
-  &.x-label-current {
-    color: #1a6fdb;
-    font-weight: 700;
-  }
+  &.x-label-current { color: var(--primary-text); font-weight: 700; }
 }
 
 .line-tooltip {
   position: absolute;
-  background: #0f172a;
-  color: #fff;
-  border-radius: 8px;
-  padding: 8px 12px;
-  pointer-events: none;
-  white-space: nowrap;
   z-index: 10;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--text);
+  color: var(--surface);
+  white-space: nowrap;
+  pointer-events: none;
   transform: translateX(-50%);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-md);
 
   .tooltip-month {
     font-size: 11px;
-    color: #94a3b8;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-transform: uppercase;
+    opacity: 0.7;
   }
 
   .tooltip-value {
+    margin-top: 2px;
+    font-family: var(--font-mono);
     font-size: 15px;
     font-weight: 700;
-    font-family: 'IBM Plex Mono', monospace;
-    color: #10b981;
-    margin-top: 2px;
+    color: var(--success);
   }
 }
 
-.kpi-cumpl-wrap {
+// ═══ BLOQUE POR AFILIADO ═════════════════════════════════════════════════
+.affiliate-block {
+  margin-bottom: 20px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.affiliate-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 12px 20px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
 }
 
-.kpi-circle {
-  transform: rotate(-90deg);
-  flex-shrink: 0;
-}
-
-.kpi-cumpl-text {
+.affiliate-name {
   display: flex;
-  flex-direction: column;
-}
-
-.kpi-grid {
-  grid-template-columns: repeat(3, 1fr); // ← cambia a 3 columnas
-}
-
-// ═══════════════════════════════════════════════════════════════
-// AGREGAR al home.scss
-// ═══════════════════════════════════════════════════════════════
-
-// Grid de KPIs combustible — igual al production pero con separación visual
-.fuel-kpi-grid {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: 2px dashed var(--border, #e2e8f0);
-  position: relative;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text);
 
   &::before {
-    position: absolute;
-    top: -11px;
-    left: 16px;
-    background: var(--bg, #f8fafc);
-    padding: 0 8px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #f59e0b;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--accent, var(--primary));
   }
 }
 
-// Sección combustible
-.fuel-section {
-  margin-top: 32px;
+.affiliate-header-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
 }
 
-.section-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 12px;
+.affiliate-stat {
+  font-size: 12.5px;
+  color: var(--text-muted);
+
+  strong {
+    font-family: var(--font-mono);
+    color: var(--text);
+  }
 }
 
-.section-header-left {
-  display: flex;
+// ═══ TABLAS DEL DASHBOARD ════════════════════════════════════════════════
+.production-table {
+  th, td { white-space: nowrap; }
+
+  .col-placa { width: 100px; }
+  .col-mes   { width: 130px; text-align: right; }
+  .col-num   { text-align: center; }
+  .col-proy  { width: 140px; text-align: right; }
+}
+
+.td-money {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.td-strong { font-weight: 700; }
+.td-center { text-align: center; }
+.td-right  { text-align: right; font-variant-numeric: tabular-nums; }
+
+// Mes actual resaltado en la columna
+.col-current { background: var(--primary-soft); color: var(--primary-text) !important; }
+.td-current  { background: color-mix(in srgb, var(--primary) 5%, transparent); font-weight: 600; }
+
+.row-total {
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+
+  td { font-size: 13.5px; }
+}
+
+// Proyección
+.proy-value { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; }
+.proy-meta  { font-size: 10.5px; color: var(--text-dim); }
+
+// Documentos (SOAT / RTM)
+.td-docs { white-space: nowrap; }
+.doc-badge { margin-right: 4px; font-family: var(--font-mono); font-size: 11px; }
+
+// Cumplimiento por mes (anillo pequeño)
+.td-prog { text-align: center; padding: 6px 4px !important; }
+
+.prog-wrap {
+  display: inline-flex;
   flex-direction: column;
+  align-items: center;
   gap: 2px;
 }
 
-.section-eyebrow {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #f59e0b;
+.prog-circle {
+  width: 36px;
+  height: 36px;
+  transform: rotate(-90deg);
 }
 
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary, #1e293b);
-  margin: 0;
+.prog-pct {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
 }
 
-// Tabla combustible
+// Celda con dato secundario debajo
+.cell-sub {
+  margin-top: 2px;
+  font-size: 10.5px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.fuel-monthly-table td { vertical-align: top; }
+
+// Tabla de combustible del mes
 .fuel-table {
   th, td { white-space: nowrap; }
-
-  .td-right {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .td-bar { width: 160px; }
+  .td-bar { width: 170px; }
 }
 
-// Barra de rendimiento
+// Barra de rendimiento / % facturado
 .render-bar-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 120px;
+  min-width: 130px;
 }
 
 .render-bar {
+  flex: 1;
+  max-width: 100px;
+  min-width: 4px;
   height: 6px;
   border-radius: 99px;
   transition: width 0.4s ease;
-  min-width: 4px;
-  flex: 1;
-  max-width: 100px;
 }
 
 .render-label {
-  font-size: 11px;
-  font-weight: 600;
   min-width: 44px;
+  font-size: 11.5px;
+  font-weight: 700;
 }
 
-// Empty state combustible
-.fuel-empty {
-  margin-top: 16px;
-  padding: 16px 20px;
-  background: var(--bg-subtle, #f8fafc);
-  border-radius: 10px;
-  border: 1px dashed var(--border, #e2e8f0);
-  font-size: 13px;
-  color: var(--text-muted, #94a3b8);
-  text-align: center;
-}
-
-// ─── Pegar al final de home.scss ─────────────────────────────────────────────
-
-.cell-sub {
-  font-size: 10.5px;
-  color: #94a3b8;
-  white-space: nowrap;
-  margin-top: 2px;
-}
-
-.fuel-monthly-table td {
-  vertical-align: top;
-}
-
-.mtto-section {
-  margin-top: 32px;
-}
-
+// ═══ MANTENIMIENTO: barras por mes ═══════════════════════════════════════
 .mtto-bars {
   display: flex;
   align-items: flex-end;
@@ -587,740 +578,45 @@
   align-items: center;
   height: 100%;
 
-  &.current .mtto-bar { background: #1a6fdb; }
-  &.current .mtto-bar-label { color: #1a6fdb; font-weight: 700; }
+  &.current .mtto-bar { background: var(--primary); }
+  &.current .mtto-bar-label { color: var(--primary-text); font-weight: 700; }
 }
 
 .mtto-bar-val {
-  font-size: 10.5px;
-  color: #64748b;
   min-height: 14px;
   margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
   white-space: nowrap;
 }
 
 .mtto-bar-track {
   flex: 1;
-  width: 60%;
-  max-width: 36px;
   display: flex;
   align-items: flex-end;
+  width: 60%;
+  max-width: 36px;
 }
 
 .mtto-bar {
   width: 100%;
   min-height: 2px;
-  background: #0ea5e9;
-  border-radius: 4px 4px 0 0;
+  border-radius: 5px 5px 0 0;
+  background: var(--violet);
+  opacity: 0.85;
   transition: height 0.6s ease;
 }
 
 .mtto-bar-label {
-  font-size: 11px;
-  color: #94a3b8;
   margin-top: 6px;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ACORDEONES — pegar al final de home.scss
-// (puedes borrar .fuel-kpi-grid y .mtto-section, ya no se usan)
-// ═══════════════════════════════════════════════════════════════
-
-.acc {
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-left: 4px solid var(--accent, #1a6fdb);
-  border-radius: 12px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-.acc-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 16px 20px;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  text-align: left;
-  font: inherit;
-  color: inherit;
-
-  &:hover { background: #f8fafc; }
-  &:focus-visible { outline: 2px solid var(--accent, #1a6fdb); outline-offset: -2px; }
-}
-
-.acc-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent, #1a6fdb);
-  flex-shrink: 0;
-}
-
-.acc-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.acc-summary {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #475569;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.acc-pill {
   font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 99px;
-  background: #f1f5f9;
-  color: #334155;
-}
-
-.acc-chevron {
-  width: 18px;
-  height: 18px;
-  stroke: #94a3b8;
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
-}
-
-.acc.open .acc-chevron { transform: rotate(180deg); }
-
-.acc-body {
-  padding: 20px;
-  border-top: 1px solid #eef2f7;
-  background: #fafbfd;
-
-  .chart-card { margin-bottom: 20px; }
-  .affiliate-block:last-child { margin-bottom: 0; }
-  .kpi-grid { margin-bottom: 20px; }
-}
-
-.acc-sub + .acc-sub { margin-top: 28px; }
-
-.acc-sub-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #334155;
-  margin: 0 0 12px;
-}
-
-.acc-empty {
-  padding: 16px 20px;
-  border: 1px dashed #dde3ec;
-  border-radius: 10px;
-  background: #fff;
-  font-size: 13px;
-  color: #94a3b8;
-  text-align: center;
-
-  code {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    background: #f1f5f9;
-    padding: 1px 5px;
-    border-radius: 4px;
-    color: #334155;
-  }
-
-  &--warn {
-    border-color: #fde68a;
-    background: #fffbeb;
-    color: #92400e;
-  }
-}
-
-@media (max-width: 600px) {
-  .acc-summary { margin-left: 22px; width: 100%; }
-}
-
-// ─── Utilidades mes a mes y barras de mantenimiento ───────────────────────
-
-.cell-sub {
-  font-size: 10.5px;
-  color: #94a3b8;
-  white-space: nowrap;
-  margin-top: 2px;
-}
-
-.fuel-monthly-table td { vertical-align: top; }
-
-.mtto-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  height: 200px;
-  padding: 8px 4px 0;
-  overflow-x: auto;
-}
-
-.mtto-bar-col {
-  flex: 1 0 44px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-
-  &.current .mtto-bar { background: #1a6fdb; }
-  &.current .mtto-bar-label { color: #1a6fdb; font-weight: 700; }
-}
-
-.mtto-bar-val {
-  font-size: 10.5px;
-  color: #64748b;
-  min-height: 14px;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.mtto-bar-track {
-  flex: 1;
-  width: 60%;
-  max-width: 36px;
-  display: flex;
-  align-items: flex-end;
-}
-
-.mtto-bar {
-  width: 100%;
-  min-height: 2px;
-  background: #0ea5e9;
-  border-radius: 4px 4px 0 0;
-  transition: height 0.6s ease;
-}
-
-.mtto-bar-label {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-top: 6px;
-  text-transform: uppercase;
   font-weight: 600;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ACORDEONES — pegar al final de home.scss
-// (puedes borrar .fuel-kpi-grid y .mtto-section, ya no se usan)
-// ═══════════════════════════════════════════════════════════════
-
-.acc {
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-left: 4px solid var(--accent, #1a6fdb);
-  border-radius: 12px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-.acc-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 16px 20px;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  text-align: left;
-  font: inherit;
-  color: inherit;
-
-  &:hover { background: #f8fafc; }
-  &:focus-visible { outline: 2px solid var(--accent, #1a6fdb); outline-offset: -2px; }
-}
-
-.acc-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent, #1a6fdb);
-  flex-shrink: 0;
-}
-
-.acc-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.acc-summary {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #475569;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.acc-pill {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 99px;
-  background: #f1f5f9;
-  color: #334155;
-}
-
-.acc-chevron {
-  width: 18px;
-  height: 18px;
-  stroke: #94a3b8;
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
-}
-
-.acc.open .acc-chevron { transform: rotate(180deg); }
-
-.acc-body {
-  padding: 20px;
-  border-top: 1px solid #eef2f7;
-  background: #fafbfd;
-
-  .chart-card { margin-bottom: 20px; }
-  .affiliate-block:last-child { margin-bottom: 0; }
-  .kpi-grid { margin-bottom: 20px; }
-}
-
-.acc-sub + .acc-sub { margin-top: 28px; }
-
-.acc-sub-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #334155;
-  margin: 0 0 12px;
-}
-
-.acc-empty {
-  padding: 16px 20px;
-  border: 1px dashed #dde3ec;
-  border-radius: 10px;
-  background: #fff;
-  font-size: 13px;
-  color: #94a3b8;
-  text-align: center;
-
-  code {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    background: #f1f5f9;
-    padding: 1px 5px;
-    border-radius: 4px;
-    color: #334155;
-  }
-
-  &--warn {
-    border-color: #fde68a;
-    background: #fffbeb;
-    color: #92400e;
-  }
-}
-
-@media (max-width: 600px) {
-  .acc-summary { margin-left: 22px; width: 100%; }
-}
-
-// ─── Utilidades mes a mes y barras de mantenimiento ───────────────────────
-
-.cell-sub {
-  font-size: 10.5px;
-  color: #94a3b8;
-  white-space: nowrap;
-  margin-top: 2px;
-}
-
-.fuel-monthly-table td { vertical-align: top; }
-
-.mtto-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  height: 200px;
-  padding: 8px 4px 0;
-  overflow-x: auto;
-}
-
-.mtto-bar-col {
-  flex: 1 0 44px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-
-  &.current .mtto-bar { background: #1a6fdb; }
-  &.current .mtto-bar-label { color: #1a6fdb; font-weight: 700; }
-}
-
-.mtto-bar-val {
-  font-size: 10.5px;
-  color: #64748b;
-  min-height: 14px;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.mtto-bar-track {
-  flex: 1;
-  width: 60%;
-  max-width: 36px;
-  display: flex;
-  align-items: flex-end;
-}
-
-.mtto-bar {
-  width: 100%;
-  min-height: 2px;
-  background: #0ea5e9;
-  border-radius: 4px 4px 0 0;
-  transition: height 0.6s ease;
-}
-
-.mtto-bar-label {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-top: 6px;
   text-transform: uppercase;
-  font-weight: 600;
+  color: var(--text-dim);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// PYG
-// ═══════════════════════════════════════════════════════════════
-
-.pyg-toolbar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.pyg-month { display: flex; align-items: center; gap: 8px; }
-.pyg-month-label { font-size: 13px; font-weight: 600; color: #475569; }
-
-.pyg-table {
-  th, td { white-space: nowrap; }
-
-  .pyg-concept { min-width: 240px; text-align: left; }
-  .pyg-col { min-width: 140px; text-align: right; }
-  .td-money { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
-
-  .pyg-col-total {
-    background: rgba(124, 58, 237, 0.05);
-    font-weight: 600;
-  }
-
-  // Primera columna fija al hacer scroll horizontal
-  th:first-child, td:first-child {
-    position: sticky;
-    left: 0;
-    background: #fff;
-    z-index: 1;
-  }
-  .row-total td:first-child { background: #f0f4f8; }
-}
-
-.pyg-own { color: #0ea5e9; font-size: 10px; margin-left: 4px; vertical-align: super; }
-
-.pyg-row-strong td { font-weight: 700; color: #0f172a; }
-.pyg-row-muted td { font-size: 12px; color: #94a3b8; }
-
-.pyg-row-section td {
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  background: #f8fafc;
-  padding-top: 10px;
-  padding-bottom: 6px;
-}
-
-.pyg-row-net td { background: #f5f3ff; }
-.pyg-row-net td:first-child { background: #f5f3ff !important; }
-
-.pyg-neg { color: #dc2626 !important; }
-
-.pyg-pct { font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
-
-.pyg-foot {
-  margin: 12px 0 0;
-  font-size: 12px;
-  color: #94a3b8;
-  line-height: 1.5;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ACORDEONES — pegar al final de home.scss
-// (puedes borrar .fuel-kpi-grid y .mtto-section, ya no se usan)
-// ═══════════════════════════════════════════════════════════════
-
-.acc {
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-left: 4px solid var(--accent, #1a6fdb);
-  border-radius: 12px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-}
-
-.acc-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 16px 20px;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  text-align: left;
-  font: inherit;
-  color: inherit;
-
-  &:hover { background: #f8fafc; }
-  &:focus-visible { outline: 2px solid var(--accent, #1a6fdb); outline-offset: -2px; }
-}
-
-.acc-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent, #1a6fdb);
-  flex-shrink: 0;
-}
-
-.acc-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.acc-summary {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #475569;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.acc-pill {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 99px;
-  background: #f1f5f9;
-  color: #334155;
-}
-
-.acc-chevron {
-  width: 18px;
-  height: 18px;
-  stroke: #94a3b8;
-  flex-shrink: 0;
-  transition: transform 0.2s ease;
-}
-
-.acc.open .acc-chevron { transform: rotate(180deg); }
-
-.acc-body {
-  padding: 20px;
-  border-top: 1px solid #eef2f7;
-  background: #fafbfd;
-
-  .chart-card { margin-bottom: 20px; }
-  .affiliate-block:last-child { margin-bottom: 0; }
-  .kpi-grid { margin-bottom: 20px; }
-}
-
-.acc-sub + .acc-sub { margin-top: 28px; }
-
-.acc-sub-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #334155;
-  margin: 0 0 12px;
-}
-
-.acc-empty {
-  padding: 16px 20px;
-  border: 1px dashed #dde3ec;
-  border-radius: 10px;
-  background: #fff;
-  font-size: 13px;
-  color: #94a3b8;
-  text-align: center;
-
-  code {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    background: #f1f5f9;
-    padding: 1px 5px;
-    border-radius: 4px;
-    color: #334155;
-  }
-
-  &--warn {
-    border-color: #fde68a;
-    background: #fffbeb;
-    color: #92400e;
-  }
-}
-
-@media (max-width: 600px) {
-  .acc-summary { margin-left: 22px; width: 100%; }
-}
-
-// ─── Utilidades mes a mes y barras de mantenimiento ───────────────────────
-
-.cell-sub {
-  font-size: 10.5px;
-  color: #94a3b8;
-  white-space: nowrap;
-  margin-top: 2px;
-}
-
-.fuel-monthly-table td { vertical-align: top; }
-
-.mtto-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  height: 200px;
-  padding: 8px 4px 0;
-  overflow-x: auto;
-}
-
-.mtto-bar-col {
-  flex: 1 0 44px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-
-  &.current .mtto-bar { background: #1a6fdb; }
-  &.current .mtto-bar-label { color: #1a6fdb; font-weight: 700; }
-}
-
-.mtto-bar-val {
-  font-size: 10.5px;
-  color: #64748b;
-  min-height: 14px;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.mtto-bar-track {
-  flex: 1;
-  width: 60%;
-  max-width: 36px;
-  display: flex;
-  align-items: flex-end;
-}
-
-.mtto-bar {
-  width: 100%;
-  min-height: 2px;
-  background: #0ea5e9;
-  border-radius: 4px 4px 0 0;
-  transition: height 0.6s ease;
-}
-
-.mtto-bar-label {
-  font-size: 11px;
-  color: #94a3b8;
-  margin-top: 6px;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// PYG
-// ═══════════════════════════════════════════════════════════════
-
-.pyg-toolbar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.pyg-month { display: flex; align-items: center; gap: 8px; }
-.pyg-month-label { font-size: 13px; font-weight: 600; color: #475569; }
-
-.pyg-table {
-  th, td { white-space: nowrap; }
-
-  .pyg-concept { min-width: 240px; text-align: left; }
-  .pyg-col { min-width: 140px; text-align: right; }
-  .td-money { text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
-
-  .pyg-col-total {
-    background: rgba(124, 58, 237, 0.05);
-    font-weight: 600;
-  }
-
-  // Primera columna fija al hacer scroll horizontal
-  th:first-child, td:first-child {
-    position: sticky;
-    left: 0;
-    background: #fff;
-    z-index: 1;
-  }
-  .row-total td:first-child { background: #f0f4f8; }
-}
-
-.pyg-own { color: #0ea5e9; font-size: 10px; margin-left: 4px; vertical-align: super; }
-
-.pyg-row-strong td { font-weight: 700; color: #0f172a; }
-.pyg-row-muted td { font-size: 12px; color: #94a3b8; }
-
-.pyg-row-section td {
-  font-size: 11px;
-  font-weight: 700;
-  color: #64748b;
-  background: #f8fafc;
-  padding-top: 10px;
-  padding-bottom: 6px;
-}
-
-.pyg-row-net td { background: #f5f3ff; }
-.pyg-row-net td:first-child { background: #f5f3ff !important; }
-
-.pyg-neg { color: #dc2626 !important; }
-
-.pyg-pct { font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
-
-.pyg-foot {
-  margin: 12px 0 0;
-  font-size: 12px;
-  color: #94a3b8;
-  line-height: 1.5;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// FACTURACIÓN (dashboard)
-// ═══════════════════════════════════════════════════════════════
-
+// ═══ FACTURACIÓN ═════════════════════════════════════════════════════════
 .bdash-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1336,52 +632,52 @@
   flex-direction: column;
   gap: 4px;
   padding: 14px 16px;
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-top: 3px solid var(--st, #94a3b8);
-  border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--st, var(--text-dim));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .bdash-label {
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--st, #64748b);
+  text-transform: uppercase;
+  color: var(--st, var(--text-muted));
 }
 
 .bdash-value {
+  font-family: var(--font-mono);
   font-size: 20px;
   font-weight: 700;
-  color: #0f172a;
-  font-family: 'IBM Plex Mono', monospace;
   letter-spacing: -0.5px;
+  color: var(--text);
 }
 
-.bdash-sub { font-size: 12px; color: #64748b; }
+.bdash-sub { font-size: 12px; color: var(--text-muted); }
 
 .bdash-bar {
   height: 4px;
   margin-top: 6px;
-  border-radius: 99px;
-  background: #f1f5f9;
   overflow: hidden;
+  border-radius: 99px;
+  background: var(--surface-3);
 }
 
 .bdash-bar-fill {
   height: 100%;
-  background: var(--st, #94a3b8);
   border-radius: 99px;
+  background: var(--st, var(--text-dim));
   transition: width 0.6s ease;
 }
 
 .bdash-progress {
-  padding: 14px 16px;
   margin-bottom: 20px;
-  background: #fff;
-  border: 1px solid #dde3ec;
-  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 
 .bdash-progress-head {
@@ -1391,17 +687,17 @@
   margin-bottom: 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #334155;
+  color: var(--text);
 
-  strong { font-size: 18px; font-family: 'IBM Plex Mono', monospace; }
+  strong { font-family: var(--font-mono); font-size: 18px; }
 }
 
 .bdash-stack {
   display: flex;
   height: 12px;
-  border-radius: 99px;
   overflow: hidden;
-  background: #f1f5f9;
+  border-radius: 99px;
+  background: var(--surface-3);
 }
 
 .bdash-stack-seg {
@@ -1415,19 +711,109 @@
   gap: 6px 16px;
   margin-top: 10px;
   font-size: 12px;
-  color: #475569;
+  color: var(--text-muted);
 
   span { display: inline-flex; align-items: center; gap: 6px; }
-  i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
 }
 
 .bdash-dot {
   display: inline-block;
   width: 9px;
   height: 9px;
-  border-radius: 50%;
   margin-right: 8px;
   vertical-align: middle;
+  border-radius: 50%;
 }
 
-.bdash-pending { color: #b45309; font-weight: 600; }
+.bdash-pending { color: var(--warning); font-weight: 600; }
+
+// ═══ PYG ═════════════════════════════════════════════════════════════════
+.pyg-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.pyg-month {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .filter-select { min-width: 170px; }
+}
+
+.pyg-month-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.pyg-table {
+  th, td { white-space: nowrap; }
+
+  .pyg-concept { min-width: 240px; text-align: left; }
+  .pyg-col     { min-width: 140px; text-align: right; }
+
+  .pyg-col-total {
+    background: color-mix(in srgb, var(--teal) 8%, transparent);
+    font-weight: 600;
+  }
+
+  // Primera columna fija al hacer scroll horizontal
+  th:first-child,
+  td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--surface);
+  }
+
+  thead th:first-child { background: var(--surface-2); }
+  .row-total td:first-child { background: var(--surface-2); }
+}
+
+.pyg-own {
+  margin-left: 4px;
+  font-size: 10px;
+  color: var(--info);
+  vertical-align: super;
+}
+
+.pyg-row-strong td { font-weight: 700; color: var(--text); }
+.pyg-row-muted td  { font-size: 12px; color: var(--text-dim); }
+
+.pyg-row-section td {
+  padding-top: 10px !important;
+  padding-bottom: 6px !important;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+
+.pyg-row-net td,
+.pyg-row-net td:first-child {
+  background: color-mix(in srgb, var(--teal) 10%, var(--surface)) !important;
+}
+
+.pyg-neg { color: var(--danger) !important; }
+
+.pyg-pct { font-family: var(--font-mono); font-weight: 700; }
+
+.pyg-foot {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-card, .line-anim { animation: none; }
+  .line-anim { stroke-dashoffset: 0; }
+}

@@ -1,79 +1,125 @@
+
 <div class="page-wrapper">
 
-  <div class="page-header">
+  <header class="page-header">
     <div class="page-header-left">
       <span class="page-eyebrow">Maestros</span>
       <h1 class="page-title">Usuarios</h1>
     </div>
+
     <button class="btn-primary" (click)="openModal()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" width="14" height="14">
         <path d="M12 5v14M5 12h14"/>
       </svg>
       Nuevo usuario
     </button>
-  </div>
+  </header>
 
   <section class="table-section">
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Documento</th>
-            <th>Email</th>
-            <th>Perfil</th>
-            <th class="col-status">Estado</th>
-            <th class="col-actions">Opciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngIf="loading">
-            <td colspan="7">
-              <div class="loading-cell">
-                <div class="spinner"></div>
-                <span>Cargando…</span>
-              </div>
-            </td>
-          </tr>
 
-          <ng-container *ngIf="!loading">
-            <tr *ngFor="let u of users" class="table-row">
-              <td class="text-muted">{{ u.id }}</td>
-              <td>{{ u.first_name }} {{ u.last_name }}</td>
-              <td class="mono">{{ u.document_number ?? '—' }}</td>
-              <td>{{ u.email }}</td>
-              <td>
-                <span class="badge"
-                  [class.badge-admin]="u.role === 1"
-                  [class.badge-aux]="u.role === 2"
-                  [class.badge-afil]="u.role === 3"
-                  [class.badge-mant]="u.role === 4">
-                  {{ profiles[u.role] || '—' }}
-                </span>
-              </td>
-              <td>
-                <span class="badge" [class.badge-active]="u.active === true" [class.badge-inactive]="u.active !== true">
-                  {{ u.active === true ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
-              <td class="col-actions">
-                <app-table-actions
-                  [actions]="actions"
-                  (actionSelected)="onAction($event, u)">
-                </app-table-actions>
-              </td>
-            </tr>
+    <app-data-table
+      [columns]="columns"
+      [actions]="actions"
+      [data]="table.rows"
+      [total]="table.total"
+      [loading]="loading"
+      [showFilterBtn]="true"
+      exportName="usuarios"
+      (pageChange)="onPageChange($event)"
+      (actionSelect)="onAction($event)"
+      (filterClick)="filterOpen = true">
+    </app-data-table>
 
-            <tr *ngIf="users.length === 0">
-              <td colspan="7" class="empty-state">
-                <p>No hay usuarios registrados</p>
-              </td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
+    <app-filter-panel
+      [open]="filterOpen"
+      [activeCount]="activeFilterCount"
+      title="Filtrar usuarios"
+      (closed)="filterOpen = false"
+      (apply)="applyFilters()"
+      (clear)="clearFilters()">
+
+      <div class="filter-fields">
+
+        <!-- Fecha de creación -->
+    <div class="filter-field">
+      <label class="filter-label">Fecha de creación</label>
+
+      <div class="filter-row-2">
+
+        <div class="filter-field">
+          <label class="filter-label">Desde</label>
+
+          <input
+            type="date"
+            class="form-control"
+            [max]="filters.fechaHasta || null"
+            [(ngModel)]="filters.fechaDesde">
+        </div>
+
+        <div class="filter-field">
+          <label class="filter-label">Hasta</label>
+
+          <input
+            type="date"
+            class="form-control"
+            [min]="filters.fechaDesde || null"
+            [(ngModel)]="filters.fechaHasta">
+        </div>
+
+      </div>
     </div>
+
+        <div class="filter-field">
+          <label class="filter-label">Nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="filters.nombre"
+            placeholder="Buscar por nombre">
+        </div>
+
+        <div class="filter-field">
+          <label class="filter-label">Documento</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="filters.documento"
+            placeholder="Número de documento">
+        </div>
+
+        <div class="filter-field">
+          <label class="filter-label">Email</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="filters.email"
+            placeholder="Correo electrónico">
+        </div>
+
+        <div class="filter-field">
+          <label class="filter-label">Perfil</label>
+          <select class="form-control" [(ngModel)]="filters.perfil">
+            <option value="">Todos los perfiles</option>
+            <option value="1">Administrador</option>
+            <option value="2">Auxiliar</option>
+            <option value="3">Afiliado</option>
+            <option value="4">Coordinador de mantenimiento</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label class="filter-label">Estado</label>
+          <select class="form-control" [(ngModel)]="filters.estado">
+            <option value="">Todos los estados</option>
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+          </select>
+        </div>
+
+      </div>
+    </app-filter-panel>
+
   </section>
 
 </div>
