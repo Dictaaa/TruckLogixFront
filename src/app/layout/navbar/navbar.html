@@ -8,17 +8,11 @@
     <span></span><span></span><span></span>
   </button>
 
-  <!-- Marca -->
+    <!-- Marca -->
   <a class="navbar-brand" href="/" aria-label="Inicio">
     <span class="navbar-logo" aria-hidden="true">
-      <svg viewBox="0 0 40 40" fill="none">
-        <rect x="2" y="14" width="26" height="15" rx="2.5" stroke="currentColor" stroke-width="2.6"/>
-        <path d="M28 18h5.5l4 5v6H28" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
-        <circle cx="9" cy="31" r="3.2" fill="currentColor"/>
-        <circle cx="31" cy="31" r="3.2" fill="currentColor"/>
-      </svg>
+      <img [src]="brand.logo" alt="" class="navbar-logo-img">
     </span>
-    <span class="navbar-appname">{{ brand.name }}</span>
   </a>
 
   <!-- Página actual -->

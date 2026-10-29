@@ -68,17 +68,18 @@
 }
 
 .navbar-logo {
-  width: 32px;
-  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 9px;
-  background: var(--primary);
-  color: var(--on-primary);
-  box-shadow: 0 4px 12px var(--primary-ring);
 
-  svg { width: 20px; height: 20px; }
+  .navbar-logo-img {
+    height: 26px;
+    width: auto;
+    max-width: 140px;
+    object-fit: contain;
+    display: block;
+  }
 }
 
 .navbar-appname {
