@@ -169,6 +169,13 @@ export const routes: Routes = [
             .then(m => m.BillingComponent),
         canActivate: [roleGuard([1, 2, 3])]
       },
+      {
+        path: 'payroll',
+        loadComponent: () =>
+          import('./features/payroll/pages/payroll/payroll')
+            .then(m => m.Payroll),
+        canActivate: [roleGuard([1, 3])]
+      }
     ],
   },
 

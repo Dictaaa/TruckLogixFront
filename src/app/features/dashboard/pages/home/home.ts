@@ -333,8 +333,14 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   laboralesTitle(v: any): string {
     const d = v.detail;
-    return `Salario ${this.formatMoney(d.salary)} + comisión ${d.commission_pct}% (${this.formatMoney(d.commission)})`;
-  }
+    const porConductor = (d.driversDetail ?? [])
+        .map((c: any) => `${c.driverName}: ${c.days}d × ${this.formatMoney(d.salary / Math.max(d.driversDetail.length, 1))}`)
+        .join('\n');
+    const lineas = (d.driversDetail ?? [])
+        .map((c: any) => `${c.driverName} — ${c.days} día(s): ${this.formatMoney(c.salary)}`)
+        .join('\n');
+    return `${lineas || 'Sin conductor asignado a los viajes'}\nComisión: ${this.formatMoney(d.commission)}`;
+}
 
   provisionesTitle(v: any): string {
     const d = v.detail;

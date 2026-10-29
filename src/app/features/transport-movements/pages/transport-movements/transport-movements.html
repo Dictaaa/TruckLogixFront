@@ -21,13 +21,8 @@
 
 </div>
 
-<app-filter-panel
-  [open]="filterOpen"
-  [activeCount]="activeFilterCount"
-  title="Filtros de Movimientos"
-  (closed)="filterOpen = false"
-  (apply)="applyFilters()"
-  (clear)="clearFilters()">
+<app-filter-panel [open]="filterOpen" [activeCount]="activeFilterCount" title="Filtros de Movimientos"
+  (closed)="filterOpen = false" (apply)="applyFilters()" (clear)="clearFilters()">
 
   <!-- Fecha -->
   <div class="filter-section">
@@ -52,7 +47,8 @@
       <label class="filter-label">Placa</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input type="text" class="form-control has-icon" placeholder="Buscar vehículo…"
           [ngModel]="vehiculoFilterCtrl.value" (ngModelChange)="vehiculoFilterCtrl.setValue($event)"
@@ -68,7 +64,8 @@
       <label class="filter-label">Conductor</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input type="text" class="form-control has-icon" placeholder="Buscar conductor…"
           [ngModel]="conductorFilterCtrl.value" (ngModelChange)="conductorFilterCtrl.setValue($event)"
@@ -84,7 +81,8 @@
       <label class="filter-label">Empresa Transporte</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input type="text" class="form-control has-icon" placeholder="Buscar empresa…"
           [ngModel]="empresaFilterCtrl.value" (ngModelChange)="empresaFilterCtrl.setValue($event)"
@@ -100,7 +98,8 @@
       <label class="filter-label">Auxiliar Transporte</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input type="text" class="form-control has-icon" placeholder="Buscar auxiliar…"
           [ngModel]="auxiliarFilterCtrl.value" (ngModelChange)="auxiliarFilterCtrl.setValue($event)"
@@ -116,7 +115,8 @@
       <label class="filter-label">Afiliado</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input type="text" class="form-control has-icon" placeholder="Buscar afiliado…"
           [ngModel]="afiliadoFilterCtrl.value" (ngModelChange)="afiliadoFilterCtrl.setValue($event)"
@@ -137,7 +137,8 @@
       <label class="filter-label">Contenedor</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input type="text" class="form-control has-icon" placeholder="Buscar contenedor…"
           [ngModel]="contenedorFilterCtrl.value" (ngModelChange)="contenedorFilterCtrl.setValue($event)"
@@ -161,7 +162,8 @@
       <label class="filter-label">Cliente</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input type="text" class="form-control has-icon" placeholder="Buscar cliente…"
           [ngModel]="clienteFilterCtrl.value" (ngModelChange)="clienteFilterCtrl.setValue($event)"
@@ -177,11 +179,11 @@
       <label class="filter-label">Línea Naviera</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
-        <input type="text" class="form-control has-icon" placeholder="Buscar línea…"
-          [ngModel]="lineaFilterCtrl.value" (ngModelChange)="lineaFilterCtrl.setValue($event)"
-          [matAutocomplete]="autoLineaF">
+        <input type="text" class="form-control has-icon" placeholder="Buscar línea…" [ngModel]="lineaFilterCtrl.value"
+          (ngModelChange)="lineaFilterCtrl.setValue($event)" [matAutocomplete]="autoLineaF">
       </div>
       <mat-autocomplete #autoLineaF="matAutocomplete" [displayWith]="displayFn('name')"
         (optionSelected)="onSelectLinea($event.option.value)">
@@ -193,7 +195,8 @@
       <label class="filter-label">Operación</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input type="text" class="form-control has-icon" placeholder="Buscar operación…"
           [ngModel]="operacionFilterCtrl.value" (ngModelChange)="operacionFilterCtrl.setValue($event)"
@@ -214,11 +217,11 @@
       <label class="filter-label">Origen</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
-        <input type="text" class="form-control has-icon" placeholder="Buscar origen…"
-          [ngModel]="origenFilterCtrl.value" (ngModelChange)="origenFilterCtrl.setValue($event)"
-          [matAutocomplete]="autoOrigenF">
+        <input type="text" class="form-control has-icon" placeholder="Buscar origen…" [ngModel]="origenFilterCtrl.value"
+          (ngModelChange)="origenFilterCtrl.setValue($event)" [matAutocomplete]="autoOrigenF">
       </div>
       <mat-autocomplete #autoOrigenF="matAutocomplete" [displayWith]="displayFn('name')"
         (optionSelected)="onSelectOrigen($event.option.value)">
@@ -230,7 +233,8 @@
       <label class="filter-label">Destino</label>
       <div class="input-icon-wrap">
         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input type="text" class="form-control has-icon" placeholder="Buscar destino…"
           [ngModel]="destinoFilterCtrl.value" (ngModelChange)="destinoFilterCtrl.setValue($event)"

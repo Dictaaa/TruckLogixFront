@@ -1,0 +1,142 @@
+<div class="modal-header">
+    <div class="modal-header-left">
+        <span class="modal-eyebrow">Nómina</span>
+        <h2 class="modal-title">{{ data.driverName }}</h2>
+    </div>
+    <button class="btn-close" (click)="close()" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+    </button>
+</div>
+
+<mat-dialog-content class="modal-body">
+
+  @if (loading) {
+    <div class="loading-cell">
+      <div class="spinner"></div>
+      <span>Calculando…</span>
+    </div>
+  } @else if (preview) {
+
+    <div class="form-section">
+      <div class="form-section-label">
+        Período {{ preview.period.start | date:'dd/MM/yyyy' }} — {{ preview.period.end | date:'dd/MM/yyyy' }}
+        ({{ totalDaysInPeriod }} días)
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Días trabajados</label>
+          <input type="text" class="form-control" [value]="daysWorked + ' / ' + totalDaysInPeriod" disabled>
+        </div>
+        <div class="form-group" *ngIf="preview.noShowDays > 0">
+          <label class="form-label">Días "No se presentó" (descontados)</label>
+          <input type="text" class="form-control" [value]="preview.noShowDays" disabled>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Salario</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Salario mínimo (editable)</label>
+          <div class="input-currency-wrap">
+            <span class="currency-prefix">$</span>
+            <input type="number" class="form-control has-prefix" [disabled]="data.readOnly" [(ngModel)]="form.min_wage" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Salario prorrateado (calculado)</label>
+          <input type="text" class="form-control" [value]="formatMoney(proratedSalary)" disabled>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Comisión</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Comisión de los viajes (editable)</label>
+          <div class="input-currency-wrap">
+            <span class="currency-prefix">$</span>
+            <input type="number" class="form-control has-prefix" [disabled]="data.readOnly" [(ngModel)]="form.commission" min="0">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Descuentos</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Salud y pensión (editable)</label>
+          <div class="input-currency-wrap">
+            <span class="currency-prefix">$</span>
+            <input type="number" class="form-control has-prefix" [disabled]="data.readOnly" [(ngModel)]="form.health_pension_value" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Préstamos</label>
+          <div class="input-currency-wrap">
+            <span class="currency-prefix">$</span>
+            <input type="number" class="form-control has-prefix" [disabled]="data.readOnly" [(ngModel)]="form.loans" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">
+            Citas perdidas (Conductor No se presentó) — {{ preview.missedAppointmentsCount }} — editable
+          </label>
+          <div class="input-currency-wrap">
+            <span class="currency-prefix">$</span>
+            <input type="number" class="form-control has-prefix" [disabled]="data.readOnly" [(ngModel)]="form.missed_appointments_value" min="0">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-label">Domingos y festivos</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Días domingo/festivo trabajados</label>
+          <input type="text" class="form-control" [value]="holidaySundayDays" disabled>
+        </div>
+        <div class="form-group">
+          <label class="form-label">% del salario diario (editable)</label>
+          <input type="number" class="form-control" [disabled]="data.readOnly" [(ngModel)]="form.holiday_sunday_bonus_pct" min="0" max="100" step="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor por día (calculado)</label>
+          <input type="text" class="form-control" [value]="formatMoney(holidayBonusUnit)" disabled>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Total domingos/festivos (calculado)</label>
+          <input type="text" class="form-control" [value]="formatMoney(holidayBonusTotal)" disabled>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-group form-group-full">
+        <label class="form-label">Observaciones</label>
+        <textarea class="form-control" rows="2" [disabled]="data.readOnly" [(ngModel)]="form.notes"></textarea>
+      </div>
+    </div>
+
+    <div class="payroll-total">
+      <span>Total a pagar</span>
+      <strong>{{ formatMoney(totalPay) }}</strong>
+    </div>
+  }
+
+</mat-dialog-content>
+
+<mat-dialog-actions class="modal-footer">
+    <button class="btn-cancel" (click)="close()">{{ data.readOnly ? 'Cerrar' : 'Cancelar' }}</button>
+    @if (!data.readOnly) {
+      <button class="btn-save" [disabled]="loading || saving" (click)="save()">
+          {{ saving ? 'Guardando…' : 'Guardar nómina' }}
+      </button>
+    }
+</mat-dialog-actions>

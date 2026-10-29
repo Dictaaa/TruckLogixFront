@@ -109,4 +109,13 @@ BILLING: {
   INVOICES:        `/api/v1/billing/invoices`,
   REVERT:          `/api/v1/billing/revert`,
 },
+
+PAYROLL: {
+  SETTINGS: `/api/v1/payroll/settings`,
+  PERIODS: `/api/v1/payroll/periods`,
+  PERIOD_ENTRIES: (id: number | string) => `/api/v1/payroll/periods/${id}/entries`,
+  PERIOD_PAY: (id: number | string) => `/api/v1/payroll/periods/${id}/pay`,
+  PREVIEW: `/api/v1/payroll/preview`,
+  ENTRIES: `/api/v1/payroll/entries`,
+},
 };

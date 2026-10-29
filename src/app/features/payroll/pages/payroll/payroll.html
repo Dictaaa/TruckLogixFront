@@ -1,0 +1,81 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-eyebrow">Recursos Humanos</span>
+      <h1 class="page-title">Nómina de Conductores</h1>
+    </div>
+  </div>
+
+  <!-- ═══ Selector de quincena ═══ -->
+  <div class="payroll-period-bar">
+    <button type="button" class="icon-btn" (click)="changeMonth(-1)" aria-label="Mes anterior">‹</button>
+    <span class="payroll-period-label">{{ monthNames[month - 1] }} {{ year }}</span>
+    <button type="button" class="icon-btn" (click)="changeMonth(1)" aria-label="Mes siguiente">›</button>
+
+    <div class="payroll-fortnight-toggle">
+      <button type="button" [class.active]="fortnight === 1" (click)="changeFortnight(1)">1 — 15</button>
+      <button type="button" [class.active]="fortnight === 2" (click)="changeFortnight(2)">16 — fin de mes</button>
+    </div>
+
+    @if (isPaid) {
+      <span class="payroll-status payroll-status--paid">✓ Pagado el {{ period?.paid_at | date:'dd/MM/yyyy' }}</span>
+    } @else {
+      <span class="payroll-status payroll-status--open">Abierto</span>
+    }
+  </div>
+
+  <!-- ═══ Tabla de conductores ═══ -->
+  <section class="table-section">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Conductor</th>
+            <th>Días trabajados</th>
+            <th class="col-right">Total a pagar</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading) {
+            <tr>
+              <td colspan="4">
+                <div class="loading-cell">
+                  <div class="spinner"></div>
+                  <span>Cargando…</span>
+                </div>
+              </td>
+            </tr>
+          } @else {
+            @for (d of drivers; track d.id) {
+              <tr>
+                <td>{{ d.name }}</td>
+                <td class="mono">{{ entryForDriver(d.id)?.days_worked ?? '—' }}</td>
+                <td class="mono col-right">{{ entryForDriver(d.id) ? formatMoney(entryForDriver(d.id)!.total_pay) : '—' }}</td>
+                <td class="col-actions">
+                  <button type="button" class="btn-filter" (click)="openDriverPayroll(d)">
+                    {{ entryForDriver(d.id) ? (isPaid ? 'Ver' : 'Editar') : 'Generar nómina' }}
+                  </button>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ Confirmar pago ═══ -->
+  @if (!loading && entries.length > 0) {
+    <div class="payroll-confirm-bar">
+      <span>{{ entries.length }} conductor(es) · <strong>{{ formatMoney(totalPaid) }}</strong></span>
+      @if (!isPaid) {
+        <button type="button" class="bill-action bill-action--primary" (click)="confirmPayment()">
+          Confirmar pago de esta quincena
+        </button>
+      }
+    </div>
+  }
+
+</div>

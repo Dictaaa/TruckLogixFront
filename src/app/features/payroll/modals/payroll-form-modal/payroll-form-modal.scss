@@ -1,0 +1,26 @@
+// Los estilos de este modal (encabezado, filas, campos, total, botones)
+// vienen del bloque MODALES del styles.scss global.
+// Aquí solo va lo que sea exclusivo de este formulario.
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.payroll-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  margin-top: 8px;
+  border-top: 2px solid var(--line, #e6e6e6);
+  font-size: 15px;
+  font-weight: 700;
+
+  strong {
+    font-size: 20px;
+    color: var(--primary, #1a73e8);
+  }
+}

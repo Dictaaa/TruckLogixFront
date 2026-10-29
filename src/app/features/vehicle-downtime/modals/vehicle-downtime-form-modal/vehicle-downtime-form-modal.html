@@ -27,7 +27,6 @@
             <option [ngValue]="null">— Auto desde placa —</option>
             <option *ngFor="let a of affiliates" [value]="a.id">{{ a.name }}</option>
           </select>
-          <!-- Solo informativo, se llena automático -->
           <span class="form-hint" *ngIf="form.affiliate_id">Afiliado asignado automáticamente.</span>
         </div>
       </div>
@@ -73,14 +72,26 @@
       </div>
     </ng-container>
 
+    <!-- Conductor — editable en los dos modos, por si el auto-llenado no era el correcto ese día -->
+    <div class="form-row cols-1">
+      <div class="form-group">
+        <label class="form-label">Conductor</label>
+        <select class="form-control" [(ngModel)]="form.driver_id">
+          <option [ngValue]="null">— Sin conductor asignado —</option>
+          <option *ngFor="let d of drivers" [value]="d.id">{{ d.name }}</option>
+        </select>
+        <span class="form-hint">Quién manejaba esta placa ese día — de esto depende si la ausencia es culpa del conductor.</span>
+      </div>
+    </div>
+
     <!-- Estado -->
     <div class="form-row cols-1">
       <div class="form-group">
         <label class="form-label">Estado <span class="required">*</span></label>
         <div class="select-with-add">
-          <select class="form-control" [(ngModel)]="form.status_id" [disabled]="showNewStatus">
+          <select class="form-control" [(ngModel)]="form.status_id" [disabled]="showNewStatus" (ngModelChange)="onStatusChange()">
             <option [ngValue]="null">Seleccionar...</option>
-            <option *ngFor="let s of statuses" [value]="s.id">{{ s.name }}</option>
+            <option *ngFor="let s of statuses" [ngValue]="s.id">{{ s.name }}</option>
           </select>
           <button class="btn-add-inline" type="button"
             (click)="showNewStatus = !showNewStatus"
@@ -93,6 +104,18 @@
             placeholder="Ej: Descanso, Sin operación...">
           <button class="btn-save-inline" (click)="saveStatus()">Guardar</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Valor perdido — SOLO si el estado elegido es culpa del conductor -->
+    <div class="form-row cols-1" *ngIf="isDriverFault">
+      <div class="form-group">
+        <label class="form-label">Valor total de lo que se perdió ese día <span class="required">*</span></label>
+        <div class="input-currency-wrap">
+          <span class="currency-prefix">$</span>
+          <input type="number" class="form-control has-prefix" [(ngModel)]="form.lost_value" min="0">
+        </div>
+        <span class="form-hint">Este valor se le descuenta al conductor en nómina, como "cita perdida".</span>
       </div>
     </div>
 

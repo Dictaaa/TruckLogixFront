@@ -98,6 +98,7 @@
             <th>Placa</th>
             <th>Contenedor</th>
             <th>Afiliado</th>
+            <th>Empresa Transporte</th>
             <th>Cliente</th>
             <th class="sortable col-right" (click)="sort('flete')">
               Flete <span class="sort-ind" *ngIf="sortBy === 'flete'">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
@@ -134,6 +135,7 @@
               <td><span class="badge badge--placa" *ngIf="r.vehicle?.plate">{{ r.vehicle.plate }}</span></td>
               <td class="mono">{{ r.container?.number || '—' }}</td>
               <td>{{ r.affiliate?.name || '—' }}</td>
+              <td>{{ r.transportCompany?.name || '—' }}</td>
               <td>{{ r.client?.name || '—' }}</td>
               <td class="mono col-right">{{ formatMoney(r.freight_value) }}</td>
               <td class="mono">
@@ -239,6 +241,23 @@
       <mat-autocomplete #autoAfiliado="matAutocomplete" [displayWith]="displayFn('name')"
         (optionSelected)="onSelect('affiliate_id', $event.option.value)">
         <mat-option *ngFor="let a of ac.affiliate_id.filtered$ | async" [value]="a">{{ a.name }}</mat-option>
+      </mat-autocomplete>
+    </div>
+
+    <div class="filter-field">
+      <label class="filter-label">Empresa Transporte</label>
+      <div class="input-icon-wrap">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" class="form-control has-icon" placeholder="Buscar empresa…"
+          [ngModel]="ac.transport_company_id.ctrl.value" (ngModelChange)="ac.transport_company_id.ctrl.setValue($event)"
+          [matAutocomplete]="autoEmpresaF">
+      </div>
+      <mat-autocomplete #autoEmpresaF="matAutocomplete" [displayWith]="displayFn('name')"
+        (optionSelected)="onSelect('transport_company_id', $event.option.value)">
+        <mat-option *ngFor="let e of ac.transport_company_id.filtered$ | async" [value]="e">{{ e.name }}</mat-option>
       </mat-autocomplete>
     </div>
 

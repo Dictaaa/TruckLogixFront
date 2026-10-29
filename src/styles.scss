@@ -10,9 +10,9 @@ html {
   height: 100%;
   @include mat.theme((
     color: (
-      primary:    mat.$orange-palette,
+      primary:    mat.$blue-palette,
       tertiary:   mat.$yellow-palette,
-      theme-type: color-scheme,          // sigue a color-scheme (light / dark)
+      theme-type: color-scheme,
     ),
     typography: 'IBM Plex Sans',
     density: 0,
@@ -47,12 +47,13 @@ html {
   --text-inverse:  #ffffff;
 
   // Marca (naranja)
-  --primary:         #f97316;
-  --primary-hover:   #ea580c;
-  --primary-active:  #c2410c;
-  --primary-soft:    rgba(249, 115, 22, 0.10);
-  --primary-ring:    rgba(249, 115, 22, 0.22);
-  --primary-text:    #c2410c;          // naranja legible sobre fondo claro
+    // Marca (azul)
+  --primary:         #028efe;
+  --primary-hover:   #0277d1;
+  --primary-active:  #015fa8;
+  --primary-soft:    rgba(2, 142, 254, 0.10);
+  --primary-ring:    rgba(2, 142, 254, 0.22);
+  --primary-text:    #015fa8;          // azul legible sobre fondo claro
   --on-primary:      #ffffff;
 
   // Estados (separados del naranja para que no se confundan)
@@ -105,13 +106,13 @@ html {
   --text-dim:      #677285;
   --text-inverse:  #0b0e14;
 
-  --primary:         #fb923c;
-  --primary-hover:   #f97316;
-  --primary-active:  #ea580c;
-  --primary-soft:    rgba(251, 146, 60, 0.14);
-  --primary-ring:    rgba(251, 146, 60, 0.28);
-  --primary-text:    #fdba74;
-  --on-primary:      #1a0f05;
+    --primary:         #3fa9ff;
+  --primary-hover:   #028efe;
+  --primary-active:  #0277d1;
+  --primary-soft:    rgba(63, 169, 255, 0.14);
+  --primary-ring:    rgba(63, 169, 255, 0.28);
+  --primary-text:    #7cc4ff;
+  --on-primary:      #04172b;
 
   --success:       #22c55e;
   --success-soft:  rgba(34, 197, 94, 0.14);

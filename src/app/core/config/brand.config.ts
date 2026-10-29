@@ -5,7 +5,7 @@
  */
 export const BRAND = {
   /** Nombre completo de la página */
-  name: 'Trucklogix',
+  name: 'Nexum360',
   /** Nombre corto (logo, espacios pequeños) */
   shortName: 'TLX',
   /** Frase corta bajo el nombre */
@@ -21,6 +21,7 @@ export const BRAND = {
 
   /** Video de la portada (carpeta public/ en Angular 17+, o src/assets/ en versiones anteriores) */
   heroVideo: 'truck.mp4',
+  logo: 'logonexum360.png',
   /** Imagen que se ve mientras carga el video (opcional, vacío = sin imagen) */
   heroPoster: '',
 } as const;

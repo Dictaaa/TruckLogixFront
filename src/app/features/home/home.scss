@@ -140,7 +140,7 @@
 // Botones sobre la franja naranja
 .btn-on-primary {
   background: #fff;
-  color: #9a3412;
+  color: var(--primary);
 
   &:hover { background: #fff7ed; }
 }
@@ -155,22 +155,21 @@
 
 // ── Logo ─────────────────────────────────────────────────────────────────
 .logo {
-  width: 36px;
-  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  background: var(--primary);
-  color: var(--on-primary);
 
-  svg { width: 22px; height: 22px; }
+  .logo-img {
+    height: 32px;
+    width: auto;
+    max-width: 160px;   // evita que un logo muy ancho empuje el resto del navbar
+    object-fit: contain;
+    display: block;
+  }
 
-  &.logo-sm {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    svg { width: 17px; height: 17px; }
+  &.logo-sm .logo-img {
+    height: 24px;
   }
 }
 
@@ -297,9 +296,9 @@
   font-weight: 700;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: #fed7aa;
-  background: rgba(249, 115, 22, 0.16);
-  border: 1px solid rgba(249, 115, 22, 0.35);
+  color: var(--primary-text);
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-ring);
 }
 
 .hero-title {
@@ -310,7 +309,7 @@
   letter-spacing: -1.6px;
   color: #fff;
 
-  .accent { color: #fb923c; }
+  .accent { color: var(--primary); }
 }
 
 .hero-text {
@@ -809,9 +808,9 @@
   flex-wrap: wrap;
   padding: 48px;
   border-radius: 22px;
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
   color: #fff;
-  box-shadow: 0 24px 60px rgba(234, 88, 12, 0.28);
+  box-shadow: 0 24px 60px var(--primary-ring);
 
   h2 {
     margin: 0 0 8px;

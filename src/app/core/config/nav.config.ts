@@ -127,6 +127,15 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    id: 'nomina',
+    label: 'Nómina',
+    icon: I.dollar,
+    roles: [1, 3],
+    items: [
+      { label: 'Nómina', route: '/payroll', icon: I.dollar },
+    ],
+  },
+  {
     id: 'maestros',
     label: 'Maestros',
     icon: I.database,

@@ -13,7 +13,7 @@ import { FilterPanelComponent } from '../../../../core/components/filter-panel/f
 import { MatDialog } from '@angular/material/dialog';
 import { VehicleDowntimeFormModal } from '../../modals/vehicle-downtime-form-modal/vehicle-downtime-form-modal';
 
-type AutoKey = 'vehicle_id' | 'affiliate_id';
+type AutoKey = 'vehicle_id' | 'affiliate_id' | 'driver_id';
 
 interface AutoFilter {
   ctrl: FormControl;
@@ -69,11 +69,13 @@ export class VehicleDowntime implements OnInit {
   ac: Record<AutoKey, AutoFilter> = {
     vehicle_id:   this.newAuto('plate'),
     affiliate_id: this.newAuto('name'),
+    driver_id:    this.newAuto('name'),
   };
 
   columns: TableColumn[] = [
     { key: 'fecha',    label: 'Fecha',    format: 'date', sortable: true },
     { key: 'placa',    label: 'Placa',    format: 'placa'               },
+    { key: 'conductor', label: 'Conductor',                sortable: true },
     { key: 'afiliado', label: 'Afiliado',                sortable: true },
     { key: 'estado',   label: 'Estado',                  sortable: true },
     { key: 'obs',      label: 'Observación'                             },
@@ -109,6 +111,7 @@ export class VehicleDowntime implements OnInit {
 
   private loadFilterCatalogs(): void {
     this.api.getAuth(ENDPOINTS.VEHICLES.LIST).subscribe((d: any) => this.bindAuto('vehicle_id', d));
+     this.api.getAuth(ENDPOINTS.DRIVERS.LIST).subscribe((d: any) => this.bindAuto('driver_id', d));
     if (!this.isAffiliate) {
       this.api.getAuth(ENDPOINTS.AFFILIATES.LIST).subscribe((d: any) => this.bindAuto('affiliate_id', d));
     }
@@ -122,6 +125,7 @@ export class VehicleDowntime implements OnInit {
         ? this.statuses.find((st: any) => st.name.toLowerCase().includes('taller'))?.id || null
         : null,
       observations: '',
+      lost_value: 0,
       saving: false,
     };
   }
@@ -173,9 +177,11 @@ export class VehicleDowntime implements OnInit {
     const payload = {
       vehicle_id:     s.vehicle_id,
       affiliate_id:   s.affiliate_id,
+      driver_id:      s.driver_id || null,
       downtime_date:  s.downtime_date,
       status_id:      s.selectedStatusId,
       maintenance_id: s.maintenance_id || null,
+      lost_value:     this.isSuggestionDriverFault(s) ? (s.lost_value || 0) : 0,
       observations:   s.observations   || null,
     };
     this.api.postAuth(ENDPOINTS.VEHICLE_DOWNTIME.FROM_SUGGESTION, payload).subscribe({
@@ -217,6 +223,7 @@ export class VehicleDowntime implements OnInit {
           id:       r.id,
           fecha:    r.downtime_date,
           placa:    r.vehicle?.plate    || '',
+          conductor: r.driver?.name      || '',
           afiliado: r.affiliate?.name   || '',
           estado:   r.status?.name      || '',
           obs:      r.observations      || '',
@@ -238,6 +245,7 @@ export class VehicleDowntime implements OnInit {
       status_id:    '' as string | number,
       vehicle_id:   '' as string | number,
       affiliate_id: '' as string | number,
+      driver_id:    '' as string | number,
     };
   }
 
@@ -335,5 +343,9 @@ export class VehicleDowntime implements OnInit {
 
   getStatusName(id: number): string {
     return this.statuses.find(s => s.id === id)?.name || '';
+  }
+
+  isSuggestionDriverFault(s: any): boolean {
+    return !!this.statuses.find(st => st.id === s.selectedStatusId)?.is_driver_fault;
   }
 }

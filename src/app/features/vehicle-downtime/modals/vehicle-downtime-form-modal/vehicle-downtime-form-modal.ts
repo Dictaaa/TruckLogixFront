@@ -22,19 +22,21 @@ export class VehicleDowntimeFormModal implements OnInit {
 
   vehicles:  any[] = [];
   affiliates: any[] = [];
+  drivers:   any[] = [];
   statuses:  any[] = [];
   saving = false;
 
-  // Nuevo estado inline
   showNewStatus = false;
   newStatusName = '';
 
   form: any = {
     vehicle_id:   null,
     affiliate_id: null,
+    driver_id:    null,
     status_id:    null,
+    lost_value:   0,
     date_from:    '',
-    date_to:      '',        // si es rango
+    date_to:      '',
     observations: '',
   };
 
@@ -45,6 +47,15 @@ export class VehicleDowntimeFormModal implements OnInit {
   get isRange(): boolean {
     return !this.isEdit && !!this.form.date_to && this.form.date_to !== this.form.date_from;
   }
+
+  /** true si el estado elegido es "culpa del conductor" — ahí se muestra el campo de valor perdido. */
+  get isDriverFault(): boolean {
+    return !!this.statuses.find(s => s.id == this.form.status_id)?.is_driver_fault;
+  }
+
+  onStatusChange(): void {
+  this.cdr.detectChanges();
+}
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { record: any; statuses: any[] }) {}
 
@@ -61,12 +72,19 @@ export class VehicleDowntimeFormModal implements OnInit {
       this.cdr.detectChanges();
     });
 
+    this.api.getAuth(ENDPOINTS.DRIVERS.LIST).subscribe((d: any) => {
+      this.drivers = Array.isArray(d) ? d : (d.data ?? []);
+      this.cdr.detectChanges();
+    });
+
     if (this.isEdit) {
       const r = this.data.record;
       this.form = {
         vehicle_id:   r.vehicle_id   || null,
         affiliate_id: r.affiliate_id || null,
+        driver_id:    r.driver_id    || null,
         status_id:    r.status_id    || null,
+        lost_value:   Number(r.lost_value || 0),
         date_from:    r.downtime_date || '',
         date_to:      '',
         observations: r.observations  || '',
@@ -74,14 +92,14 @@ export class VehicleDowntimeFormModal implements OnInit {
     }
   }
 
-  // Al seleccionar vehículo → auto-llenar afiliado
+  // Al seleccionar vehículo → auto-llenar afiliado Y conductor (el que tiene asignado ahora mismo).
   onVehicleChange(): void {
     const v = this.vehicles.find(x => String(x.id) === String(this.form.vehicle_id));
     if (v?.company_id) this.form.affiliate_id = v.company_id;
+    if (v?.driver_id)  this.form.driver_id    = v.driver_id;
     this.cdr.detectChanges();
   }
 
-  // Agregar estado inline
   saveStatus(): void {
     if (!this.newStatusName.trim()) return;
     this.api.postAuth(ENDPOINTS.VEHICLE_DOWNTIME.CREATE_STATUS, { name: this.newStatusName }).subscribe({
@@ -105,9 +123,10 @@ export class VehicleDowntimeFormModal implements OnInit {
     this.saving = true;
 
     if (this.isEdit) {
-      // Solo actualiza estado y observación
       const payload = {
         status_id:    this.form.status_id,
+        driver_id:    this.form.driver_id,
+        lost_value:   this.isDriverFault ? this.form.lost_value : 0,
         observations: this.form.observations,
       };
       this.api.putAuth(ENDPOINTS.VEHICLE_DOWNTIME.UPDATE(this.data.record.id), payload).subscribe({
@@ -115,11 +134,12 @@ export class VehicleDowntimeFormModal implements OnInit {
         error: () => { this.toast.error('Error al actualizar'); this.saving = false; }
       });
     } else {
-      // Crea con rango (el backend genera un registro por día)
       const payload = {
         vehicle_id:   this.form.vehicle_id,
         affiliate_id: this.form.affiliate_id || null,
+        driver_id:    this.form.driver_id || null,
         status_id:    this.form.status_id,
+        lost_value:   this.isDriverFault ? this.form.lost_value : 0,
         date_from:    this.form.date_from,
         date_to:      this.form.date_to || this.form.date_from,
         observations: this.form.observations || null,

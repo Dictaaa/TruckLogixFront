@@ -8,14 +8,8 @@
     <div class="container nav-inner">
       <a class="nav-brand" routerLink="/" aria-label="Inicio">
         <span class="logo" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none">
-            <rect x="2" y="14" width="26" height="15" rx="2.5" stroke="currentColor" stroke-width="2.4"/>
-            <path d="M28 18h5.5l4 5v6H28" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-            <circle cx="9" cy="31" r="3.2" fill="currentColor"/>
-            <circle cx="31" cy="31" r="3.2" fill="currentColor"/>
-          </svg>
+          <img [src]="brand.logo" alt="" class="logo-img">
         </span>
-        <span class="nav-name">{{ brand.name }}</span>
       </a>
 
       <nav class="nav-links" aria-label="Secciones">
@@ -34,12 +28,9 @@
   <!-- ═══ HERO CON VIDEO ═══════════════════════════════════════════════ -->
   <section class="hero">
     <!-- Video de fondo: silenciado, en bucle, sin controles -->
-    <video #heroVideo class="hero-video"
-      [src]="brand.heroVideo"
-      [attr.poster]="brand.heroPoster || null"
-      autoplay muted loop playsinline preload="auto"
-      disablepictureinpicture disableremoteplayback
-      aria-hidden="true" tabindex="-1"></video>
+    <video #heroVideo class="hero-video" [src]="brand.heroVideo" [attr.poster]="brand.heroPoster || null" autoplay muted
+      loop playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-hidden="true"
+      tabindex="-1"></video>
     <div class="hero-overlay" aria-hidden="true"></div>
 
     <div class="container hero-inner">
@@ -55,8 +46,10 @@
         <div class="hero-ctas hero-anim" style="--d: 360ms">
           <button type="button" class="btn btn-primary-solid btn-lg" (click)="goToPortal()">
             {{ isLoggedIn ? 'Ir al portal' : 'Ingresar al portal' }}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
             </svg>
           </button>
           <button type="button" class="btn btn-glass btn-lg" (click)="scrollTo('planes')">Ver planes</button>
@@ -87,12 +80,11 @@
       </header>
 
       <div class="features">
-        <article class="feature" *ngFor="let f of features; let i = index"
-          appReveal [revealDelay]="(i % 3) * 110">
+        <article class="feature" *ngFor="let f of features; let i = index" appReveal [revealDelay]="(i % 3) * 110">
           <span class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <path *ngFor="let d of f.icon" [attr.d]="d"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path *ngFor="let d of f.icon" [attr.d]="d" />
             </svg>
           </span>
           <h3>{{ f.title }}</h3>
@@ -111,8 +103,7 @@
       </header>
 
       <ol class="steps">
-        <li class="step" *ngFor="let s of steps; let i = index"
-          appReveal="left" [revealDelay]="i * 140">
+        <li class="step" *ngFor="let s of steps; let i = index" appReveal="left" [revealDelay]="i * 140">
           <span class="step-n">{{ s.n }}</span>
           <h3>{{ s.title }}</h3>
           <p>{{ s.text }}</p>
@@ -130,15 +121,14 @@
       </header>
 
       <div class="audiences">
-        <article class="audience" *ngFor="let a of audiences; let i = index"
-          [appReveal]="i === 0 ? 'left' : 'right'">
+        <article class="audience" *ngFor="let a of audiences; let i = index" [appReveal]="i === 0 ? 'left' : 'right'">
           <h3>{{ a.title }}</h3>
           <p>{{ a.text }}</p>
           <ul>
             <li *ngFor="let p of a.points">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M20 6 9 17l-5-5"/>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 6 9 17l-5-5" />
               </svg>
               {{ p }}
             </li>
@@ -166,8 +156,7 @@
       </div>
 
       <div class="plans">
-        <article class="plan" *ngFor="let p of plans; let i = index"
-          [class.plan--featured]="p.highlight"
+        <article class="plan" *ngFor="let p of plans; let i = index" [class.plan--featured]="p.highlight"
           appReveal="zoom" [revealDelay]="i * 110">
 
           <span class="plan-badge" *ngIf="p.highlight">{{ p.tag }}</span>
@@ -196,9 +185,11 @@
           <ul class="plan-items">
             <li *ngFor="let it of p.items" [class.off]="!it.included">
               <svg *ngIf="it.included" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 6 9 17l-5-5" /></svg>
               <svg *ngIf="!it.included" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
-                stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                stroke-linecap="round" aria-hidden="true">
+                <path d="M18 6 6 18M6 6l12 12" /></svg>
               <span>{{ it.text }}</span>
             </li>
           </ul>
@@ -236,10 +227,10 @@
       <div class="footer-brand">
         <span class="logo logo-sm" aria-hidden="true">
           <svg viewBox="0 0 40 40" fill="none">
-            <rect x="2" y="14" width="26" height="15" rx="2.5" stroke="currentColor" stroke-width="2.6"/>
-            <path d="M28 18h5.5l4 5v6H28" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
-            <circle cx="9" cy="31" r="3.2" fill="currentColor"/>
-            <circle cx="31" cy="31" r="3.2" fill="currentColor"/>
+            <rect x="2" y="14" width="26" height="15" rx="2.5" stroke="currentColor" stroke-width="2.6" />
+            <path d="M28 18h5.5l4 5v6H28" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" />
+            <circle cx="9" cy="31" r="3.2" fill="currentColor" />
+            <circle cx="31" cy="31" r="3.2" fill="currentColor" />
           </svg>
         </span>
         <span>© {{ year }} {{ brand.name }}</span>

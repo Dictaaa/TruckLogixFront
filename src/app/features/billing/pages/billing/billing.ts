@@ -16,7 +16,7 @@ import { BillingHistoryModal } from '../../modals/billing-history-modal/billing-
 
 export type BillingStatus = 'pendiente_oc_temporal' | 'pendiente_oc' | 'pendiente_factura' | 'facturado';
 type Tab = BillingStatus | 'todos';
-type AutoKey = 'affiliate_id' | 'client_id' | 'vehicle_id' | 'container_id';
+type AutoKey = 'affiliate_id' | 'transport_company_id' | 'client_id' | 'vehicle_id' | 'container_id';
 
 interface AutoFilter {
   ctrl: FormControl;
@@ -84,6 +84,7 @@ export class BillingComponent implements OnInit, OnDestroy {
     { key: 'placa',       label: 'Placa' },
     { key: 'contenedor',  label: 'Contenedor' },
     { key: 'cliente',     label: 'Cliente' },
+    { key: 'transporte', label: 'Empresa Transporte' },
     { key: 'afiliado',    label: 'Afiliado' },
     { key: 'ocTemporal',  label: 'OC temporal' },
     { key: 'ordenCompra', label: 'Orden de compra' },
@@ -118,6 +119,7 @@ export class BillingComponent implements OnInit, OnDestroy {
 
   ac: Record<AutoKey, AutoFilter> = {
     affiliate_id: this.newAuto('name'),
+    transport_company_id: this.newAuto('name'),
     client_id:    this.newAuto('name'),
     vehicle_id:   this.newAuto('plate'),
     container_id: this.newAuto('number'),
@@ -320,6 +322,7 @@ export class BillingComponent implements OnInit, OnDestroy {
       fecha_desde:    '',
       fecha_hasta:    '',
       affiliate_id:   '' as string | number,
+      transport_company_id: '' as string | number,
       client_id:      '' as string | number,
       vehicle_id:     '' as string | number,
       container_id:   '' as string | number,
@@ -353,6 +356,7 @@ export class BillingComponent implements OnInit, OnDestroy {
     if (!this.isAffiliate) {
       this.api.getAuth(ENDPOINTS.AFFILIATES.LIST).subscribe((d: any) => this.bindAuto('affiliate_id', d));
     }
+    this.api.getAuth(ENDPOINTS.TRANSPORT_COMPANIES.LIST).subscribe((d: any) => this.bindAuto('transport_company_id', d));
     this.api.getAuth(ENDPOINTS.CLIENTS.LIST).subscribe((d: any) => this.bindAuto('client_id', d));
     this.api.getAuth(ENDPOINTS.VEHICLES.LIST).subscribe((d: any) => this.bindAuto('vehicle_id', d));
     this.api.getAuth(ENDPOINTS.CONTAINERS.LIST).subscribe((d: any) => this.bindAuto('container_id', d));

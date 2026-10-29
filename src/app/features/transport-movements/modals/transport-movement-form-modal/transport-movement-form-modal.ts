@@ -102,6 +102,7 @@ export class TransportMovementFormModalComponent implements OnInit {
     flete: 0,
     comisionPagada: 0,
     transporteComida: 0,
+    citaPerdida: false,
     observacion: '',
     fechaFacturar: '',
     tipoServicio: '',
@@ -249,9 +250,9 @@ export class TransportMovementFormModalComponent implements OnInit {
   }
 
   onFleteManualChange(): void {
-    this.form.comisionPagada = Math.round(this.form.flete * 0.10);
-    this.freightResolved = this.form.flete > 0;
-  }
+  this.form.comisionPagada = Math.round(this.form.flete * 0.08);
+  this.freightResolved = this.form.flete > 0;
+}
 
   saving = false;
 
@@ -332,9 +333,11 @@ export class TransportMovementFormModalComponent implements OnInit {
     this.form.cliente = d.client_id ?? '';
     this.form.estado = d.client_status ?? '';
     this.form.estadoTrabajo = d.work_status ?? '';
+    this.form.tipoServicio = d.service_type ?? ''; 
     this.form.flete = Number(d.freight_value || 0);
     this.form.comisionPagada = Number(d.commission_paid || 0);
     this.form.transporteComida = Number(d.transport_food_value || 0);
+    this.form.citaPerdida = d.missed_appointment ?? false;   // ← esta
     this.form.observacion = d.observations ?? '';
     this.form.fechaFacturar = d.invoice_send_date ?? '';
 
@@ -388,6 +391,7 @@ export class TransportMovementFormModalComponent implements OnInit {
       commission_paid: this.form.comisionPagada || 0,
       work_status: this.form.estadoTrabajo || null,
       transport_food_value: this.form.transporteComida || 0,
+      missed_appointment: this.form.citaPerdida,   // ← esta
       observations: this.form.observacion || null,
       invoice_send_date: this.form.fechaFacturar || null,
       service_type: this.form.tipoServicio || null,

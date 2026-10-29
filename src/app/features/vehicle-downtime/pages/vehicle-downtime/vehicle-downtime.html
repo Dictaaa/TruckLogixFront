@@ -70,9 +70,11 @@
             <tr>
               <th>Fecha</th>
               <th>Placa</th>
+              <th>Conductor</th>
               <th>Afiliado</th>
               <th>Mantenimiento</th>
               <th>Estado <span class="required">*</span></th>
+              <th>Valor perdido</th>
               <th>Observación</th>
               <th>Acción</th>
             </tr>
@@ -81,6 +83,7 @@
             <tr *ngFor="let s of suggestions" class="table-row suggestion-row">
               <td class="td-date">{{ s.downtime_date }}</td>
               <td><span class="badge badge--placa">{{ s.plate }}</span></td>
+              <td>{{ s.driver_name || '—' }}</td>
               <td>{{ s.affiliate_name }}</td>
               <td>
                 <span *ngIf="s.maintenance_id" class="badge badge-taller">🔧 Taller</span>
@@ -93,6 +96,11 @@
                   <option [ngValue]="null">Seleccionar...</option>
                   <option *ngFor="let st of statuses" [value]="st.id">{{ st.name }}</option>
                 </select>
+              </td>
+              <td class="td-lost-value">
+                <input *ngIf="isSuggestionDriverFault(s)" type="number" class="form-control-inline" min="0"
+                  [(ngModel)]="s.lost_value" placeholder="$ 0">
+                <span *ngIf="!isSuggestionDriverFault(s)" class="text-muted">—</span>
               </td>
               <td class="td-obs">
                 <input type="text" class="form-control-inline"
@@ -196,6 +204,22 @@
       <mat-autocomplete #autoAfiliado="matAutocomplete" [displayWith]="displayFn('name')"
         (optionSelected)="onSelect('affiliate_id', $event.option.value)">
         <mat-option *ngFor="let a of ac.affiliate_id.filtered$ | async" [value]="a">{{ a.name }}</mat-option>
+      </mat-autocomplete>
+    </div>
+
+        <div class="filter-field">
+      <label class="filter-label">Conductor</label>
+      <div class="input-icon-wrap">
+        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" class="form-control has-icon" placeholder="Buscar conductor…"
+          [ngModel]="ac.driver_id.ctrl.value" (ngModelChange)="ac.driver_id.ctrl.setValue($event)"
+          [matAutocomplete]="autoConductor">
+      </div>
+      <mat-autocomplete #autoConductor="matAutocomplete" [displayWith]="displayFn('name')"
+        (optionSelected)="onSelect('driver_id', $event.option.value)">
+        <mat-option *ngFor="let d of ac.driver_id.filtered$ | async" [value]="d">{{ d.name }}</mat-option>
       </mat-autocomplete>
     </div>
   </div>
